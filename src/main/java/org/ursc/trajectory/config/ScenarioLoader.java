@@ -143,12 +143,13 @@ public final class ScenarioLoader {
 
     private void configureForces(final PropagationConfig config) {
         if (getBoolean("force.gravity", true)) {
-            final int degree = (int) getDouble("gravity.degree", 6);
-            final int order = (int) getDouble("gravity.order", 0);
+            final int degree = (int) getDouble("gravity.degree", 20);
+            final int order = (int) getDouble("gravity.order", 20);
             final double mu = getDouble("gravity.mu", Constants.EARTH_MU);
             final double radius = getDouble("gravity.radius", Constants.EARTH_EQUATORIAL_RADIUS);
-            GravityField field;
             final String file = getString("gravity.file", "");
+            final String gravityModel = getString("gravity.model", "egm96").toLowerCase();
+            final GravityField field;
             if (!file.isEmpty()) {
                 try {
                     field = GravityFieldFactory.loadNormalized(
@@ -156,10 +157,16 @@ public final class ScenarioLoader {
                 } catch (final IOException ex) {
                     throw new IllegalStateException("cannot load gravity file " + file, ex);
                 }
-            } else {
+            } else if (gravityModel.equals("zonal")) {
                 field = GravityFieldFactory.getDefaultZonalField();
+            } else {
+                // bundled EGM96 (satellite-only) complete to d/o 70
+                field = GravityFieldFactory.getEgm96(degree);
             }
-            config.gravityField(field, degree, order);
+            // never request beyond what the chosen field supplies
+            final int useDegree = Math.min(degree, field.getMaxDegree());
+            final int useOrder = Math.min(order, Math.min(useDegree, field.getMaxOrder()));
+            config.gravityField(field, useDegree, useOrder);
         }
 
         if (getBoolean("force.thirdBody.sun", false)) {

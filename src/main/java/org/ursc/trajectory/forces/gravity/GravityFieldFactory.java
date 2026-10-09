@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.zip.GZIPInputStream;
 
 import org.ursc.trajectory.math.Constants;
 
@@ -23,7 +24,41 @@ public final class GravityFieldFactory {
     private static final double J5 = -2.27296083e-7;
     private static final double J6 = 5.40681239e-7;
 
+    /** EGM96 gravitational constant GM (m^3/s^2), as published with the model. */
+    public static final double EGM96_MU = 3.986004415e14;
+    /** EGM96 reference radius (m). */
+    public static final double EGM96_RADIUS = 6378136.3;
+    /** Maximum degree/order of the bundled EGM96 (satellite-only) field. */
+    public static final int EGM96_MAX_DEGREE = 70;
+
+    private static final String EGM96_RESOURCE = "/gravity/egm96s_to70.gfc.gz";
+
     private GravityFieldFactory() {
+    }
+
+    /**
+     * Load the bundled EGM96 field (satellite-only solution, complete to degree and
+     * order 70) truncated to the requested degree, with order equal to that degree
+     * so any order &le; degree may be selected by the force model.
+     *
+     * @param maxDegree degree to retain (1..70)
+     * @return the de-normalised gravity field
+     */
+    public static GravityField getEgm96(final int maxDegree) {
+        if (maxDegree < 1 || maxDegree > EGM96_MAX_DEGREE) {
+            throw new IllegalArgumentException(
+                    "EGM96 degree must be between 1 and " + EGM96_MAX_DEGREE + ", got " + maxDegree);
+        }
+        try (InputStream raw = GravityFieldFactory.class.getResourceAsStream(EGM96_RESOURCE)) {
+            if (raw == null) {
+                throw new IllegalStateException("bundled EGM96 resource not found: " + EGM96_RESOURCE);
+            }
+            try (InputStream in = new GZIPInputStream(raw)) {
+                return loadNormalized(in, EGM96_MU, EGM96_RADIUS, maxDegree, maxDegree);
+            }
+        } catch (final IOException e) {
+            throw new IllegalStateException("cannot read bundled EGM96 field", e);
+        }
     }
 
     /**
