@@ -11,6 +11,7 @@ import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.bodies.OneAxisEllipsoid;
 import org.ursc.trajectory.forces.drag.Atmosphere;
 import org.ursc.trajectory.forces.drag.ConstantSpaceWeather;
+import org.ursc.trajectory.forces.drag.CssiSpaceWeatherProvider;
 import org.ursc.trajectory.forces.drag.ExponentialAtmosphere;
 import org.ursc.trajectory.forces.drag.HarrisPriesterAtmosphere;
 import org.ursc.trajectory.forces.drag.NRLMSISE00Atmosphere;
@@ -229,13 +230,31 @@ public final class ScenarioLoader {
                     getDouble("drag.harrisPriester.exponent", 2.0));
         }
         if (model.equals("nrlmsise00") || model.equals("nrlmsise-00") || model.equals("msis")) {
-            final SpaceWeatherProvider weather = new ConstantSpaceWeather(
-                    getDouble("spaceWeather.f107", 150.0),
-                    getDouble("spaceWeather.f107a", 150.0),
-                    getDouble("spaceWeather.ap", 4.0));
-            return new NRLMSISE00Atmosphere(earth, weather);
+            return new NRLMSISE00Atmosphere(earth, buildSpaceWeather());
         }
         return new ExponentialAtmosphere(earth);
+    }
+
+    private SpaceWeatherProvider buildSpaceWeather() {
+        final SpaceWeatherProvider constant = new ConstantSpaceWeather(
+                getDouble("spaceWeather.f107", 150.0),
+                getDouble("spaceWeather.f107a", 150.0),
+                getDouble("spaceWeather.ap", 4.0));
+        final String source = getString("spaceWeather.source", "constant").toLowerCase();
+        if (source.equals("file")) {
+            final String file = getString("spaceWeather.file", "");
+            if (file.isEmpty()) {
+                throw new IllegalStateException(
+                        "spaceWeather.source=file requires spaceWeather.file to be set");
+            }
+            try {
+                // the constant values act as the fallback for dates outside the file
+                return new CssiSpaceWeatherProvider(Paths.get(file), constant);
+            } catch (final IOException ex) {
+                throw new IllegalStateException("cannot load space-weather file " + file, ex);
+            }
+        }
+        return constant;
     }
 
     private ODEIntegrator buildIntegrator() {

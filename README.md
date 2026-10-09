@@ -169,16 +169,17 @@ marked extension point):
   ample for perturbation forcing.
 - UT1 ≈ UTC (dUT1 = 0); no IERS Earth-orientation data yet.
 - Atmosphere models range from static (exponential) through diurnal
-  (Harris-Priester) to the full solar/geomagnetic-driven **NRLMSISE-00**; the
-  bundled `SpaceWeatherProvider` is constant (plug in a CSSI/CelesTrak file
-  reader for historical/forecast F10.7 and Ap).
+  (Harris-Priester) to the full solar/geomagnetic-driven **NRLMSISE-00**, driven
+  by a `SpaceWeatherProvider` that is either constant or **file-backed**
+  (`CssiSpaceWeatherProvider` reads a CelesTrak CSSI `SW-All.csv` for historical
+  F10.7 and Ap).
 - TLE seeding is approximate (no SGP4 mean-to-osculating recovery).
 
 ## Roadmap (toward broader Orekit parity + beyond)
 
 Natural next modules, all building on the existing interfaces:
-- **Atmosphere:** Jacchia-Bowman 2008, DTM2000; a file-backed `SpaceWeatherProvider`
-  (NRLMSISE-00 itself is implemented)
+- **Atmosphere:** Jacchia-Bowman 2008, DTM2000 (NRLMSISE-00 with a file-backed
+  CelesTrak space-weather provider is implemented)
 - **Gravity:** embedded higher-degree EGM2008 subset (EGM96 to d/o 70, solid &
   ocean tides, and Lense-Thirring are implemented)
 - **Perturbations:** frequency-dependent (Step 2) tide terms, pole tide, de Sitter
