@@ -59,6 +59,7 @@ point and one configuration surface:
 | **Atmospheric drag** | `DragForce` | pluggable `Atmosphere`: `ExponentialAtmosphere`, `HarrisPriesterAtmosphere` (diurnal bulge), **`NRLMSISE00Atmosphere`** (full empirical thermosphere, solar/geomagnetic driven via a `SpaceWeatherProvider`) |
 | **Solar radiation pressure** | `SolarRadiationPressure` | conical umbra/penumbra eclipse model |
 | **Solid Earth tides** | `SolidTides` | Sun+Moon geopotential deformation, IERS-2010 (degree 2-3 + k⁺ degree-4) |
+| **Ocean tides** | `OceanTides` | IERS-2010 eq 6.15, bundled FES2004 8-constituent (Q1,O1,P1,K1,N2,M2,S2,K2) to d/o 4 |
 | **Earth albedo + IR** | `EarthRadiationPressure` | Knocke-Ries reflected-sunlight + thermal-IR pressure |
 | **General relativity** | `Relativity` | Schwarzschild + optional Lense-Thirring (frame dragging) |
 | **Empirical** | `EmpiricalAcceleration` | constant RTN, for unmodelled forces |
@@ -178,8 +179,9 @@ marked extension point):
 Natural next modules, all building on the existing interfaces:
 - **Atmosphere:** Jacchia-Bowman 2008, DTM2000; a file-backed `SpaceWeatherProvider`
   (NRLMSISE-00 itself is implemented)
-- **Gravity:** time-dependent (tides) terms; embedded higher-degree EGM2008 subset
-- **Perturbations:** solid & ocean tides, Earth albedo/IR, relativistic Lense-Thirring/De Sitter
+- **Gravity:** embedded higher-degree EGM2008 subset (EGM96 to d/o 70, solid &
+  ocean tides, and Lense-Thirring are implemented)
+- **Perturbations:** frequency-dependent (Step 2) tide terms, pole tide, de Sitter
 - **Frames:** IAU-2006/2000A precession-nutation, polar motion, IERS EOP loading
 - **Propagation:** semi-analytical (DSST) for very-long-term/lifetime runs, state-transition matrix & covariance propagation
 - **Determination:** batch least-squares and Kalman/Unscented filters over measurements

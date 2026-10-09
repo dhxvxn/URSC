@@ -13,6 +13,7 @@ import org.ursc.trajectory.forces.drag.Atmosphere;
 import org.ursc.trajectory.forces.drag.DragForce;
 import org.ursc.trajectory.forces.drag.IsotropicDrag;
 import org.ursc.trajectory.forces.gravity.GravityField;
+import org.ursc.trajectory.forces.gravity.OceanTides;
 import org.ursc.trajectory.forces.gravity.SolidTides;
 import org.ursc.trajectory.forces.gravity.SphericalHarmonicGravity;
 import org.ursc.trajectory.forces.radiation.EarthRadiationPressure;
@@ -58,6 +59,7 @@ public final class PropagationConfig {
     private boolean useRelativity = false;
     private boolean relativityLenseThirring = false;
     private boolean useSolidTides = false;
+    private boolean useOceanTides = false;
     private boolean useEarthRadiation = false;
     private CelestialBody earthRadiationSun;
     private double earthRadiationCr;
@@ -132,6 +134,11 @@ public final class PropagationConfig {
         return this;
     }
 
+    public PropagationConfig oceanTides(final boolean enabled) {
+        this.useOceanTides = enabled;
+        return this;
+    }
+
     public PropagationConfig earthRadiation(final CelestialBody sun, final double cr,
                                             final double area) {
         this.useEarthRadiation = true;
@@ -189,6 +196,9 @@ public final class PropagationConfig {
         }
         if (useSolidTides) {
             forces.add(new SolidTides());
+        }
+        if (useOceanTides) {
+            forces.add(new OceanTides());
         }
         if (useEarthRadiation) {
             forces.add(new EarthRadiationPressure(earthRadiationSun,

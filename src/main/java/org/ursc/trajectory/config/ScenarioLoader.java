@@ -198,6 +198,10 @@ public final class ScenarioLoader {
             config.solidTides(true);
         }
 
+        if (getBoolean("force.oceanTides", false)) {
+            config.oceanTides(true);
+        }
+
         if (getBoolean("force.earthRadiation", false)) {
             config.earthRadiation(CelestialBodyFactory.getSun(),
                     getDouble("spacecraft.reflectionCoefficient", 1.5),
