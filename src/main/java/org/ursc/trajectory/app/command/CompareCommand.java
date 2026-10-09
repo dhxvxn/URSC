@@ -11,7 +11,6 @@ import org.ursc.trajectory.app.Args;
 import org.ursc.trajectory.app.term.Ansi;
 import org.ursc.trajectory.app.term.Table;
 import org.ursc.trajectory.config.ScenarioLoader;
-import org.ursc.trajectory.propagation.numerical.NumericalPropagator;
 
 /** Run several model variants of one scenario side by side and tabulate divergence. */
 public final class CompareCommand implements Command {
@@ -61,8 +60,9 @@ public final class CompareCommand implements Command {
             if (propKey.equals("drag.model")) {
                 p.setProperty("force.drag", "true");
             }
-            final NumericalPropagator propagator = new ScenarioLoader(p).build().propagator;
-            variants.add(new ModelComparison.Variant(rawKey + "=" + v, propagator));
+            // built lazily, immediately before this variant is run
+            variants.add(new ModelComparison.Variant(rawKey + "=" + v,
+                    () -> new ScenarioLoader(p).build().propagator));
         }
 
         System.out.println(Ansi.bold("=== compare ==="));

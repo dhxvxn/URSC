@@ -19,13 +19,42 @@ import org.ursc.trajectory.time.TimeScalesFactory;
  */
 public final class FramesFactory {
 
+    /** How the GCRF&harr;ITRF transform is realised. */
+    public enum Model {
+        /** Sidereal rotation only (GMST); fast, no precession/nutation. */
+        SIMPLE,
+        /** Full IAU-2006 precession + IAU-2000B nutation + ERA/GAST + polar motion. */
+        IAU_2006
+    }
+
     private static final Frame GCRF = new Frame("GCRF", true);
     private static final Frame ITRF = new Frame("ITRF", false);
 
     private static final Vector3D EARTH_ANGULAR_VELOCITY =
             new Vector3D(0.0, 0.0, Constants.EARTH_ROTATION_RATE);
 
+    private static volatile Model model = Model.IAU_2006;
+    private static volatile EopProvider eop = ConstantEop.ZERO;
+
     private FramesFactory() {
+    }
+
+    /** Select the frame model (default {@link Model#IAU_2006}). */
+    public static void setModel(final Model m) {
+        model = m;
+    }
+
+    public static Model getModel() {
+        return model;
+    }
+
+    /** Inject Earth Orientation Parameters (default {@link ConstantEop#ZERO}). */
+    public static void setEopProvider(final EopProvider provider) {
+        eop = provider;
+    }
+
+    public static EopProvider getEopProvider() {
+        return eop;
     }
 
     /** @return the pseudo-inertial geocentric celestial reference frame. */
@@ -65,9 +94,15 @@ public final class FramesFactory {
             return new Transform(RotationMatrix.IDENTITY, Vector3D.ZERO);
         }
         if (from == GCRF && to == ITRF) {
-            final double theta = gmst(date);
+            final RotationMatrix rotation;
+            if (model == Model.IAU_2006) {
+                rotation = Iau2006.gcrfToItrf(date, eop);
+            } else {
+                rotation = RotationMatrix.rotationZ(gmst(date));
+            }
             // ITRF angular velocity relative to GCRF, expressed in ITRF axes (+Z).
-            return new Transform(RotationMatrix.rotationZ(theta), EARTH_ANGULAR_VELOCITY);
+            // Precession/nutation rates (~1e-12 rad/s) are negligible beside Earth spin.
+            return new Transform(rotation, EARTH_ANGULAR_VELOCITY);
         }
         if (from == ITRF && to == GCRF) {
             return getTransform(GCRF, ITRF, date).getInverse();

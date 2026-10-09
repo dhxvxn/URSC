@@ -38,7 +38,9 @@ point and one configuration surface:
 
 ### Geometry / frames
 - Pseudo-inertial **GCRF/J2000** frame (propagation frame)
-- Earth-fixed **ITRF** frame via Greenwich Mean Sidereal Time rotation
+- Earth-fixed **ITRF** frame via the full **IAU-2006 precession + IAU-2000B
+  nutation + ERA/GAST + polar motion** transform (validated against SOFA), with a
+  fast GMST-only `SIMPLE` mode; optional **IERS EOP C04** loading (`IersEopProvider`)
 - Kinematic `Transform` (rotation + angular velocity → correct velocity transforms)
 - `OneAxisEllipsoid` with Bowring geodetic conversion (latitude, longitude, altitude)
 
@@ -163,8 +165,9 @@ This is a faithful first release focused on the perturbations that dominate
 **long-term LEO** behaviour. Known simplifications (each is an isolated, clearly
 marked extension point):
 
-- GCRF→ITRF uses sidereal rotation only; precession, nutation and polar motion
-  are neglected (sub-km over long LEO arcs).
+- GCRF→ITRF uses the full IAU-2006/2000B precession-nutation + ERA/GAST + polar
+  motion (validated against SOFA); sub-arcsecond accuracy needs an IERS EOP file,
+  otherwise UT1=UTC and polar motion are zero.
 - Sun/Moon ephemerides are low-precision analytical series (≈0.1° / few-hundred-km),
   ample for perturbation forcing.
 - UT1 ≈ UTC (dUT1 = 0); no IERS Earth-orientation data yet.
@@ -183,7 +186,9 @@ Natural next modules, all building on the existing interfaces:
 - **Gravity:** embedded higher-degree EGM2008 subset (EGM96 to d/o 70, solid &
   ocean tides, and Lense-Thirring are implemented)
 - **Perturbations:** frequency-dependent (Step 2) tide terms, pole tide, de Sitter
-- **Frames:** IAU-2006/2000A precession-nutation, polar motion, IERS EOP loading
+- **Frames:** full IAU-2000A nutation (1365-term) if sub-mas is needed; automatic
+  EOP download (IAU-2006/2000B precession-nutation, polar motion and EOP C04 loading
+  are implemented)
 - **Propagation:** semi-analytical (DSST) for very-long-term/lifetime runs, state-transition matrix & covariance propagation
 - **Determination:** batch least-squares and Kalman/Unscented filters over measurements
 - **Maneuvers:** impulsive and finite-burn models

@@ -29,7 +29,10 @@ import org.ursc.trajectory.orbits.Orbit;
 import org.ursc.trajectory.orbits.OrbitType;
 import org.ursc.trajectory.orbits.PVCoordinates;
 import org.ursc.trajectory.orbits.PositionAngle;
+import org.ursc.trajectory.frames.ConstantEop;
+import org.ursc.trajectory.frames.EopProvider;
 import org.ursc.trajectory.frames.FramesFactory;
+import org.ursc.trajectory.frames.IersEopProvider;
 import org.ursc.trajectory.propagation.SpacecraftState;
 import org.ursc.trajectory.propagation.events.AltitudeDetector;
 import org.ursc.trajectory.propagation.events.EventDetector;
@@ -86,6 +89,7 @@ public final class ScenarioLoader {
     }
 
     public Scenario build() {
+        configureFrames();
         final AbsoluteDate epoch = parseDate(required("epoch"));
         final double mass = getDouble("spacecraft.mass", 1000.0);
         final Orbit orbit = buildInitialOrbit(epoch);
@@ -119,6 +123,28 @@ public final class ScenarioLoader {
 
         return new Scenario(propagator, initialState, epoch, end,
                 getDouble("output.step", 60.0), getString("output.file", "ephemeris.csv"));
+    }
+
+    private void configureFrames() {
+        final String fm = getString("frames.model", "iau2006").toLowerCase();
+        FramesFactory.setModel(fm.equals("simple")
+                ? FramesFactory.Model.SIMPLE : FramesFactory.Model.IAU_2006);
+
+        final double arcsecToRad = Math.PI / (180.0 * 3600.0);
+        final EopProvider constant = new ConstantEop(
+                getDouble("eop.dut1", 0.0),
+                getDouble("eop.xp", 0.0) * arcsecToRad,
+                getDouble("eop.yp", 0.0) * arcsecToRad);
+        final String eopFile = getString("eop.file", "");
+        if (!eopFile.isEmpty()) {
+            try {
+                FramesFactory.setEopProvider(new IersEopProvider(Paths.get(eopFile), constant));
+            } catch (final IOException ex) {
+                throw new IllegalStateException("cannot load EOP file " + eopFile, ex);
+            }
+        } else {
+            FramesFactory.setEopProvider(constant);
+        }
     }
 
     private Orbit buildInitialOrbit(final AbsoluteDate epoch) {

@@ -2,6 +2,7 @@ package org.ursc.trajectory.analysis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.ursc.trajectory.math.Vector3D;
 import org.ursc.trajectory.orbits.KeplerianOrbit;
@@ -17,14 +18,19 @@ import org.ursc.trajectory.time.AbsoluteDate;
  */
 public final class ModelComparison {
 
-    /** A named, configured propagator to compare. */
+    /**
+     * A named variant. The propagator is supplied lazily and built immediately
+     * before it is run, so variants that change global state (e.g. the frame
+     * model or EOP, set in {@code ScenarioLoader.build()}) do not interfere with
+     * one another.
+     */
     public static final class Variant {
         public final String name;
-        public final NumericalPropagator propagator;
+        public final Supplier<NumericalPropagator> provider;
 
-        public Variant(final String name, final NumericalPropagator propagator) {
+        public Variant(final String name, final Supplier<NumericalPropagator> provider) {
             this.name = name;
-            this.propagator = propagator;
+            this.provider = provider;
         }
     }
 
@@ -55,10 +61,13 @@ public final class ModelComparison {
         final List<KeplerianOrbit> finals = new ArrayList<>();
 
         for (final Variant v : variants) {
+            // build immediately before running so each variant's global config
+            // (frame model, EOP, ...) is the one in effect during its propagation
+            final NumericalPropagator propagator = v.provider.get();
             final EphemerisCollector collector = new EphemerisCollector();
-            v.propagator.setStepHandler(sampleStep, collector);
-            final AbsoluteDate start = v.propagator.getInitialState().getDate();
-            final SpacecraftState fin = v.propagator.propagate(start.shiftedBy(durationSeconds));
+            propagator.setStepHandler(sampleStep, collector);
+            final AbsoluteDate start = propagator.getInitialState().getDate();
+            final SpacecraftState fin = propagator.propagate(start.shiftedBy(durationSeconds));
             histories.add(collector.getStates());
             finals.add(new KeplerianOrbit(fin.getOrbit()));
         }
