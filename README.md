@@ -56,7 +56,7 @@ point and one configuration surface:
 | Central attraction | `NewtonianAttraction` | point mass |
 | **Spherical-harmonic gravity** | `SphericalHarmonicGravity` | Cunningham/Gottlieb recursion, degree/order selectable; default J2–J6 zonal, or load a full normalised field |
 | **Third-body** | `ThirdBodyAttraction` | Sun, Moon, or any `CelestialBody` |
-| **Atmospheric drag** | `DragForce` | pluggable `Atmosphere`: `ExponentialAtmosphere`, `HarrisPriesterAtmosphere` (diurnal bulge) |
+| **Atmospheric drag** | `DragForce` | pluggable `Atmosphere`: `ExponentialAtmosphere`, `HarrisPriesterAtmosphere` (diurnal bulge), **`NRLMSISE00Atmosphere`** (full empirical thermosphere, solar/geomagnetic driven via a `SpaceWeatherProvider`) |
 | **Solar radiation pressure** | `SolarRadiationPressure` | conical umbra/penumbra eclipse model |
 | **General relativity** | `Relativity` | Schwarzschild correction |
 | **Empirical** | `EmpiricalAcceleration` | constant RTN, for unmodelled forces |
@@ -149,6 +149,8 @@ The test suite (`mvn test`) checks:
 - numerical vs. analytical Keplerian agreement to sub-metre over an hour
 - J2 nodal regression matching the secular formula `dΩ/dt = -1.5 n J2 (Re/p)² cos i`
 - time-scale offsets, leap seconds, and calendar round-trips
+- **NRLMSISE-00 reproduces the official reference test case to 7 significant figures**
+  (densities, total mass density, and both temperatures)
 
 ---
 
@@ -163,14 +165,17 @@ marked extension point):
 - Sun/Moon ephemerides are low-precision analytical series (≈0.1° / few-hundred-km),
   ample for perturbation forcing.
 - UT1 ≈ UTC (dUT1 = 0); no IERS Earth-orientation data yet.
-- Atmosphere models are static/diurnal (exponential, Harris-Priester); no
-  solar-activity-driven NRLMSISE/Jacchia-Bowman yet.
+- Atmosphere models range from static (exponential) through diurnal
+  (Harris-Priester) to the full solar/geomagnetic-driven **NRLMSISE-00**; the
+  bundled `SpaceWeatherProvider` is constant (plug in a CSSI/CelesTrak file
+  reader for historical/forecast F10.7 and Ap).
 - TLE seeding is approximate (no SGP4 mean-to-osculating recovery).
 
 ## Roadmap (toward broader Orekit parity + beyond)
 
 Natural next modules, all building on the existing interfaces:
-- **Atmosphere:** NRLMSISE-00, Jacchia-Bowman 2008, DTM2000 with space-weather input
+- **Atmosphere:** Jacchia-Bowman 2008, DTM2000; a file-backed `SpaceWeatherProvider`
+  (NRLMSISE-00 itself is implemented)
 - **Gravity:** time-dependent (tides) terms; embedded higher-degree EGM2008 subset
 - **Perturbations:** solid & ocean tides, Earth albedo/IR, relativistic Lense-Thirring/De Sitter
 - **Frames:** IAU-2006/2000A precession-nutation, polar motion, IERS EOP loading
