@@ -194,8 +194,18 @@ public final class ScenarioLoader {
                     getDouble("spacecraft.srpArea", 1.0));
         }
 
+        if (getBoolean("force.solidTides", false)) {
+            config.solidTides(true);
+        }
+
+        if (getBoolean("force.earthRadiation", false)) {
+            config.earthRadiation(CelestialBodyFactory.getSun(),
+                    getDouble("spacecraft.reflectionCoefficient", 1.5),
+                    getDouble("spacecraft.srpArea", 1.0));
+        }
+
         if (getBoolean("force.relativity", false)) {
-            config.relativity(true);
+            config.relativity(true, getBoolean("force.relativity.lenseThirring", false));
         }
 
         if (getBoolean("force.empirical", false)) {

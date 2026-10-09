@@ -58,7 +58,9 @@ point and one configuration surface:
 | **Third-body** | `ThirdBodyAttraction` | Sun, Moon, or any `CelestialBody` |
 | **Atmospheric drag** | `DragForce` | pluggable `Atmosphere`: `ExponentialAtmosphere`, `HarrisPriesterAtmosphere` (diurnal bulge), **`NRLMSISE00Atmosphere`** (full empirical thermosphere, solar/geomagnetic driven via a `SpaceWeatherProvider`) |
 | **Solar radiation pressure** | `SolarRadiationPressure` | conical umbra/penumbra eclipse model |
-| **General relativity** | `Relativity` | Schwarzschild correction |
+| **Solid Earth tides** | `SolidTides` | Sun+Moon geopotential deformation, IERS-2010 (degree 2-3 + k⁺ degree-4) |
+| **Earth albedo + IR** | `EarthRadiationPressure` | Knocke-Ries reflected-sunlight + thermal-IR pressure |
+| **General relativity** | `Relativity` | Schwarzschild + optional Lense-Thirring (frame dragging) |
 | **Empirical** | `EmpiricalAcceleration` | constant RTN, for unmodelled forces |
 
 ### Integrators (pluggable via `ODEIntegrator`)

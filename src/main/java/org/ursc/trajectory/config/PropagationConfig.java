@@ -13,7 +13,9 @@ import org.ursc.trajectory.forces.drag.Atmosphere;
 import org.ursc.trajectory.forces.drag.DragForce;
 import org.ursc.trajectory.forces.drag.IsotropicDrag;
 import org.ursc.trajectory.forces.gravity.GravityField;
+import org.ursc.trajectory.forces.gravity.SolidTides;
 import org.ursc.trajectory.forces.gravity.SphericalHarmonicGravity;
+import org.ursc.trajectory.forces.radiation.EarthRadiationPressure;
 import org.ursc.trajectory.forces.radiation.IsotropicRadiationSingleCoefficient;
 import org.ursc.trajectory.forces.radiation.SolarRadiationPressure;
 import org.ursc.trajectory.ode.ODEIntegrator;
@@ -54,6 +56,12 @@ public final class PropagationConfig {
     private double srpArea;
     private boolean useSrp = false;
     private boolean useRelativity = false;
+    private boolean relativityLenseThirring = false;
+    private boolean useSolidTides = false;
+    private boolean useEarthRadiation = false;
+    private CelestialBody earthRadiationSun;
+    private double earthRadiationCr;
+    private double earthRadiationArea;
     private double[] empiricalRtn;
 
     public PropagationConfig initialState(final SpacecraftState state) {
@@ -110,7 +118,26 @@ public final class PropagationConfig {
     }
 
     public PropagationConfig relativity(final boolean enabled) {
+        return relativity(enabled, false);
+    }
+
+    public PropagationConfig relativity(final boolean enabled, final boolean lenseThirring) {
         this.useRelativity = enabled;
+        this.relativityLenseThirring = lenseThirring;
+        return this;
+    }
+
+    public PropagationConfig solidTides(final boolean enabled) {
+        this.useSolidTides = enabled;
+        return this;
+    }
+
+    public PropagationConfig earthRadiation(final CelestialBody sun, final double cr,
+                                            final double area) {
+        this.useEarthRadiation = true;
+        this.earthRadiationSun = sun;
+        this.earthRadiationCr = cr;
+        this.earthRadiationArea = area;
         return this;
     }
 
@@ -160,8 +187,15 @@ public final class PropagationConfig {
             forces.add(new SolarRadiationPressure(srpSun,
                     new IsotropicRadiationSingleCoefficient(reflectionCoefficient, srpArea)));
         }
+        if (useSolidTides) {
+            forces.add(new SolidTides());
+        }
+        if (useEarthRadiation) {
+            forces.add(new EarthRadiationPressure(earthRadiationSun,
+                    new IsotropicRadiationSingleCoefficient(earthRadiationCr, earthRadiationArea), 10, 20));
+        }
         if (useRelativity) {
-            forces.add(new Relativity(centralMu));
+            forces.add(new Relativity(centralMu, relativityLenseThirring));
         }
         if (empiricalRtn != null) {
             forces.add(new EmpiricalAcceleration(empiricalRtn[0], empiricalRtn[1], empiricalRtn[2]));
