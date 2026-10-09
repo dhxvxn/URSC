@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.ursc</groupId>
+    <artifactId>leo-trajectory</artifactId>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
+
+    <name>URSC LEO Trajectory Predictor</name>
+    <description>
+        A modular numerical orbit-propagation library for long-term prediction of
+        Low Earth Orbit (LEO) satellite trajectories. Every force model, integrator,
+        orbit representation and output is pluggable and configurable. Architecture
+        and physics are modelled on (but independent of) the Orekit library.
+    </description>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>5.10.2</junit.version>
+    </properties>
+
+    <dependencies>
+        <!-- Pure-Java library: no runtime dependencies on purpose, so the physics
+             core is fully self-contained and auditable. Tests use JUnit 5. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

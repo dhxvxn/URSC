@@ -1,0 +1,18 @@
+# Build output
+target/
+*.class
+
+# Generated ephemerides
+*.csv
+ephemeris*.csv
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
