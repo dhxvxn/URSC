@@ -51,11 +51,16 @@ public final class ScenarioLoader {
     }
 
     public static ScenarioLoader fromFile(final Path path) throws IOException {
+        return new ScenarioLoader(loadProperties(path));
+    }
+
+    /** Load a scenario's raw properties (so callers can clone and override them). */
+    public static Properties loadProperties(final Path path) throws IOException {
         final Properties p = new Properties();
         try (InputStream in = Files.newInputStream(path)) {
             p.load(in);
         }
-        return new ScenarioLoader(p);
+        return p;
     }
 
     /** The assembled scenario, ready to run. */
