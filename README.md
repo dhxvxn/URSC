@@ -14,6 +14,17 @@ the entire physics core is plain, auditable Java.
 
 ---
 
+## Documentation
+
+- **[docs/USAGE.md](docs/USAGE.md)** — build/run, every CLI command and flag, and
+  the complete scenario `.properties` reference.
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — package map, the extension
+  interfaces, and how to add a force model / atmosphere / integrator / propagator.
+- **[docs/PHYSICS.md](docs/PHYSICS.md)** — every model with its formula and
+  reference, plus the full validation table and honest accuracy caveats.
+
+---
+
 ## Why this design
 
 The request was a *modular* model where you "plug in necessary force models and
