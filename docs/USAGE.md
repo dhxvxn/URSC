@@ -95,6 +95,48 @@ mean-to-osculating recovery).
 | `--mass <kg>` | `500` | spacecraft mass |
 | `--plot …`, `--quiet` | | as for `propagate` |
 
+### `validate <poeorb.eof>`
+Validate the propagator against a **POEORB precise orbit** (e.g. a Sentinel-3
+`AUX_POEORB *.EOF`). Seeds from the first precise state, propagates the full force
+model, and reports the radial/along-track/cross-track position error vs the precise
+ephemeris as a table (hourly) plus an ASCII plot of total error, with RMS and max.
+The file's own UT1−UTC is used for the ITRF↔GCRF transform.
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `--hours <h>` | whole file | validation span |
+| `--gravity-degree <n>` | `30` | EGM96 degree/order |
+| `--mass <kg>` | `1130` | spacecraft mass |
+| `--area <m2>` | `8` | drag & SRP cross-section |
+| `--cd <Cd>` | `2.2` | drag coefficient |
+| `--cr <Cr>` | `1.3` | SRP reflectivity |
+| `--f107 <v>` / `--f107a <v>` / `--ap <v>` | `220` / `205` / `12` | space-weather indices for NRLMSISE-00 |
+| `--plot total\|none` | `total` | total-error ASCII plot |
+
+```bash
+java -jar …/leo-trajectory-0.1.0.jar validate S3A_…_POEORB_…​.EOF --hours 24
+```
+
+### `fit <poeorb.eof>`
+**Batch least-squares orbit determination** against a POEORB arc: fit the initial
+state (and, with `--estimate-cd`, the drag coefficient) to position observations
+sampled from the precise orbit, and report pre-fit vs post-fit residual RMS, the
+improvement factor, and the estimated parameters. Partials are formed by finite
+differences, so it works with the full force model.
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `--estimate-cd` | off | also solve for the drag coefficient |
+| `--hours <h>` | `6` | observation arc length |
+| `--sample-step <s>` | `60` | spacing between position observations |
+| `--gravity-degree <n>` | `20` | EGM96 degree/order (lower = faster per iteration) |
+| `--max-iter <n>` | `10` | Gauss-Newton iteration cap |
+| `--mass`, `--area`, `--cd`, `--cr`, `--f107`, `--f107a`, `--ap` | as `validate` | fixed model settings |
+
+```bash
+java -jar …/leo-trajectory-0.1.0.jar fit S3A_…_POEORB_…​.EOF --estimate-cd --hours 6
+```
+
 ### `help`, `version`
 Print the command list / the version string.
 

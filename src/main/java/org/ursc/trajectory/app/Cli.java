@@ -7,8 +7,10 @@ import java.util.Map;
 import org.ursc.trajectory.app.command.Command;
 import org.ursc.trajectory.app.command.CompareCommand;
 import org.ursc.trajectory.app.command.DecayCommand;
+import org.ursc.trajectory.app.command.FitCommand;
 import org.ursc.trajectory.app.command.PropagateCommand;
 import org.ursc.trajectory.app.command.TleCommand;
+import org.ursc.trajectory.app.command.ValidateCommand;
 import org.ursc.trajectory.app.term.Ansi;
 
 /**
@@ -16,7 +18,7 @@ import org.ursc.trajectory.app.term.Ansi;
  *
  * <pre>
  *   java -jar leo-trajectory-0.1.0.jar &lt;command&gt; [args]
- *   commands: propagate, decay, compare, tle, help, version
+ *   commands: propagate, decay, compare, tle, validate, fit, help, version
  * </pre>
  */
 public final class Cli {
@@ -30,6 +32,8 @@ public final class Cli {
         register(new DecayCommand());
         register(new CompareCommand());
         register(new TleCommand());
+        register(new ValidateCommand());
+        register(new FitCommand());
     }
 
     private Cli() {
@@ -82,5 +86,7 @@ public final class Cli {
         System.out.println("  leoprop decay sample-scenario.properties --monte-carlo 20 --seed 1");
         System.out.println("  leoprop compare sample-scenario.properties "
                 + "--vary atmosphere=exponential,harris-priester,nrlmsise00");
+        System.out.println("  leoprop validate orbit.EOF --hours 24 --plot total");
+        System.out.println("  leoprop fit orbit.EOF --estimate-cd --hours 6");
     }
 }

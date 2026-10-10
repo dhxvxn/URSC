@@ -93,6 +93,19 @@ point and one configuration surface:
 - **Event detection** (g-stop with bracketing + bisection): apside, node, altitude
   (re-entry), eclipse
 
+### Validation & orbit determination
+- **POEORB precise-orbit reader** (`PoeOrbReader`) — parses CCSDS/Earth-Explorer
+  `AUX_POEORB *.EOF` files (e.g. Sentinel-3), including the carried UT1−UTC offset
+- **`validate` command** — seed from a precise state, propagate the full force
+  model, and report radial/along/cross-track position error vs the precise orbit
+  (table + ASCII plot). A conservative ground-truth check on the whole stack
+- **Batch least-squares orbit determination** (`BatchLeastSquares`) — Gauss-Newton
+  fit of the initial state (and, optionally, the drag coefficient) to position
+  observations, via finite-difference partials so it works with any force model
+  and either propagation engine; parameter scaling + step-halving backtracking
+- **`fit` command** — run the batch OD against a POEORB arc and report pre/post-fit
+  residual RMS and the estimated parameters
+
 ### I/O & configuration
 - `.properties` scenario files (see `sample-scenario.properties`)
 - CSV ephemeris writer
@@ -173,6 +186,16 @@ The test suite (`mvn test`) checks:
   (densities, total mass density, and both temperatures)
 - **DSST** matches two-body exactly, the J2 secular nodal rate to ~1%, and the
   Cowell secular SMA decay under drag to ~0.1 m over 3 days (mean-vs-mean)
+- **Batch least-squares OD** recovers a perturbed initial state to ~mm and a
+  known drag coefficient to within 0.05 from noise-free synthetic observations
+- **POEORB reader** parses records, state-vector fields and the UT1−UTC offset
+
+Beyond the unit suite, the propagator has been checked end-to-end against **real
+Sentinel-3A/3B precise orbits**: pure propagation from a single POEORB state
+holds radial and cross-track error to a few metres over a day, with the residual
+dominated by along-track (drag/ballistic) growth — which the `fit` command then
+collapses by estimating the drag coefficient (e.g. ~38 m → ~4 m RMS over a 6 h
+arc).
 
 ---
 
