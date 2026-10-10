@@ -16,7 +16,7 @@ import org.ursc.trajectory.app.term.AsciiChart;
 import org.ursc.trajectory.app.term.Ansi;
 import org.ursc.trajectory.config.ScenarioLoader;
 import org.ursc.trajectory.math.Constants;
-import org.ursc.trajectory.propagation.numerical.NumericalPropagator;
+import org.ursc.trajectory.propagation.SampledPropagator;
 import org.ursc.trajectory.time.AbsoluteDate;
 
 /** Predict orbital decay / re-entry, optionally with Monte-Carlo uncertainty. */
@@ -61,7 +61,7 @@ public final class DecayCommand implements Command {
     private int runDeterministic(final Properties base, final double reentry,
                                  final double maxYears, final boolean quiet) {
         final ScenarioLoader.Scenario scn = new ScenarioLoader(base).build();
-        final NumericalPropagator propagator = scn.propagator;
+        final SampledPropagator propagator = scn.propagator;
         propagator.addStepHandler(new ProgressStepHandler(!quiet));
 
         final DecayPredictor.Result r =
@@ -108,7 +108,7 @@ public final class DecayCommand implements Command {
             p.setProperty("spaceWeather.f107", Double.toString(f107));
             p.setProperty("spaceWeather.f107a", Double.toString(f107));
 
-            final NumericalPropagator propagator = new ScenarioLoader(p).build().propagator;
+            final SampledPropagator propagator = new ScenarioLoader(p).build().propagator;
             final DecayPredictor.Result r = DecayPredictor.predict(propagator, reentry, maxYears, 0);
             if (r.decayed) {
                 decayDays.add(r.daysToDecay);

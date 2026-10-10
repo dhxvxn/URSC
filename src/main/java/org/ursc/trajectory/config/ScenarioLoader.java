@@ -36,7 +36,9 @@ import org.ursc.trajectory.frames.IersEopProvider;
 import org.ursc.trajectory.propagation.SpacecraftState;
 import org.ursc.trajectory.propagation.events.AltitudeDetector;
 import org.ursc.trajectory.propagation.events.EventDetector;
-import org.ursc.trajectory.propagation.numerical.NumericalPropagator;
+import org.ursc.trajectory.forces.ForceModel;
+import org.ursc.trajectory.propagation.SampledPropagator;
+import org.ursc.trajectory.propagation.semianalytical.DSSTPropagator;
 import org.ursc.trajectory.time.AbsoluteDate;
 import org.ursc.trajectory.time.TimeScalesFactory;
 
@@ -69,14 +71,14 @@ public final class ScenarioLoader {
 
     /** The assembled scenario, ready to run. */
     public static final class Scenario {
-        public final NumericalPropagator propagator;
+        public final SampledPropagator propagator;
         public final SpacecraftState initialState;
         public final AbsoluteDate startDate;
         public final AbsoluteDate endDate;
         public final double outputStep;
         public final String outputFile;
 
-        Scenario(final NumericalPropagator propagator, final SpacecraftState initialState,
+        Scenario(final SampledPropagator propagator, final SpacecraftState initialState,
                  final AbsoluteDate startDate, final AbsoluteDate endDate,
                  final double outputStep, final String outputFile) {
             this.propagator = propagator;
@@ -95,15 +97,30 @@ public final class ScenarioLoader {
         final Orbit orbit = buildInitialOrbit(epoch);
         final SpacecraftState initialState = new SpacecraftState(orbit, mass);
 
+        final OrbitType outputType =
+                OrbitType.valueOf(getString("output.type", "KEPLERIAN").toUpperCase());
+        final double outputStep = getDouble("output.step", 60.0);
+
         final PropagationConfig config = new PropagationConfig()
                 .initialState(initialState)
                 .integrator(buildIntegrator(), getDouble("integrator.initialStep", 60.0))
-                .outputType(OrbitType.valueOf(getString("output.type", "KEPLERIAN").toUpperCase()))
-                .outputStep(getDouble("output.step", 60.0));
+                .outputType(outputType)
+                .outputStep(outputStep);
 
         configureForces(config);
 
-        final NumericalPropagator propagator = config.build();
+        final SampledPropagator propagator;
+        if (getString("propagator", "numerical").toLowerCase().equals("dsst")) {
+            final DSSTPropagator dsst = new DSSTPropagator(initialState,
+                    getDouble("dsst.step", 43200.0), (int) getDouble("dsst.averagingPoints", 24));
+            for (final ForceModel f : config.buildForceModels()) {
+                dsst.addForceModel(f);
+            }
+            dsst.setOutputType(outputType).setOutputStep(outputStep);
+            propagator = dsst;
+        } else {
+            propagator = config.build();
+        }
 
         // optional re-entry stop event
         final double reentryAltitude = getDouble("event.reentryAltitude", Double.NaN);

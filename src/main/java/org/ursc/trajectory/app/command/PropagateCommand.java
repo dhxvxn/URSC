@@ -14,9 +14,10 @@ import org.ursc.trajectory.config.ScenarioLoader;
 import org.ursc.trajectory.forces.ForceModel;
 import org.ursc.trajectory.io.CsvEphemerisWriter;
 import org.ursc.trajectory.orbits.KeplerianOrbit;
+import org.ursc.trajectory.propagation.SampledPropagator;
 import org.ursc.trajectory.propagation.SpacecraftState;
-import org.ursc.trajectory.propagation.numerical.NumericalPropagator;
 import org.ursc.trajectory.propagation.sampling.EphemerisCollector;
+import org.ursc.trajectory.propagation.semianalytical.DSSTPropagator;
 
 /** Propagate a scenario and show a summary table + an in-terminal decay plot. */
 public final class PropagateCommand implements Command {
@@ -44,7 +45,8 @@ public final class PropagateCommand implements Command {
 
         final ScenarioLoader.Scenario scenario =
                 ScenarioLoader.fromFile(Paths.get(scenarioFile)).build();
-        final NumericalPropagator propagator = scenario.propagator;
+        final SampledPropagator propagator = scenario.propagator;
+        final boolean mean = propagator instanceof DSSTPropagator;
 
         final EphemerisCollector collector = new EphemerisCollector();
         propagator.addStepHandler(collector);
@@ -53,7 +55,8 @@ public final class PropagateCommand implements Command {
             propagator.addStepHandler(new CsvEphemerisWriter(Paths.get(args.get("csv", "ephemeris.csv"))));
         }
 
-        System.out.println(Ansi.bold("=== propagate ==="));
+        System.out.println(Ansi.bold("=== propagate ===")
+                + (mean ? Ansi.dim("  [DSST semi-analytical — mean elements]") : ""));
         System.out.println("Start : " + scenario.startDate);
         System.out.println("End   : " + scenario.endDate);
         System.out.println("Forces: ");

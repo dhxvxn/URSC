@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import org.ursc.trajectory.math.Vector3D;
 import org.ursc.trajectory.orbits.KeplerianOrbit;
 import org.ursc.trajectory.propagation.SpacecraftState;
-import org.ursc.trajectory.propagation.numerical.NumericalPropagator;
+import org.ursc.trajectory.propagation.SampledPropagator;
 import org.ursc.trajectory.propagation.sampling.EphemerisCollector;
 import org.ursc.trajectory.time.AbsoluteDate;
 
@@ -26,9 +26,9 @@ public final class ModelComparison {
      */
     public static final class Variant {
         public final String name;
-        public final Supplier<NumericalPropagator> provider;
+        public final Supplier<SampledPropagator> provider;
 
-        public Variant(final String name, final Supplier<NumericalPropagator> provider) {
+        public Variant(final String name, final Supplier<SampledPropagator> provider) {
             this.name = name;
             this.provider = provider;
         }
@@ -63,7 +63,7 @@ public final class ModelComparison {
         for (final Variant v : variants) {
             // build immediately before running so each variant's global config
             // (frame model, EOP, ...) is the one in effect during its propagation
-            final NumericalPropagator propagator = v.provider.get();
+            final SampledPropagator propagator = v.provider.get();
             final EphemerisCollector collector = new EphemerisCollector();
             propagator.setStepHandler(sampleStep, collector);
             final AbsoluteDate start = propagator.getInitialState().getDate();

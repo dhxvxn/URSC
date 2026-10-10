@@ -71,7 +71,11 @@ point and one configuration surface:
 - Classical **RK4** fixed step
 
 ### Propagation
-- `NumericalPropagator` — Cowell integration of the summed forces
+- `NumericalPropagator` — Cowell integration of the summed forces (osculating)
+- **`DSSTPropagator`** — semi-analytical mean-element propagator (numerically-averaged
+  DSST): orbit-averages the variational equations so the mean elements step in
+  hours-to-a-day, ~20× faster than Cowell for multi-year/lifetime runs, reusing
+  every force model; outputs mean elements
 - `KeplerianPropagator` — analytical two-body baseline
 - Dense (cubic-Hermite) output on a user-defined grid; multiple step handlers
 - In-memory ephemeris collection and CSV export (with ground track)
@@ -156,6 +160,8 @@ The test suite (`mvn test`) checks:
 - time-scale offsets, leap seconds, and calendar round-trips
 - **NRLMSISE-00 reproduces the official reference test case to 7 significant figures**
   (densities, total mass density, and both temperatures)
+- **DSST** matches two-body exactly, the J2 secular nodal rate to ~1%, and the
+  Cowell secular SMA decay under drag to ~0.1 m over 3 days (mean-vs-mean)
 
 ---
 
@@ -189,7 +195,9 @@ Natural next modules, all building on the existing interfaces:
 - **Frames:** full IAU-2000A nutation (1365-term) if sub-mas is needed; automatic
   EOP download (IAU-2006/2000B precession-nutation, polar motion and EOP C04 loading
   are implemented)
-- **Propagation:** semi-analytical (DSST) for very-long-term/lifetime runs, state-transition matrix & covariance propagation
+- **Propagation:** DSST short-period recovery (osculating output); analytical
+  Brouwer-Lyddane; state-transition matrix & covariance propagation (the
+  numerically-averaged DSST mean-element propagator is implemented)
 - **Determination:** batch least-squares and Kalman/Unscented filters over measurements
 - **Maneuvers:** impulsive and finite-burn models
 - **I/O:** CCSDS OEM/OMM/OPM, SP3, RINEX

@@ -16,7 +16,7 @@ import org.ursc.trajectory.orbits.KeplerianOrbit;
 import org.ursc.trajectory.orbits.Orbit;
 import org.ursc.trajectory.orbits.OrbitType;
 import org.ursc.trajectory.orbits.PVCoordinates;
-import org.ursc.trajectory.propagation.Propagator;
+import org.ursc.trajectory.propagation.SampledPropagator;
 import org.ursc.trajectory.propagation.SpacecraftState;
 import org.ursc.trajectory.propagation.events.EventDetector;
 import org.ursc.trajectory.propagation.sampling.StepHandler;
@@ -32,7 +32,7 @@ import org.ursc.trajectory.time.AbsoluteDate;
  * event detectors are all injected, so the same engine serves everything from a
  * quick two-body check to a high-fidelity multi-perturbation lifetime run.</p>
  */
-public final class NumericalPropagator implements Propagator {
+public final class NumericalPropagator implements SampledPropagator {
 
     private final SpacecraftState initialState;
     private final Frame frame;

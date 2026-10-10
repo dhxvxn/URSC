@@ -8,7 +8,7 @@ import org.ursc.trajectory.math.Constants;
 import org.ursc.trajectory.propagation.SpacecraftState;
 import org.ursc.trajectory.propagation.events.AltitudeDetector;
 import org.ursc.trajectory.propagation.events.EventDetector;
-import org.ursc.trajectory.propagation.numerical.NumericalPropagator;
+import org.ursc.trajectory.propagation.SampledPropagator;
 import org.ursc.trajectory.propagation.sampling.EphemerisCollector;
 import org.ursc.trajectory.time.AbsoluteDate;
 
@@ -47,7 +47,7 @@ public final class DecayPredictor {
      * @param maxYears          propagation cap
      * @param sampleStepSeconds history sampling step; &le; 0 disables history (faster, for Monte Carlo)
      */
-    public static Result predict(final NumericalPropagator propagator,
+    public static Result predict(final SampledPropagator propagator,
                                  final double reentryAltitudeM, final double maxYears,
                                  final double sampleStepSeconds) {
         final SpacecraftState initial = propagator.getInitialState();
