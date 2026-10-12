@@ -22,6 +22,8 @@ the entire physics core is plain, auditable Java.
   interfaces, and how to add a force model / atmosphere / integrator / propagator.
 - **[docs/PHYSICS.md](docs/PHYSICS.md)** — every model with its formula and
   reference, plus the full validation table and honest accuracy caveats.
+- **[docs/OREKIT_DATA.md](docs/OREKIT_DATA.md)** — using orekit-data EOP
+  (`--eop-file`) and gravity models (`--gravity-file`); which files to supply.
 
 ---
 
