@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>URSC Model Comparison</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="cover" style="height:150mm;">
+  <div class="kicker">Model Comparison &mdash; Plain Numbers</div>
+  <h1>Current vs Revised Model: Input, Expected, Output, Error</h1>
+  <div class="sub">Measured side-by-side on the Sentinel-3A / 3B precise orbits provided</div>
+  <div class="rule"></div>
+  <div class="meta">
+    <b>Current model:</b> committed baseline &mdash; Cowell with constant space weather, no Earth albedo;
+    DSST seeded as mean, mean-element output.<br>
+    <b>Revised model:</b> Earth albedo/IR enabled; DSST with osculating&harr;mean initialization +
+    first-order short-period recovery. (Real historical space weather: see note.)<br>
+    <b>Truth:</b> Sentinel-3 POEORB precise orbit (GPS POD, ~cm) for the Cowell test; a high-accuracy
+    Cowell integration for the DSST long-term test.
+  </div>
+</section>
+
+<!-- 1 INPUT -->
+<section class="section">
+<h2>1&nbsp;&nbsp;Input taken (as provided)</h2>
+<p>The inputs are the two Sentinel-3 POEORB <code>*.EOF</code> precise-orbit files supplied. Each
+propagation is <b>seeded from the first state vector</b> (ITRF&rarr;GCRF with the file's own UT1) and run
+forward under identical settings; only the model differences below are changed.</p>
+
+<table class="tbl-compact">
+  <caption><b>Table 1.</b> Input files and seed states.</caption>
+  <tr><th>Satellite</th><th>File (POEORB)</th><th>Epoch (UTC)</th><th class="num">Perigee alt</th><th class="num">Incl.</th><th class="num">Ecc.</th><th class="num">Records</th></tr>
+  <tr><td>Sentinel-3A</td><td>S3A_OPER_AUX_POEORB_..._20241016</td><td>2024-10-16 00:00:00</td><td class="num">780.3 km</td><td class="num">98.618&deg;</td><td class="num">0.00212</td><td class="num">9361 @ 10 s</td></tr>
+  <tr><td>Sentinel-3B</td><td>S3B_OPER_AUX_POEORB_..._20241016</td><td>2024-10-16 00:00:00</td><td class="num">786.9 km</td><td class="num">98.625&deg;</td><td class="num">0.00065</td><td class="num">9361 @ 10 s</td></tr>
+</table>
+
+<table class="tbl-compact">
+  <caption><b>Table 2.</b> Fixed run configuration (identical for both models unless noted).</caption>
+  <tr><th>Mass</th><th>Drag area</th><th>C<sub>D</sub></th><th>C<sub>R</sub></th><th>Gravity</th><th>Integrator</th><th>Space weather</th><th>Earth albedo/IR</th></tr>
+  <tr><td>1130 kg</td><td>8 m&sup2;</td><td>2.2</td><td>1.3</td><td>EGM96 30&times;30</td><td>DP54 (1e-7/1e-9)</td><td>F10.7=220, F10.7a=205, Ap=12 (constant)</td><td>current: off / revised: on</td></tr>
+</table>
+</section>
+
+<!-- 2 EXPECTED -->
+<section class="section">
+<h2>2&nbsp;&nbsp;Expected answer (truth)</h2>
+<p>The <b>expected position at every epoch is the POEORB precise-orbit position</b> &mdash; an independent,
+GPS-derived product accurate to a few centimetres, i.e. effectively exact at the metre level reported here.
+The numbers below are therefore each model's <i>own</i> error against that truth. (For the DSST long-term
+test, where no 30-day precise orbit is provided, the truth is a high-accuracy Cowell integration from the
+same seed with the same forces.)</p>
+</section>
+
+<!-- 3 COWELL -->
+<section class="section">
+<h2>3&nbsp;&nbsp;Result A &mdash; precise-orbit accuracy (Cowell) vs POEORB</h2>
+<p>Total position error (metres) at each horizon, current vs revised, against the POEORB truth.</p>
+
+<table>
+  <caption><b>Table 3.</b> Sentinel-3A &mdash; total position error vs POEORB (m).</caption>
+  <tr><th>Horizon</th><th class="num">Expected (truth)</th><th class="num">Current output err</th><th class="num">Revised output err</th><th class="num">&Delta; (m)</th></tr>
+  <tr><td>6 h</td><td class="num">POEORB</td><td class="num">80.9</td><td class="num">80.7</td><td class="num">&minus;0.2</td></tr>
+  <tr><td>12 h</td><td class="num">POEORB</td><td class="num">119.7</td><td class="num">118.9</td><td class="num">&minus;0.8</td></tr>
+  <tr><td>24 h</td><td class="num">POEORB</td><td class="num">302.9</td><td class="num">301.3</td><td class="num">&minus;1.6</td></tr>
+  <tr><td><b>24 h RMS</b></td><td class="num">&mdash;</td><td class="num"><b>165.6</b></td><td class="num"><b>164.8</b></td><td class="num">&minus;0.8</td></tr>
+  <tr><td>24 h MAX</td><td class="num">&mdash;</td><td class="num">315.0</td><td class="num">313.9</td><td class="num">&minus;1.1</td></tr>
+</table>
+
+<table>
+  <caption><b>Table 4.</b> Sentinel-3B &mdash; total position error vs POEORB (m).</caption>
+  <tr><th>Horizon</th><th class="num">Expected (truth)</th><th class="num">Current output err</th><th class="num">Revised output err</th><th class="num">&Delta; (m)</th></tr>
+  <tr><td>6 h</td><td class="num">POEORB</td><td class="num">74.2</td><td class="num">73.9</td><td class="num">&minus;0.3</td></tr>
+  <tr><td>12 h</td><td class="num">POEORB</td><td class="num">114.1</td><td class="num">113.5</td><td class="num">&minus;0.6</td></tr>
+  <tr><td>24 h</td><td class="num">POEORB</td><td class="num">276.8</td><td class="num">275.7</td><td class="num">&minus;1.1</td></tr>
+  <tr><td><b>24 h RMS</b></td><td class="num">&mdash;</td><td class="num"><b>146.2</b></td><td class="num"><b>145.4</b></td><td class="num">&minus;0.8</td></tr>
+  <tr><td>24 h MAX</td><td class="num">&mdash;</td><td class="num">276.8</td><td class="num">275.7</td><td class="num">&minus;1.1</td></tr>
+</table>
+
+<figure><img src="assets/plot_cowell_cmp.png" style="max-width:72%;">
+  <figcaption><b>Figure 1.</b> Cowell 24 h RMS, current vs revised. The change is sub-metre.</figcaption></figure>
+
+<div class="warn"><b>Honest note on Result A.</b> The only revised-model change active here is <b>Earth albedo/IR</b>,
+which is a ~10<sup>&minus;7</sup> m s<sup>&minus;2</sup> force &mdash; so it moves the 24 h result by under
+1&nbsp;m, as shown. The large lever on this channel is <b>real historical space weather</b>, which this
+run could <i>not</i> apply: the execution environment's network blocked the CelesTrak data host, so both
+columns still use the same constant F10.7/Ap. The <code>--sw-file</code> path is implemented and verified;
+supplying the CelesTrak <code>SW-All.csv</code> (host allow-listed, or the file uploaded) fills in the real
+space-weather column. The constant indices used were already near the Oct-2024 solar-max level, so the
+expected change on this specific 24 h arc is modest regardless; space weather dominates over <i>long</i>
+arcs, which is what Result B isolates.</div>
+</section>
+
+<!-- 4 DSST -->
+<section class="section">
+<h2>4&nbsp;&nbsp;Result B &mdash; long-term prediction (DSST) vs Cowell truth</h2>
+<p>This is where the revised model changes decisively. Same Sentinel-like orbit (780 km, i=98.6&deg;),
+conservative forces (zonal J2&ndash;J6 + Sun + Moon), propagated 30 days. Position error (metres) vs the
+Cowell truth, current (mean-seed / mean output) vs revised (osculating&harr;mean + short-period).</p>
+
+<table class="tbl-compact">
+  <caption><b>Table 5.</b> DSST position error vs Cowell truth over 30 days (m). Current values are in kilometres-scale.</caption>
+  <tr><th>Day</th><th class="num">Cowell |r| (km)</th><th class="num">Current err (m)</th><th class="num">Revised err (m)</th><th class="num">Ratio</th></tr>
+  <tr><td>0</td><td class="num">7149.7</td><td class="num">0</td><td class="num">4.7</td><td class="num">&mdash;</td></tr>
+  <tr><td>1</td><td class="num">7156</td><td class="num">214,091</td><td class="num">127.1</td><td class="num">1685&times;</td></tr>
+  <tr><td>5</td><td class="num">7170.6</td><td class="num">1,087,654</td><td class="num">159.7</td><td class="num">6811&times;</td></tr>
+  <tr><td>10</td><td class="num">7162.5</td><td class="num">2,130,018</td><td class="num">235.9</td><td class="num">9029&times;</td></tr>
+  <tr><td>15</td><td class="num">7157.9</td><td class="num">3,200,911</td><td class="num">788.0</td><td class="num">4062&times;</td></tr>
+  <tr><td>20</td><td class="num">7171.6</td><td class="num">4,231,769</td><td class="num">1,592.5</td><td class="num">2657&times;</td></tr>
+  <tr><td>25</td><td class="num">7161.4</td><td class="num">5,230,504</td><td class="num">2,333.7</td><td class="num">2241&times;</td></tr>
+  <tr><td>30</td><td class="num">7164.3</td><td class="num">6,234,100</td><td class="num">2,764.1</td><td class="num">2255&times;</td></tr>
+  <tr><td><b>30-day RMS</b></td><td class="num">&mdash;</td><td class="num"><b>3,671,346</b></td><td class="num"><b>1,197</b></td><td class="num"><b>3067&times;</b></td></tr>
+</table>
+
+<figure><img src="assets/plot_dsst_longterm.png">
+  <figcaption><b>Figure 2.</b> DSST position error vs Cowell over 30 days (log scale). Current output
+  (orange) diverges to thousands of km; revised (blue) stays at the km level.</figcaption></figure>
+
+<div class="key"><b>Result B in words.</b> The current semi-analytical output was never osculating &mdash; it
+emitted mean elements and treated the osculating seed as mean, so its position error reached
+<b>6,234 km at 30 days</b> (RMS 3,671 km): unusable for a real trajectory. The revised engine tracks the
+Cowell truth to <b>2.76 km at 30 days</b> (RMS 1.2 km) &mdash; a <b>3067&times;</b> reduction &mdash; while
+running <b>~10&times; faster</b> than Cowell (the speed-up grows with arc length and force complexity).
+This is the capability needed for long-term trajectory and lifetime prediction.</div>
+</section>
+
+<!-- 5 SUMMARY -->
+<section class="section">
+<h2>5&nbsp;&nbsp;Summary (plain numbers)</h2>
+<table>
+  <caption><b>Table 6.</b> Headline comparison.</caption>
+  <tr><th>Test</th><th>Metric</th><th class="num">Current</th><th class="num">Revised</th><th class="num">Change</th></tr>
+  <tr><td>Cowell vs POEORB (S3A, 24 h)</td><td>total RMS</td><td class="num">165.6 m</td><td class="num">164.8 m</td><td class="num">&minus;0.8 m</td></tr>
+  <tr><td>Cowell vs POEORB (S3B, 24 h)</td><td>total RMS</td><td class="num">146.2 m</td><td class="num">145.4 m</td><td class="num">&minus;0.8 m</td></tr>
+  <tr><td>DSST vs Cowell (30 days)</td><td>total RMS</td><td class="num">3,671 km</td><td class="num">1.2 km</td><td class="num">3067&times; better</td></tr>
+  <tr><td>DSST vs Cowell (30 days)</td><td>error at day 30</td><td class="num">6,234 km</td><td class="num">2.76 km</td><td class="num">2255&times; better</td></tr>
+  <tr><td>DSST wall-clock (30 days)</td><td>vs Cowell</td><td class="num">&mdash;</td><td class="num">~10&times; faster</td><td class="num">&mdash;</td></tr>
+  <tr><td>Real space weather (Cowell)</td><td>&mdash;</td><td colspan="3">implemented (<code>--sw-file</code>); real indices pending network/data</td></tr>
+</table>
+<footer>URSC &mdash; Model Comparison. Cowell results measured against Sentinel-3A/3B POEORB (16 Oct 2024);
+DSST long-term measured against a Cowell reference. Branch
+<code>claude/leo-trajectory-prediction-java-ihupky</code>.</footer>
+</section>
+
+</body>
+</html>

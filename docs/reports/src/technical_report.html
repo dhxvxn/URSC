@@ -392,6 +392,26 @@ values, not just internal consistency:</p>
 
 <!-- ============================ 13 ============================ -->
 <section class="section">
+<h2 style="border-top:2px solid var(--accent); padding-top:10px;">12b&nbsp;&nbsp;Revised-model update (implemented since first release)</h2>
+<p>Several roadmap items above are now implemented and validated (see the companion
+<i>Model Comparison</i> report for the full side-by-side numbers):</p>
+<ul>
+  <li><span class="tag done">DONE</span> <b>Real space-weather hook</b> &mdash; <code>validate</code>/<code>fit</code>
+      accept <code>--sw-file SW-All.csv</code> (file-backed <code>CssiSpaceWeatherProvider</code> with the
+      constant indices as fallback). <i>Note:</i> fetching the live CelesTrak file was blocked by the
+      execution environment's network policy, so the real-indices run is pending the host being
+      allow-listed or the file supplied; the plumbing is verified.</li>
+  <li><span class="tag done">DONE</span> <b>Earth albedo/IR enabled</b> in the precise-orbit force config
+      (a sub-metre effect over 24 h at this altitude, as expected).</li>
+  <li><span class="tag done">DONE</span> <b>DSST osculating&harr;mean initialization + first-order
+      short-period recovery</b> (numerical short-period generating function; non-singular vector-based
+      equinoctial conversion). The semi-analytical output is now osculating-accurate.</li>
+</ul>
+<div class="key"><b>Measured impact (DSST long-term vs a Cowell reference, 30 days, Sentinel-like).</b>
+The previous mean-element output drifted to <b>6,234 km</b> at day 30 (RMS 3,671 km); the revised engine
+tracks the osculating truth to <b>2.76 km</b> (RMS 1.2 km) &mdash; a <b>3067&times;</b> reduction &mdash;
+at ~10&times; the speed of Cowell. The osculating seed round-trips at epoch to ~0.1 m.</div>
+
 <h2>13&nbsp;&nbsp;Appendix</h2>
 <h3>A&nbsp;&nbsp;Physical constants (as used in code)</h3>
 <table class="tbl-compact">

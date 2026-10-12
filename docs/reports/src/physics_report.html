@@ -491,6 +491,14 @@ would most improve accuracy:</p>
   <li><b>Direct GNSS measurement fit.</b> Fit to the raw onboard GPS observations (the Sentinel-3 GNSSRD
       product) rather than the reduced POEORB positions, closing the loop with the GNSS data directly.</li>
 </ol>
+<div class="key"><b>Update.</b> Recommendation (2) &mdash; the semi-analytical method's mean/osculating handling &mdash;
+has since been implemented: the DSST propagator now converts the osculating seed to mean elements and
+restores the first-order short-period terms on output. Against a high-accuracy reference over 30 days this
+reduces the long-term position error from thousands of kilometres (raw mean output) to the kilometre level
+(a ~3000&times; reduction), making the engine suitable for long-term trajectory and lifetime prediction.
+Earth albedo/IR and a file-backed real-space-weather input (recommendation 1) are also now wired in. See
+the companion <i>Model Comparison</i> report for the measured numbers.</div>
+
 <footer>URSC &mdash; Physics &amp; Error-Analysis Report. All error figures are measured against
 Sentinel-3A/3B POEORB precise orbits (16 Oct 2024). Equations typeset from the governing models as
 implemented; constants as used in the code.</footer>
