@@ -1,0 +1,38 @@
+Force sweep: train = first 6.0 h (2161 obs), held-out = remaining 20.0 h
+space weather: real (uploaded); gravity rung = 20x20
+
+swept 22 combinations in 62.5 s
+
+CUMULATIVE LADDER (marginal contribution)
+  two-body (central)             held-out RMS =   51817.85 m
+  + J2                           held-out RMS =    2415.58 m   (Δ -49402.3 m)
+  + gravity 20x20                held-out RMS =     270.78 m   (Δ -2144.8 m)
+  + Sun/Moon                     held-out RMS =     270.60 m   (Δ -0.2 m)
+  + drag (NRLMSISE, est. Cd)     held-out RMS =     224.15 m   (Δ -46.4 m)
+  + SRP (est. Cr)                held-out RMS =     224.00 m   (Δ -0.2 m)
+  + solid tides                  held-out RMS =     224.10 m   (Δ +0.1 m)
+  + ocean tides                  held-out RMS =     226.89 m   (Δ +2.8 m)
+  + relativity                   held-out RMS =     226.90 m   (Δ +0.0 m)
+  + albedo/IR (FULL stack)       held-out RMS =     226.87 m   (Δ -0.0 m)
+
+ATMOSPHERE MODEL AT FULL STACK
+  full, drag=none                held-out RMS =     269.96 m
+  full, drag=exponential         held-out RMS =     243.23 m
+  full, drag=harris-priester     held-out RMS =     228.05 m
+  full, drag=nrlmsise00          held-out RMS =     226.87 m
+
+LEAVE-ONE-OUT FROM FULL STACK
+  FULL (reference)               held-out RMS =     226.87 m
+  full - drag                    held-out RMS =     269.96 m
+  full - Sun/Moon                held-out RMS =     230.63 m
+  full - SRP                     held-out RMS =     227.03 m
+  full - solid tides             held-out RMS =     226.75 m
+  full - ocean tides             held-out RMS =     224.08 m
+  full - relativity              held-out RMS =     226.87 m
+  full - albedo/IR               held-out RMS =     226.90 m
+
+
+==> LEAST-ERROR COMBINATION: "+ SRP (est. Cr)"  (held-out RMS = 224.00 m)
+    active perturbation models: gravity 20x20 (EGM96), Sun third-body, Moon third-body, drag (nrlmsise00, est. Cd), SRP (est. Cr)
+CSV written: sweep_results.csv
+
