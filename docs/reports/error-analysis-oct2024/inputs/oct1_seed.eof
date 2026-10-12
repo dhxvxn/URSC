@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Earth_Explorer_File>
+  <Data_Block type="xml">
+    <List_of_OSVs count="1">
+      <OSV>
+        <UTC>UTC=2024-10-01T21:59:42.000000</UTC>
+        <X unit="m">-6070314.946759</X>
+        <Y unit="m">552274.315540</Y>
+        <Z unit="m">-3807638.868815</Z>
+        <VX unit="m/s">4022.099496</VX>
+        <VY unit="m/s">1401.170432</VY>
+        <VZ unit="m/s">-6216.770780</VZ>
+      </OSV>
+    </List_of_OSVs>
+  </Data_Block>
+</Earth_Explorer_File>
