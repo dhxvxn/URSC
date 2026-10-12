@@ -79,6 +79,62 @@ public final class GravityFieldFactory {
         return new GravityField(Constants.EARTH_MU, Constants.EARTH_EQUATORIAL_RADIUS, n, 0, c, s);
     }
 
+    /**
+     * Load an ICGEM gravity-model file ({@code .gfc}, e.g. the EIGEN / EGM2008 models shipped
+     * with orekit-data), reading {@code earth_gravity_constant} (GM) and {@code radius} from the
+     * header and the fully-normalised {@code gfc} coefficient lines from the body. Transparently
+     * handles a {@code .gz} file. Truncated to the requested degree/order.
+     *
+     * @param path      the .gfc (or .gfc.gz) file
+     * @param maxDegree maximum degree to retain
+     * @param maxOrder  maximum order to retain
+     */
+    public static GravityField loadIcgem(final Path path, final int maxDegree, final int maxOrder)
+            throws IOException {
+        // Read header for GM and radius (and, if present, honour the model's own max degree).
+        double mu = EGM96_MU;
+        double radius = EGM96_RADIUS;
+        final boolean gz = path.getFileName().toString().toLowerCase().endsWith(".gz");
+        try (InputStream raw = Files.newInputStream(path);
+             InputStream hs = gz ? new GZIPInputStream(raw) : raw;
+             BufferedReader reader = new BufferedReader(new InputStreamReader(hs, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                final String t = line.trim();
+                if (t.startsWith("earth_gravity_constant")) {
+                    final Double v = headerValue(t);
+                    if (v != null) {
+                        mu = v;
+                    }
+                } else if (t.startsWith("radius")) {
+                    final Double v = headerValue(t);
+                    if (v != null) {
+                        radius = v;
+                    }
+                } else if (t.startsWith("end_of_head")) {
+                    break;
+                }
+            }
+        }
+        // Second pass: coefficients (loadNormalized already tolerates the leading "gfc" key).
+        try (InputStream raw = Files.newInputStream(path);
+             InputStream in = gz ? new GZIPInputStream(raw) : raw) {
+            return loadNormalized(in, mu, radius, maxDegree, maxOrder);
+        }
+    }
+
+    private static Double headerValue(final String line) {
+        final String[] t = line.split("\\s+");
+        if (t.length < 2) {
+            return null;
+        }
+        try {
+            return Double.valueOf(t[1].replace('D', 'E').replace('d', 'e'));
+        } catch (final NumberFormatException e) {
+            return null;
+        }
+    }
+
     /** Load a normalised coefficient file from a path. */
     public static GravityField loadNormalized(final Path path, final double mu,
                                               final double referenceRadius,

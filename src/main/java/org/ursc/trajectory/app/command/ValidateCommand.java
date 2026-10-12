@@ -8,6 +8,7 @@ import org.ursc.trajectory.app.Args;
 import org.ursc.trajectory.app.term.Ansi;
 import org.ursc.trajectory.app.term.AsciiChart;
 import org.ursc.trajectory.app.term.Table;
+import org.ursc.trajectory.forces.gravity.GravityFieldFactory;
 import org.ursc.trajectory.io.PoeOrbReader;
 import org.ursc.trajectory.math.Constants;
 import org.ursc.trajectory.math.Vector3D;
@@ -39,11 +40,11 @@ public final class ValidateCommand implements Command {
         if (file == null) {
             System.err.println("usage: validate <poeorb.eof> [--hours H] [--gravity-degree N] "
                     + "[--mass kg] [--area m2] [--cd Cd] [--cr Cr] [--f107 v] [--f107a v] [--ap v] "
-                    + "[--sw-file SW-All.csv] [--plot total|none]");
+                    + "[--sw-file SW-All.csv] [--eop-file finals2000A.all] [--gravity-file model.gfc] "
+                    + "[--plot total|none]");
             return 2;
         }
         final PoeOrbReader.Ephemeris eph = PoeOrbReader.read(Paths.get(file));
-        OrbitFiles.configureFrames(eph);
 
         final OrbitFiles.Setup s = new OrbitFiles.Setup();
         s.mass = args.getDouble("mass", s.mass);
@@ -58,6 +59,13 @@ public final class ValidateCommand implements Command {
         if (swFile != null) {
             s.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, s);
         }
+        final String gravFile = args.get("gravity-file", null);
+        if (gravFile != null) {
+            s.gravityOverride = GravityFieldFactory.loadIcgem(Paths.get(gravFile),
+                    s.gravityDegree, s.gravityDegree);
+        }
+        final String eopFile = args.get("eop-file", null);
+        OrbitFiles.configureFrames(eph, eopFile != null ? OrbitFiles.loadEop(eopFile, eph) : null);
         final double cd = args.getDouble("cd", 2.2);
 
         final double stepS = eph.dates.get(1).durationFrom(eph.dates.get(0)); // record cadence
@@ -79,6 +87,10 @@ public final class ValidateCommand implements Command {
         System.out.printf(Locale.US, "Space weather: %s%n", swFile != null
                 ? "file " + swFile + " (fallback F10.7=" + s.f107 + ", Ap=" + s.ap + ")"
                 : "constant F10.7=" + s.f107 + ", F10.7a=" + s.f107a + ", Ap=" + s.ap);
+        System.out.printf(Locale.US, "EOP: %s   Gravity model: %s%n",
+                eopFile != null ? "file " + eopFile + " (real UT1 + polar motion)"
+                        : "POEORB UT1, zero polar motion",
+                gravFile != null ? "file " + gravFile : "bundled EGM96");
 
         final NumericalPropagator prop = (NumericalPropagator) OrbitFiles.fullConfig(s0, s, cd).build();
         final EphemerisCollector col = new EphemerisCollector();

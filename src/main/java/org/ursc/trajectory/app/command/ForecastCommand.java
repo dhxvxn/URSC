@@ -44,12 +44,12 @@ public final class ForecastCommand implements Command {
         if (seedFile == null) {
             System.err.println("usage: forecast <seed.eof> [--days N] [--sw-file FILE] [--cd Cd] "
                     + "[--gravity-degree N] [--mass kg] [--area m2] [--cr Cr] "
-                    + "[--f107 v] [--f107a v] [--ap v] [--step s] [--csv out.csv] [--plot alt|sma|ecc|none]");
+                    + "[--f107 v] [--f107a v] [--ap v] [--eop-file finals2000A.all] "
+                    + "[--gravity-file model.gfc] [--step s] [--csv out.csv] [--plot alt|sma|ecc|none]");
             return 2;
         }
 
         final PoeOrbReader.Ephemeris eph = PoeOrbReader.read(Paths.get(seedFile));
-        OrbitFiles.configureFrames(eph);
 
         final OrbitFiles.Setup s = new OrbitFiles.Setup();
         s.mass = args.getDouble("mass", s.mass);
@@ -64,6 +64,13 @@ public final class ForecastCommand implements Command {
         if (swFile != null) {
             s.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, s);
         }
+        final String gravFile = args.get("gravity-file", null);
+        if (gravFile != null) {
+            s.gravityOverride = org.ursc.trajectory.forces.gravity.GravityFieldFactory
+                    .loadIcgem(Paths.get(gravFile), s.gravityDegree, s.gravityDegree);
+        }
+        final String eopFile = args.get("eop-file", null);
+        OrbitFiles.configureFrames(eph, eopFile != null ? OrbitFiles.loadEop(eopFile, eph) : null);
         final double cd = args.getDouble("cd", 2.2);
         final double days = args.getDouble("days", 7.0);
         final double step = args.getDouble("step", 300.0);

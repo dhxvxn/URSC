@@ -54,6 +54,7 @@ public final class BacktestCommand implements Command {
         if (trainFile == null || args.positionalCount() < 2) {
             System.err.println("usage: backtest <train.eof> <truth1.eof> [truth2.eof ...] "
                     + "[--sweep ladder|atmos|full] [--sw-file SW.csv] [--gravity-degree N] "
+                    + "[--eop-file finals2000A.all] [--gravity-file model.gfc] "
                     + "[--sample-step S] [--mass kg] [--area m2] [--cd Cd] [--cr Cr] "
                     + "[--f107 v] [--f107a v] [--ap v] [--max-iter N]");
             return 2;
@@ -66,7 +67,9 @@ public final class BacktestCommand implements Command {
         }
         final PoeOrbReader.Ephemeris trainEph = PoeOrbReader.read(Paths.get(trainFile));
         final PoeOrbReader.Ephemeris truthEph = PoeOrbReader.readAll(allFiles);
-        OrbitFiles.configureFrames(truthEph);
+        final String eopFile = args.get("eop-file", null);
+        OrbitFiles.configureFrames(truthEph,
+                eopFile != null ? OrbitFiles.loadEop(eopFile, truthEph) : null);
 
         final OrbitFiles.Setup setup = new OrbitFiles.Setup();
         setup.mass = args.getDouble("mass", setup.mass);
@@ -81,6 +84,11 @@ public final class BacktestCommand implements Command {
             setup.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, setup);
         }
         final int gravDeg = args.getInt("gravity-degree", 20);
+        final String gravFile = args.get("gravity-file", null);
+        if (gravFile != null) {
+            setup.gravityOverride = org.ursc.trajectory.forces.gravity.GravityFieldFactory
+                    .loadIcgem(Paths.get(gravFile), gravDeg, gravDeg);
+        }
         final double cdGuess = args.getDouble("cd", 2.2);
         final double obsStep = args.getDouble("sample-step", 120.0);
         final int maxIter = args.getInt("max-iter", 8);

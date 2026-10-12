@@ -16,10 +16,14 @@ import org.ursc.trajectory.forces.drag.ExponentialAtmosphere;
 import org.ursc.trajectory.forces.drag.HarrisPriesterAtmosphere;
 import org.ursc.trajectory.forces.drag.NRLMSISE00Atmosphere;
 import org.ursc.trajectory.forces.drag.SpaceWeatherProvider;
+import org.ursc.trajectory.forces.gravity.GravityField;
 import org.ursc.trajectory.forces.gravity.GravityFieldFactory;
 import org.ursc.trajectory.frames.ConstantEop;
+import org.ursc.trajectory.frames.EopProvider;
+import org.ursc.trajectory.frames.Finals2000AEopProvider;
 import org.ursc.trajectory.frames.Frame;
 import org.ursc.trajectory.frames.FramesFactory;
+import org.ursc.trajectory.frames.IersEopProvider;
 import org.ursc.trajectory.frames.Transform;
 import org.ursc.trajectory.io.PoeOrbReader;
 import org.ursc.trajectory.math.Constants;
@@ -49,6 +53,8 @@ final class OrbitFiles {
         double ap = 12.0;
         /** Real space-weather provider (from a CelesTrak CSV); null = use the constants above. */
         SpaceWeatherProvider spaceWeather = null;
+        /** Gravity field override (e.g. an orekit-data ICGEM model); null = bundled EGM96. */
+        GravityField gravityOverride = null;
     }
 
     /**
@@ -81,6 +87,29 @@ final class OrbitFiles {
     static void configureFrames(final PoeOrbReader.Ephemeris eph) {
         FramesFactory.setModel(FramesFactory.Model.IAU_2006);
         FramesFactory.setEopProvider(new ConstantEop(eph.ut1MinusUtc, 0.0, 0.0));
+    }
+
+    /** Configure the frames with an explicit EOP provider (e.g. a real orekit-data file). */
+    static void configureFrames(final PoeOrbReader.Ephemeris eph, final EopProvider eop) {
+        FramesFactory.setModel(FramesFactory.Model.IAU_2006);
+        FramesFactory.setEopProvider(eop != null ? eop : new ConstantEop(eph.ut1MinusUtc, 0.0, 0.0));
+    }
+
+    /**
+     * Build a real Earth-orientation provider from an orekit-data EOP file, auto-detecting the
+     * layout: the IERS {@code finals2000A.all} (Bulletin&nbsp;A flags) or the EOP&nbsp;C04
+     * whitespace series. Dates outside the file fall back to the POEORB's own UT1−UTC with zero
+     * polar motion, so the result is never worse than {@link #configureFrames(PoeOrbReader.Ephemeris)}.
+     */
+    static EopProvider loadEop(final String file, final PoeOrbReader.Ephemeris eph) throws IOException {
+        final java.nio.file.Path path = Paths.get(file);
+        final EopProvider fallback = new ConstantEop(eph.ut1MinusUtc, 0.0, 0.0);
+        boolean finals;
+        try (java.io.InputStream in = java.nio.file.Files.newInputStream(path)) {
+            finals = Finals2000AEopProvider.looksLikeFinals2000A(in);
+        }
+        return finals ? new Finals2000AEopProvider(path, fallback)
+                      : new IersEopProvider(path, fallback);
     }
 
     /** Convert the ITRF state at index {@code i} to a GCRF {@link SpacecraftState}. */
@@ -155,10 +184,14 @@ final class OrbitFiles {
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(
                 Constants.EARTH_EQUATORIAL_RADIUS, Constants.EARTH_FLATTENING);
         final int order = fs.gravityOrder < 0 ? fs.gravityDegree : fs.gravityOrder;
+        final GravityField field = (s.gravityOverride != null)
+                ? s.gravityOverride : GravityFieldFactory.getEgm96(fs.gravityDegree);
+        final int degree = Math.min(fs.gravityDegree, field.getMaxDegree());
+        final int ord = Math.min(order, field.getMaxOrder());
         final PropagationConfig c = new PropagationConfig()
                 .initialState(s0)
                 .integrator(new DormandPrince54Integrator(1e-7, 1e-9, 1e-3, 120.0), 60.0)
-                .gravityField(GravityFieldFactory.getEgm96(fs.gravityDegree), fs.gravityDegree, order)
+                .gravityField(field, degree, ord)
                 .outputType(OrbitType.CARTESIAN);
         if (fs.sun) {
             c.thirdBody(CelestialBodyFactory.getSun());

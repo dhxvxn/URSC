@@ -41,11 +41,11 @@ public final class FitCommand implements Command {
         if (file == null) {
             System.err.println("usage: fit <poeorb.eof> [--estimate-cd] [--hours H] "
                     + "[--sample-step S] [--gravity-degree N] [--mass kg] [--area m2] [--cd Cd] "
-                    + "[--cr Cr] [--f107 v] [--f107a v] [--ap v] [--sw-file SW-All.csv] [--max-iter N]");
+                    + "[--cr Cr] [--f107 v] [--f107a v] [--ap v] [--sw-file SW-All.csv] "
+                    + "[--eop-file finals2000A.all] [--gravity-file model.gfc] [--max-iter N]");
             return 2;
         }
         final PoeOrbReader.Ephemeris eph = PoeOrbReader.read(Paths.get(file));
-        OrbitFiles.configureFrames(eph);
 
         final OrbitFiles.Setup setup = new OrbitFiles.Setup();
         setup.mass = args.getDouble("mass", setup.mass);
@@ -60,6 +60,13 @@ public final class FitCommand implements Command {
         if (swFile != null) {
             setup.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, setup);
         }
+        final String gravFile = args.get("gravity-file", null);
+        if (gravFile != null) {
+            setup.gravityOverride = org.ursc.trajectory.forces.gravity.GravityFieldFactory
+                    .loadIcgem(Paths.get(gravFile), setup.gravityDegree, setup.gravityDegree);
+        }
+        final String eopFile = args.get("eop-file", null);
+        OrbitFiles.configureFrames(eph, eopFile != null ? OrbitFiles.loadEop(eopFile, eph) : null);
         final double fixedCd = args.getDouble("cd", 2.2);
         final boolean estimateCd = args.has("estimate-cd");
         final int maxIter = args.getInt("max-iter", 10);
