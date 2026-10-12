@@ -112,7 +112,8 @@ public final class ScenarioLoader {
         final SampledPropagator propagator;
         if (getString("propagator", "numerical").toLowerCase().equals("dsst")) {
             final DSSTPropagator dsst = new DSSTPropagator(initialState,
-                    getDouble("dsst.step", 43200.0), (int) getDouble("dsst.averagingPoints", 24));
+                    getDouble("dsst.step", 43200.0), (int) getDouble("dsst.averagingPoints", 24),
+                    getBoolean("dsst.shortPeriod", true));
             for (final ForceModel f : config.buildForceModels()) {
                 dsst.addForceModel(f);
             }

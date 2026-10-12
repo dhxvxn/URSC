@@ -39,7 +39,7 @@ public final class ValidateCommand implements Command {
         if (file == null) {
             System.err.println("usage: validate <poeorb.eof> [--hours H] [--gravity-degree N] "
                     + "[--mass kg] [--area m2] [--cd Cd] [--cr Cr] [--f107 v] [--f107a v] [--ap v] "
-                    + "[--plot total|none]");
+                    + "[--sw-file SW-All.csv] [--plot total|none]");
             return 2;
         }
         final PoeOrbReader.Ephemeris eph = PoeOrbReader.read(Paths.get(file));
@@ -54,6 +54,10 @@ public final class ValidateCommand implements Command {
         s.f107 = args.getDouble("f107", s.f107);
         s.f107a = args.getDouble("f107a", s.f107a);
         s.ap = args.getDouble("ap", s.ap);
+        final String swFile = args.get("sw-file", null);
+        if (swFile != null) {
+            s.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, s);
+        }
         final double cd = args.getDouble("cd", 2.2);
 
         final double stepS = eph.dates.get(1).durationFrom(eph.dates.get(0)); // record cadence
@@ -71,7 +75,10 @@ public final class ValidateCommand implements Command {
                 (k0.getA() * (1 - k0.getE()) - Constants.EARTH_EQUATORIAL_RADIUS) / 1000.0,
                 Math.toDegrees(k0.getI()), k0.getE());
         System.out.printf(Locale.US, "Model: gravity %dx%d + Sun/Moon + NRLMSISE drag (Cd=%.1f,A=%.1f) "
-                + "+ SRP + tides + relativity%n", s.gravityDegree, s.gravityDegree, cd, s.dragArea);
+                + "+ SRP + albedo/IR + tides + relativity%n", s.gravityDegree, s.gravityDegree, cd, s.dragArea);
+        System.out.printf(Locale.US, "Space weather: %s%n", swFile != null
+                ? "file " + swFile + " (fallback F10.7=" + s.f107 + ", Ap=" + s.ap + ")"
+                : "constant F10.7=" + s.f107 + ", F10.7a=" + s.f107a + ", Ap=" + s.ap);
 
         final NumericalPropagator prop = (NumericalPropagator) OrbitFiles.fullConfig(s0, s, cd).build();
         final EphemerisCollector col = new EphemerisCollector();

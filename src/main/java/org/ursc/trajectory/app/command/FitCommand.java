@@ -41,7 +41,7 @@ public final class FitCommand implements Command {
         if (file == null) {
             System.err.println("usage: fit <poeorb.eof> [--estimate-cd] [--hours H] "
                     + "[--sample-step S] [--gravity-degree N] [--mass kg] [--area m2] [--cd Cd] "
-                    + "[--cr Cr] [--f107 v] [--f107a v] [--ap v] [--max-iter N]");
+                    + "[--cr Cr] [--f107 v] [--f107a v] [--ap v] [--sw-file SW-All.csv] [--max-iter N]");
             return 2;
         }
         final PoeOrbReader.Ephemeris eph = PoeOrbReader.read(Paths.get(file));
@@ -56,6 +56,10 @@ public final class FitCommand implements Command {
         setup.f107 = args.getDouble("f107", setup.f107);
         setup.f107a = args.getDouble("f107a", setup.f107a);
         setup.ap = args.getDouble("ap", setup.ap);
+        final String swFile = args.get("sw-file", null);
+        if (swFile != null) {
+            setup.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, setup);
+        }
         final double fixedCd = args.getDouble("cd", 2.2);
         final boolean estimateCd = args.has("estimate-cd");
         final int maxIter = args.getInt("max-iter", 10);

@@ -46,6 +46,7 @@ public final class DSSTPropagator implements SampledPropagator {
 
     private static final int STATE_DIM = 6;
     private static final double FD_STEP = 1.0e-3; // velocity finite-difference step (m/s)
+    private static final int SP_POINTS = 64;      // nodes for the short-period quadrature
 
     private final SpacecraftState initialState;
     private final Frame frame;
@@ -53,6 +54,8 @@ public final class DSSTPropagator implements SampledPropagator {
     private final double mass;
     private final double step;
     private final int averagingPoints;
+    private final boolean shortPeriod;
+
 
     private final List<ForceModel> forceModels = new ArrayList<>();
     private final List<StepHandler> stepHandlers = new ArrayList<>();
@@ -61,18 +64,34 @@ public final class DSSTPropagator implements SampledPropagator {
     private OrbitType outputType = OrbitType.KEPLERIAN;
 
     /**
-     * @param initialState    initial state (treated as the mean state at epoch)
+     * @param initialState    initial (osculating) state at epoch
      * @param step            mean-element integration step (s), e.g. 43200 (half day)
      * @param averagingPoints number of quadrature nodes per revolution (e.g. 24)
      */
     public DSSTPropagator(final SpacecraftState initialState, final double step,
                           final int averagingPoints) {
+        this(initialState, step, averagingPoints, true);
+    }
+
+    /**
+     * @param initialState    initial state at epoch
+     * @param step            mean-element integration step (s)
+     * @param averagingPoints number of quadrature nodes per revolution
+     * @param shortPeriod     when {@code true} (default), the osculating seed is converted to
+     *                        mean elements at epoch and the first-order short-period terms are
+     *                        restored on output so the result is an osculating ephemeris; when
+     *                        {@code false}, the seed is taken as mean and the output is the mean
+     *                        orbit (pure mean-element study).
+     */
+    public DSSTPropagator(final SpacecraftState initialState, final double step,
+                          final int averagingPoints, final boolean shortPeriod) {
         this.initialState = initialState;
         this.frame = initialState.getFrame();
         this.mu = initialState.getMu();
         this.mass = initialState.getMass();
         this.step = step;
         this.averagingPoints = averagingPoints;
+        this.shortPeriod = shortPeriod;
     }
 
     @Override
@@ -126,7 +145,8 @@ public final class DSSTPropagator implements SampledPropagator {
     public SpacecraftState propagate(final AbsoluteDate target) {
         final AbsoluteDate start = initialState.getDate();
         final double tEnd = target.durationFrom(start);
-        double[] y = meanFromOrbit(initialState.getOrbit());
+        final double[] oscSeed = meanFromOrbit(initialState.getOrbit());
+        double[] y = shortPeriod ? meanFromOsculating(oscSeed, start) : oscSeed;
 
         final FirstOrderDifferentialEquations eq = new MeanEquations(start);
         final ClassicalRungeKutta integrator = new ClassicalRungeKutta();
@@ -276,45 +296,224 @@ public final class DSSTPropagator implements SampledPropagator {
         }
     }
 
-    /** Osculating equinoctial elements {a, ex, ey, hx, hy, lambda} from position/velocity. */
+    /**
+     * Osculating equinoctial elements {a, ex, ey, hx, hy, lambda} from position/velocity,
+     * computed directly from the state vectors (eccentricity vector + node), with no
+     * perigee/argument-of-latitude angles. This is non-singular for near-circular orbits,
+     * so the velocity finite differences used for the element rates and the short-period
+     * generating function stay clean at small eccentricity.
+     */
     private double[] osculatingEquinoctial(final Vector3D r, final Vector3D v, final AbsoluteDate date) {
-        final KeplerianOrbit k = new KeplerianOrbit(new PVCoordinates(r, v), frame, date, mu);
-        final double e = k.getE();
-        final double raan = k.getRightAscensionOfAscendingNode();
-        final double peri = k.getPerigeeArgument();
-        final double varpi = peri + raan;
-        final double tanHalfI = Math.tan(k.getI() / 2.0);
-        return new double[] {
-                k.getA(),
-                e * Math.cos(varpi),
-                e * Math.sin(varpi),
-                tanHalfI * Math.cos(raan),
-                tanHalfI * Math.sin(raan),
-                k.getMeanAnomaly() + varpi
-        };
+        final double rN = r.getNorm();
+        final double v2 = v.getNormSq();
+        final double a = 1.0 / (2.0 / rN - v2 / mu);
+
+        final Vector3D hVec = r.crossProduct(v);
+        final double inc = Math.acos(Math.max(-1.0, Math.min(1.0, hVec.getZ() / hVec.getNorm())));
+        final double raan = Math.atan2(hVec.getX(), -hVec.getY()); // ascending-node right ascension
+        final double tanHalfI = Math.tan(inc / 2.0);
+        final double hx = tanHalfI * Math.cos(raan);
+        final double hy = tanHalfI * Math.sin(raan);
+
+        // eccentricity vector (points to perigee, in the inertial frame)
+        final double rv = r.dotProduct(v);
+        final Vector3D eccVec = r.scalarMultiply(v2 - mu / rN).subtract(v.scalarMultiply(rv))
+                .scalarMultiply(1.0 / mu);
+        final double e = eccVec.getNorm();
+
+        // fold the orbit plane into the equatorial plane by rotating about the node by -i;
+        // the folded x,y components are ex = e cos(w+O), ey = e sin(w+O)
+        final Vector3D node = new Vector3D(Math.cos(raan), Math.sin(raan), 0.0);
+        final Vector3D eccFold = rotateAboutAxis(eccVec, node, -inc);
+        final Vector3D rFold = rotateAboutAxis(r, node, -inc);
+        final double ex = eccFold.getX();
+        final double ey = eccFold.getY();
+
+        // true longitude L = O + w + nu  (robust: angle of the folded position)
+        final double trueLon = Math.atan2(rFold.getY(), rFold.getX());
+        final double varpi = Math.atan2(ey, ex);
+        final double nu = trueLon - varpi;                      // true anomaly
+        final double eccAnom = Math.atan2(Math.sqrt(Math.max(0.0, 1.0 - e * e)) * Math.sin(nu),
+                e + Math.cos(nu));
+        final double meanAnom = eccAnom - e * Math.sin(eccAnom);
+        final double lambda = meanAnom + varpi;
+
+        return new double[] {a, ex, ey, hx, hy, lambda};
+    }
+
+    /** Rotate {@code vec} about the unit axis {@code axis} by {@code angle} (Rodrigues). */
+    private static Vector3D rotateAboutAxis(final Vector3D vec, final Vector3D axis, final double angle) {
+        final double c = Math.cos(angle);
+        final double s = Math.sin(angle);
+        return vec.scalarMultiply(c)
+                .add(axis.crossProduct(vec).scalarMultiply(s))
+                .add(axis.scalarMultiply(axis.dotProduct(vec) * (1.0 - c)));
     }
 
     // ---- state <-> mean element vector ----
 
     private double[] meanFromOrbit(final Orbit orbit) {
-        final KeplerianOrbit k = (orbit instanceof KeplerianOrbit)
-                ? (KeplerianOrbit) orbit : new KeplerianOrbit(orbit);
-        final double e = k.getE();
-        final double raan = k.getRightAscensionOfAscendingNode();
-        final double varpi = k.getPerigeeArgument() + raan;
-        final double tanHalfI = Math.tan(k.getI() / 2.0);
-        return new double[] {
-                k.getA(),
-                e * Math.cos(varpi),
-                e * Math.sin(varpi),
-                tanHalfI * Math.cos(raan),
-                tanHalfI * Math.sin(raan),
-                k.getMeanAnomaly() + varpi
-        };
+        final PVCoordinates pv = orbit.getPVCoordinates();
+        return osculatingEquinoctial(pv.getPosition(), pv.getVelocity(), orbit.getDate());
+    }
+
+    // ---- first-order short-period (osculating <-> mean) ----
+
+    /**
+     * Convert an osculating equinoctial vector to mean by removing the first-order
+     * short-period terms (fixed-point iteration: mean = osc - delta(mean)).
+     */
+    private double[] meanFromOsculating(final double[] oscY, final AbsoluteDate date) {
+        final double[] mean = oscY.clone();
+        for (int it = 0; it < 2; it++) {
+            final double[] sp = shortPeriodOffset(mean, date);
+            for (int k = 0; k < STATE_DIM; k++) {
+                mean[k] = oscY[k] - sp[k];
+            }
+        }
+        return mean;
+    }
+
+    /**
+     * First-order short-period offset (osculating - mean) of the six equinoctial
+     * elements at the current anomaly of the given mean state, computed numerically as
+     * the periodic part of the perturbation's Gauss element rates integrated around one
+     * revolution — the DSST short-period generating function to first order. Consistent
+     * with the numerical averaging used for the secular rates, and uses the same force
+     * models. The mean-longitude offset also carries the indirect term from the n(a)
+     * oscillation driven by the short-period in the semi-major axis.
+     */
+    private double[] shortPeriodOffset(final double[] y, final AbsoluteDate date) {
+        final double a = y[0];
+        final double e = Math.hypot(y[1], y[2]);
+        final double inc = 2.0 * Math.atan(Math.hypot(y[3], y[4]));
+        final double raan = Math.atan2(y[4], y[3]);
+        final double varpi = Math.atan2(y[2], y[1]);
+        final double peri = varpi - raan;
+        final double n = Math.sqrt(mu / (a * a * a));
+        final int nSeg = SP_POINTS;
+        final double dE = Constants.TWO_PI / nSeg;
+
+        // sample the perturbation element rates and the (1 - e cosE) weight at each node
+        final double[][] rate = new double[nSeg + 1][STATE_DIM];
+        final double[] wgt = new double[nSeg + 1];
+        for (int j = 0; j <= nSeg; j++) {
+            final double ecc = dE * j;
+            final double trueAnom = 2.0 * Math.atan2(
+                    Math.sqrt(1.0 + e) * Math.sin(ecc / 2.0),
+                    Math.sqrt(1.0 - e) * Math.cos(ecc / 2.0));
+            final KeplerianOrbit node = new KeplerianOrbit(a, e, inc, peri, raan, trueAnom,
+                    PositionAngle.TRUE, frame, date, mu);
+            final PVCoordinates pv = node.getPVCoordinates();
+            final SpacecraftState st =
+                    new SpacecraftState(new CartesianOrbit(pv, frame, date, mu), mass);
+            final Vector3D gamma = perturbation(st, pv.getPosition());
+            rate[j] = rateContribution(pv.getPosition(), pv.getVelocity(), date, gamma);
+            wgt[j] = 1.0 - e * Math.cos(ecc);
+        }
+
+        // mean-anomaly average of each rate: <c_k> = (1/2pi) integral c_k (1 - e cosE) dE
+        final double[] meanRate = new double[STATE_DIM];
+        for (int k = 0; k < STATE_DIM; k++) {
+            double s = 0.0;
+            for (int j = 0; j < nSeg; j++) {
+                s += rate[j][k] * wgt[j];
+            }
+            meanRate[k] = s / nSeg;
+        }
+
+        // cumulative generating function g_k(E) = integral (c_k - <c_k>) (1 - e cosE)/n dE
+        final double[][] g = new double[nSeg + 1][STATE_DIM];
+        for (int k = 0; k < STATE_DIM; k++) {
+            double acc = 0.0;
+            for (int j = 1; j <= nSeg; j++) {
+                final double f0 = (rate[j - 1][k] - meanRate[k]) * wgt[j - 1] / n;
+                final double f1 = (rate[j][k] - meanRate[k]) * wgt[j] / n;
+                acc += 0.5 * (f0 + f1) * dE;
+                g[j][k] = acc;
+            }
+        }
+
+        // zero-mean short-period arrays sp_k(E) = g_k - <g_k>
+        final double[][] sp = new double[nSeg + 1][STATE_DIM];
+        for (int k = 0; k < STATE_DIM; k++) {
+            double s = 0.0;
+            for (int j = 0; j < nSeg; j++) {
+                s += g[j][k] * wgt[j];
+            }
+            final double gbar = s / nSeg;
+            for (int j = 0; j <= nSeg; j++) {
+                sp[j][k] = g[j][k] - gbar;
+            }
+        }
+
+        // indirect mean-longitude term: delta_lambda += integral -(3n/2a) delta_a dt
+        double accL = 0.0;
+        final double[] gL = new double[nSeg + 1];
+        for (int j = 1; j <= nSeg; j++) {
+            final double f0 = -(1.5 * n / a) * sp[j - 1][0] * wgt[j - 1] / n;
+            final double f1 = -(1.5 * n / a) * sp[j][0] * wgt[j] / n;
+            accL += 0.5 * (f0 + f1) * dE;
+            gL[j] = accL;
+        }
+        double sL = 0.0;
+        for (int j = 0; j < nSeg; j++) {
+            sL += gL[j] * wgt[j];
+        }
+        final double gLbar = sL / nSeg;
+        for (int j = 0; j <= nSeg; j++) {
+            sp[j][5] += gL[j] - gLbar;
+        }
+
+        // evaluate at the current eccentric anomaly of the state
+        double eCur = keplerEccentricAnomaly(y[5] - varpi, e) % Constants.TWO_PI;
+        if (eCur < 0.0) {
+            eCur += Constants.TWO_PI;
+        }
+        final double x = eCur / dE;
+        final int j0 = (int) Math.floor(x);
+        final double frac = x - j0;
+        final int jlo = j0 % nSeg;
+        final int jhi = jlo + 1; // sp[nSeg] == sp[0] (periodic), so this index is valid
+        final double[] delta = new double[STATE_DIM];
+        for (int k = 0; k < STATE_DIM; k++) {
+            delta[k] = sp[jlo][k] + frac * (sp[jhi][k] - sp[jlo][k]);
+        }
+        return delta;
+    }
+
+    /** Solve Kepler's equation M = E - e sinE for the eccentric anomaly. */
+    private static double keplerEccentricAnomaly(final double meanAnomaly, final double e) {
+        double m = meanAnomaly % Constants.TWO_PI;
+        double ea = m;
+        for (int i = 0; i < 20; i++) {
+            final double d = (ea - e * Math.sin(ea) - m) / (1.0 - e * Math.cos(ea));
+            ea -= d;
+            if (Math.abs(d) < 1.0e-13) {
+                break;
+            }
+        }
+        return ea;
     }
 
     private SpacecraftState buildState(final double t, final double[] y, final AbsoluteDate start) {
         final AbsoluteDate date = start.shiftedBy(t);
+        // restore the first-order short-period terms so the output is osculating
+        final double[] out;
+        if (shortPeriod) {
+            final double[] sp = shortPeriodOffset(y, date);
+            out = new double[STATE_DIM];
+            for (int k = 0; k < STATE_DIM; k++) {
+                out[k] = y[k] + sp[k];
+            }
+        } else {
+            out = y;
+        }
+        return new SpacecraftState(equinoctialToOrbit(out, date), mass);
+    }
+
+    /** Build a Keplerian orbit from an equinoctial vector {a, ex, ey, hx, hy, lambda}. */
+    private Orbit equinoctialToOrbit(final double[] y, final AbsoluteDate date) {
         final double a = y[0];
         final double ex = y[1];
         final double ey = y[2];
@@ -326,9 +525,8 @@ public final class DSSTPropagator implements SampledPropagator {
         final double varpi = Math.atan2(ey, ex);
         final double peri = varpi - raan;
         final double meanAnomaly = y[5] - varpi;
-        final Orbit orbit = new KeplerianOrbit(a, e, inc, peri, raan, meanAnomaly,
+        return new KeplerianOrbit(a, e, inc, peri, raan, meanAnomaly,
                 PositionAngle.MEAN, frame, date, mu);
-        return new SpacecraftState(orbit, mass);
     }
 
     private SpacecraftState convertOutput(final SpacecraftState state) {

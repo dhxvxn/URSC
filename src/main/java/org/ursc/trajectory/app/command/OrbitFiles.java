@@ -1,5 +1,7 @@
 package org.ursc.trajectory.app.command;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,9 @@ import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.bodies.OneAxisEllipsoid;
 import org.ursc.trajectory.config.PropagationConfig;
 import org.ursc.trajectory.forces.drag.ConstantSpaceWeather;
+import org.ursc.trajectory.forces.drag.CssiSpaceWeatherProvider;
 import org.ursc.trajectory.forces.drag.NRLMSISE00Atmosphere;
+import org.ursc.trajectory.forces.drag.SpaceWeatherProvider;
 import org.ursc.trajectory.forces.gravity.GravityFieldFactory;
 import org.ursc.trajectory.frames.ConstantEop;
 import org.ursc.trajectory.frames.Frame;
@@ -39,6 +43,19 @@ final class OrbitFiles {
         double f107 = 220.0;
         double f107a = 205.0;
         double ap = 12.0;
+        /** Real space-weather provider (from a CelesTrak CSV); null = use the constants above. */
+        SpaceWeatherProvider spaceWeather = null;
+    }
+
+    /**
+     * Build a file-backed {@link CssiSpaceWeatherProvider} from a CelesTrak
+     * {@code SW-All.csv}/{@code SW-Last5Years.csv}, with the {@code Setup} constants as the
+     * out-of-file fallback. Call once per run (the CSV is parsed here, not per propagation).
+     */
+    static SpaceWeatherProvider loadSpaceWeather(final String csvFile, final Setup s)
+            throws IOException {
+        return new CssiSpaceWeatherProvider(Paths.get(csvFile),
+                new ConstantSpaceWeather(s.f107, s.f107a, s.ap));
     }
 
     private OrbitFiles() {
@@ -78,15 +95,17 @@ final class OrbitFiles {
     static PropagationConfig fullConfig(final SpacecraftState s0, final Setup s, final double cd) {
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(
                 Constants.EARTH_EQUATORIAL_RADIUS, Constants.EARTH_FLATTENING);
+        final SpaceWeatherProvider weather = (s.spaceWeather != null)
+                ? s.spaceWeather : new ConstantSpaceWeather(s.f107, s.f107a, s.ap);
         return new PropagationConfig()
                 .initialState(s0)
                 .integrator(new DormandPrince54Integrator(1e-7, 1e-9, 1e-3, 120.0), 60.0)
                 .gravityField(GravityFieldFactory.getEgm96(s.gravityDegree), s.gravityDegree, s.gravityDegree)
                 .thirdBody(CelestialBodyFactory.getSun())
                 .thirdBody(CelestialBodyFactory.getMoon())
-                .drag(new NRLMSISE00Atmosphere(earth, new ConstantSpaceWeather(s.f107, s.f107a, s.ap)),
-                        cd, s.dragArea)
+                .drag(new NRLMSISE00Atmosphere(earth, weather), cd, s.dragArea)
                 .solarRadiationPressure(CelestialBodyFactory.getSun(), s.cr, s.srpArea)
+                .earthRadiation(CelestialBodyFactory.getSun(), s.cr, s.srpArea)
                 .solidTides(true).oceanTides(true).relativity(true, true)
                 .outputType(OrbitType.CARTESIAN);
     }
