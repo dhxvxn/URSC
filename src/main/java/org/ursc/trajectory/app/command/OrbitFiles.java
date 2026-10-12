@@ -11,6 +11,7 @@ import org.ursc.trajectory.config.PropagationConfig;
 import org.ursc.trajectory.forces.drag.Atmosphere;
 import org.ursc.trajectory.forces.drag.ConstantSpaceWeather;
 import org.ursc.trajectory.forces.drag.CssiSpaceWeatherProvider;
+import org.ursc.trajectory.forces.drag.CssiTxtSpaceWeatherProvider;
 import org.ursc.trajectory.forces.drag.ExponentialAtmosphere;
 import org.ursc.trajectory.forces.drag.HarrisPriesterAtmosphere;
 import org.ursc.trajectory.forces.drag.NRLMSISE00Atmosphere;
@@ -51,14 +52,26 @@ final class OrbitFiles {
     }
 
     /**
-     * Build a file-backed {@link CssiSpaceWeatherProvider} from a CelesTrak
-     * {@code SW-All.csv}/{@code SW-Last5Years.csv}, with the {@code Setup} constants as the
-     * out-of-file fallback. Call once per run (the CSV is parsed here, not per propagation).
+     * Build a file-backed space-weather provider, auto-detecting the format: the AGI/Orekit
+     * CSSI text file ({@code SpaceWeather-All-v1.2.txt}, first line {@code DATATYPE
+     * CssiSpaceWeather}) or the CelesTrak {@code SW-All.csv}. The {@code Setup} constants are
+     * the out-of-file fallback. Parsed once per run (not per propagation).
      */
-    static SpaceWeatherProvider loadSpaceWeather(final String csvFile, final Setup s)
+    static SpaceWeatherProvider loadSpaceWeather(final String file, final Setup s)
             throws IOException {
-        return new CssiSpaceWeatherProvider(Paths.get(csvFile),
-                new ConstantSpaceWeather(s.f107, s.f107a, s.ap));
+        final ConstantSpaceWeather fallback = new ConstantSpaceWeather(s.f107, s.f107a, s.ap);
+        final java.nio.file.Path path = Paths.get(file);
+        String first = "";
+        try (java.io.BufferedReader r = java.nio.file.Files.newBufferedReader(path)) {
+            final String line = r.readLine();
+            if (line != null) {
+                first = line;
+            }
+        }
+        if (first.toUpperCase(java.util.Locale.US).contains("CSSISPACEWEATHER")) {
+            return new CssiTxtSpaceWeatherProvider(path, fallback);
+        }
+        return new CssiSpaceWeatherProvider(path, fallback);
     }
 
     private OrbitFiles() {

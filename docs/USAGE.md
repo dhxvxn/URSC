@@ -160,6 +160,25 @@ final error) plus an ASCII plot of the best model's held-out error vs the two-bo
 java -jar …/leo-trajectory-0.1.0.jar backtest day1.EOF day2.EOF … day7.EOF --sw-file SW-All.csv
 ```
 
+### `forecast <seed.eof> [--days N]`
+**Predict the orbit forward from a single precise state** (the first OSV of a POEORB file).
+Seeds the full force model from the state and propagates forward, writing the predicted
+ephemeris to CSV and printing an element summary + altitude plot. No orbit determination
+(a single state has no arc), so the drag coefficient is fixed, not fitted.
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `--days <N>` | `7` | forecast span |
+| `--sw-file <FILE>` | — | real space weather — auto-detects the CelesTrak `SW-All.csv` or the AGI/Orekit `SpaceWeather-All-v1.2.txt` format |
+| `--step <s>` | `300` | output sampling for the CSV / plot |
+| `--csv <out.csv>` | `forecast_ephemeris.csv` | predicted ephemeris output |
+| `--cd`, `--gravity-degree`, `--mass`, `--area`, `--cr`, `--f107`, `--f107a`, `--ap`, `--plot alt\|sma\|ecc\|none` | | model / output settings |
+
+```bash
+java -jar …/leo-trajectory-0.1.0.jar forecast seed.EOF --days 7 --sw-file SpaceWeather-All-v1.2.txt
+```
+Score the prediction against truth later with `validate <truth.eof>`.
+
 ### `help`, `version`
 Print the command list / the version string.
 

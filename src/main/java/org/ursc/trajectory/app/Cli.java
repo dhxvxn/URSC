@@ -9,6 +9,7 @@ import org.ursc.trajectory.app.command.CompareCommand;
 import org.ursc.trajectory.app.command.DecayCommand;
 import org.ursc.trajectory.app.command.BacktestCommand;
 import org.ursc.trajectory.app.command.FitCommand;
+import org.ursc.trajectory.app.command.ForecastCommand;
 import org.ursc.trajectory.app.command.PropagateCommand;
 import org.ursc.trajectory.app.command.TleCommand;
 import org.ursc.trajectory.app.command.ValidateCommand;
@@ -36,6 +37,7 @@ public final class Cli {
         register(new ValidateCommand());
         register(new FitCommand());
         register(new BacktestCommand());
+        register(new ForecastCommand());
     }
 
     private Cli() {
@@ -91,5 +93,6 @@ public final class Cli {
         System.out.println("  leoprop validate orbit.EOF --hours 24 --plot total");
         System.out.println("  leoprop fit orbit.EOF --estimate-cd --hours 6");
         System.out.println("  leoprop backtest day1.EOF day2.EOF ... day7.EOF --sw-file SW-All.csv");
+        System.out.println("  leoprop forecast seed.EOF --days 7 --sw-file SpaceWeather-All-v1.2.txt");
     }
 }
