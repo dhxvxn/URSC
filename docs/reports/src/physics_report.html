@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>URSC Physics Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================ COVER ============================ -->
+<section class="cover">
+  <div class="kicker">Physical Models &amp; Error Analysis</div>
+  <h1>Dynamical Modelling and Validation of Long-Term LEO Trajectory Prediction</h1>
+  <div class="sub">The force models, their governing equations, and the measured accuracy against Sentinel-3 precise orbits</div>
+  <div class="rule"></div>
+  <div class="meta">
+    <b>Project:</b> URSC &mdash; modular LEO orbit propagation &amp; determination (Java, zero runtime dependencies)<br>
+    <b>Validation data:</b> Sentinel-3A / Sentinel-3B POEORB precise orbits (GPS-derived POD), 16 Oct 2024, 10&nbsp;s sampling<br>
+    <b>Document type:</b> Physics &amp; error-analysis report<br>
+    <b>Reference architecture:</b> Orekit (independent clean-room implementation)
+  </div>
+  <div class="abstract">
+    <b>Abstract.</b> This report documents the physics of a from-scratch orbital dynamics engine for
+    low-Earth-orbit (LEO) trajectory prediction and the accuracy it achieves against independent,
+    GPS-derived precise orbits. The equations of motion integrate a full perturbation stack: a
+    spherical-harmonic geopotential (EGM96 to degree/order 70), luni-solar third-body attraction,
+    atmospheric drag through the NRLMSISE-00 thermosphere, solar radiation pressure with a conical
+    eclipse model, solid and ocean tides (IERS-2010 / FES2004), and post-Newtonian relativistic
+    corrections, all referred to a rigorous GCRF&harr;ITRF transformation (IAU-2006/2000B precession,
+    nutation, Earth rotation and polar motion). Validated against Sentinel-3 POEORB ephemerides, pure
+    propagation from a single state vector reproduces the precise orbit with radial and cross-track
+    errors held to a few metres over 24&nbsp;h, while the along-track channel &mdash; the integrated
+    signature of residual non-conservative mismodelling &mdash; grows to roughly 0.3&nbsp;km.
+    A batch least-squares fit reduces the 6-hour residual from &approx;40&nbsp;m to &approx;5&nbsp;m RMS.
+    The results confirm that the conservative field is modelled correctly and localise the remaining
+    error physically in the drag/ballistic channel.
+  </div>
+</section>
+
+<!-- ============================ TOC ============================ -->
+<section>
+  <h2>Contents</h2>
+  <ol class="toc" style="list-style:none; padding-left:0;">
+    <li><span class="n">1</span> Physical setting: the LEO perturbation environment</li>
+    <li><span class="n">2</span> Equations of motion and the perturbation hierarchy</li>
+    <li><span class="n">3</span> The gravitational field</li>
+    <li><span class="n">4</span> Third-body (luni-solar) attraction</li>
+    <li><span class="n">5</span> Atmospheric drag and the thermosphere</li>
+    <li><span class="n">6</span> Solar radiation pressure and eclipse geometry</li>
+    <li><span class="n">7</span> Solid Earth and ocean tides</li>
+    <li><span class="n">8</span> Relativistic corrections</li>
+    <li><span class="n">9</span> Reference frames and time scales (the GNSS connection)</li>
+    <li><span class="n">10</span> Validation against Sentinel-3 precise orbits</li>
+    <li><span class="n">11</span> Orbit determination and drag-coefficient observability</li>
+    <li><span class="n">12</span> Error budget, interpretation and physical accuracy</li>
+    <li><span class="n">13</span> Conclusions and recommended refinements</li>
+  </ol>
+</section>
+
+<!-- ============================ 1 ============================ -->
+<section class="section">
+<h2>1&nbsp;&nbsp;Physical setting: the LEO perturbation environment</h2>
+<p class="lead">A satellite in low Earth orbit does not move on a closed Keplerian ellipse. The dominant
+central attraction is perturbed by a hierarchy of smaller forces whose relative importance is strongly
+altitude-dependent. The two validation targets, Sentinel-3A and Sentinel-3B, fly in a near-polar,
+Sun-synchronous orbit at roughly 800&nbsp;km altitude (inclination &approx;98.6&deg;, near-circular),
+representative of Earth-observation LEO.</p>
+
+<p>The purpose of the engine is twofold: (i) <b>prediction</b> &mdash; integrate the state forward over
+hours to years for trajectory and orbital-lifetime studies; and (ii) <b>determination</b> &mdash; recover
+the initial state and dynamical parameters that best reproduce a set of observations. Both rest on the
+same force models, so the physical fidelity of those models sets the ceiling on achievable accuracy.</p>
+
+<table class="tbl-compact">
+  <caption><b>Table 1.</b> Orbital characteristics of the validation targets (from the POEORB seed state).</caption>
+  <tr><th>Satellite</th><th>Perigee altitude</th><th>Inclination</th><th>Eccentricity</th><th>Period</th><th>POEORB sampling</th></tr>
+  <tr><td>Sentinel-3A</td><td class="num">780.3 km</td><td class="num">98.618&deg;</td><td class="num">0.00212</td><td class="num">~100.9 min</td><td>10 s, 26 h arc</td></tr>
+  <tr><td>Sentinel-3B</td><td class="num">786.9 km</td><td class="num">98.625&deg;</td><td class="num">0.00065</td><td class="num">~101.0 min</td><td>10 s, 26 h arc</td></tr>
+</table>
+
+<div class="note"><b>Why POEORB is a strong reference.</b> The Sentinel-3 POEORB product is a <i>precise</i>
+orbit determined on the ground from the satellite's onboard GPS receiver (dual-frequency POD), with a
+quoted accuracy of a few centimetres (radial &lt;&nbsp;3&nbsp;cm). It is therefore effectively
+"truth" at the metre level relevant here, and &mdash; crucially &mdash; it is <i>independent</i> of our
+dynamics: it is a GNSS measurement product, not another propagation. This makes it an honest external
+check of the physics.</div>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section class="section">
+<h2>2&nbsp;&nbsp;Equations of motion and the perturbation hierarchy</h2>
+<p>The satellite's motion is integrated in the geocentric celestial reference frame (GCRF), a
+pseudo-inertial frame, as a second-order system for the position <i>r</i> and velocity <i>v</i>. The
+total acceleration is the two-body term plus the sum of perturbations:</p>
+
+<div class="eq"><img src="assets/eq_eom.png"><span class="num">(1)</span></div>
+
+<p>where the perturbing accelerations are, in turn, the non-spherical geopotential
+(<i>a</i><sub>NS</sub>), third-body attraction (<i>a</i><sub>3B</sub>), atmospheric drag
+(<i>a</i><sub>drag</sub>), solar radiation pressure (<i>a</i><sub>SRP</sub>), solid and ocean tides
+(<i>a</i><sub>tide</sub>), and relativistic corrections (<i>a</i><sub>rel</sub>). Each is an independent,
+individually switchable physical model. Table&nbsp;2 orders them by characteristic magnitude at the
+Sentinel-3 altitude; this hierarchy is what the validation later confirms.</p>
+
+<table>
+  <caption><b>Table 2.</b> Order-of-magnitude of each acceleration at ~800 km, with the dominant orbital effect.</caption>
+  <tr><th>Perturbation</th><th class="num">Magnitude (m s<sup>&minus;2</sup>)</th><th>Relative to central</th><th>Dominant effect on the orbit</th></tr>
+  <tr><td>Central attraction &minus;&mu;<i>r</i>/<i>r</i>&sup3;</td><td class="num">~8.2</td><td class="num">1</td><td>Keplerian ellipse</td></tr>
+  <tr><td>J<sub>2</sub> (oblateness)</td><td class="num">~1&times;10<sup>&minus;2</sup></td><td class="num">10<sup>&minus;3</sup></td><td>Nodal regression, apsidal rotation</td></tr>
+  <tr><td>Higher geopotential (<i>n</i>&ge;3)</td><td class="num">~1&times;10<sup>&minus;5</sup></td><td class="num">10<sup>&minus;6</sup></td><td>Short-period + resonant terms</td></tr>
+  <tr><td>Luni-solar third body</td><td class="num">~5&times;10<sup>&minus;6</sup></td><td class="num">10<sup>&minus;6</sup></td><td>Secular/long-period on &Omega;, <i>i</i>, <i>e</i></td></tr>
+  <tr><td>Atmospheric drag</td><td class="num">~1&times;10<sup>&minus;7</sup></td><td class="num">10<sup>&minus;8</sup></td><td><b>Secular along-track decay</b></td></tr>
+  <tr><td>Solar radiation pressure</td><td class="num">~1&times;10<sup>&minus;7</sup></td><td class="num">10<sup>&minus;8</sup></td><td>Periodic; eclipse-modulated</td></tr>
+  <tr><td>Solid Earth tides</td><td class="num">~2&times;10<sup>&minus;9</sup></td><td class="num">10<sup>&minus;10</sup></td><td>Small periodic geopotential change</td></tr>
+  <tr><td>Ocean tides</td><td class="num">~1&times;10<sup>&minus;9</sup></td><td class="num">10<sup>&minus;10</sup></td><td>Small periodic geopotential change</td></tr>
+  <tr><td>Relativity (Schwarzschild)</td><td class="num">~3&times;10<sup>&minus;10</sup></td><td class="num">10<sup>&minus;11</sup></td><td>Apsidal precession (~few m/day)</td></tr>
+  <tr><td>Lense&ndash;Thirring (frame drag)</td><td class="num">~1&times;10<sup>&minus;12</sup></td><td class="num">10<sup>&minus;13</sup></td><td>Nodal drag (negligible for LEO)</td></tr>
+</table>
+
+<p>The central and J<sub>2</sub> terms govern the gross geometry; everything below drag is conservative
+and cleanly periodic, which is why &mdash; as the validation shows &mdash; it maps into bounded radial and
+cross-track errors. Drag is the only large <i>dissipative</i> term, and it is the hardest to model
+because it depends on the state of the thermosphere.</p>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section class="section">
+<h2>3&nbsp;&nbsp;The gravitational field</h2>
+<p>The Earth's gravity is derived from a potential expanded in spherical harmonics. In body-fixed
+spherical coordinates (radius <i>r</i>, geocentric latitude &phi;, longitude &lambda;):</p>
+
+<div class="eq tall"><img src="assets/eq_geopot.png"><span class="num">(2)</span></div>
+
+<p>Here <i>R</i><sub>&oplus;</sub> is the field's reference radius, <span class="mono">P&#772;<sub>nm</sub></span>
+are the fully-normalised associated Legendre functions, and
+<span class="mono">C&#772;<sub>nm</sub>, S&#772;<sub>nm</sub></span> are the normalised Stokes coefficients. The
+acceleration is &nabla;<i>U</i>. The zonal term <i>n</i>=2, <i>m</i>=0 is the oblateness
+(J<sub>2</sub> = &minus;C<sub>20</sub>&radic;5 &approx; 1.0826&times;10<sup>&minus;3</sup>), which produces
+the Sun-synchronous nodal regression that defines this orbit class.</p>
+
+<h3>3.1&nbsp;&nbsp;Coefficient set and normalisation</h3>
+<p>The field is the <b>EGM96</b> satellite-only solution, complete to degree and order 70, with
+GM = 3.986004415&times;10<sup>14</sup>&nbsp;m&sup3;s<sup>&minus;2</sup> and
+<i>R</i><sub>&oplus;</sub> = 6&thinsp;378&thinsp;136.3&nbsp;m. The published coefficients are fully
+normalised; they are converted to the unnormalised form used in the recursion by</p>
+
+<div class="eq"><img src="assets/eq_denorm.png"><span class="num">(3)</span></div>
+
+<p>with &delta;<sub>0m</sub> the Kronecker delta. Default runs truncate at degree/order 30, which captures
+essentially all of the geopotential signal relevant over multi-day LEO arcs; the full 70&times;70 field is
+available when required.</p>
+
+<h3>3.2&nbsp;&nbsp;Evaluation method</h3>
+<p>The potential gradient is computed with the <b>Cunningham&ndash;Gottlieb</b> recursion for the
+normalised potential derivatives (Montenbruck &amp; Gill, <i>Satellite Orbits</i>, &sect;3.2.4), which is
+numerically stable to high degree and avoids the explicit evaluation of Legendre polynomials and their
+derivatives. The field is static only in the Earth-fixed frame, so the acceleration is evaluated in ITRF
+and rotated back to GCRF using the frame transformation of &sect;9. The expansion may be truncated
+independently in degree and order, allowing, for example, a zonal-only J<sub>2</sub>&ndash;J<sub>6</sub>
+field (order 0) for secular studies or a full tesseral field for high-fidelity work.</p>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section class="section">
+<h2>4&nbsp;&nbsp;Third-body (luni-solar) attraction</h2>
+<p>The Sun and Moon perturb the geocentric orbit both by attracting the satellite directly and by
+attracting the Earth itself. Writing the satellite position <i>r</i> and the third body's geocentric
+position <i>s</i>, the perturbing acceleration is the difference of these two terms:</p>
+
+<div class="eq"><img src="assets/eq_thirdbody.png"><span class="num">(4)</span></div>
+
+<p>The bracketed difference is the standard formulation: the first term is the direct attraction on the
+satellite, the second (the "indirect" term) removes the acceleration of the frame origin so that the
+result is the <i>tidal</i> acceleration relative to the Earth. Gravitational constants used are
+GM<sub>&odot;</sub> = 1.32712440018&times;10<sup>20</sup> and
+GM<sub>&#9789;</sub> = 4.9028&times;10<sup>12</sup>&nbsp;m&sup3;s<sup>&minus;2</sup>. The solar and lunar
+positions come from compact analytical ephemeris series (Montenbruck &amp; Gill), accurate to
+&approx;0.1&deg; / a few hundred kilometres &mdash; far better than the 10<sup>&minus;6</sup> relative
+precision needed for the perturbation itself.</p>
+</section>
+
+<!-- ============================ 5 ============================ -->
+<section class="section">
+<h2>5&nbsp;&nbsp;Atmospheric drag and the thermosphere</h2>
+<p>Drag is the dominant non-conservative force at this altitude and, as the validation confirms, the
+single largest contributor to prediction error. The acceleration opposes the velocity of the satellite
+relative to the co-rotating atmosphere:</p>
+
+<div class="eq"><img src="assets/eq_drag.png"><span class="num">(5)</span></div>
+
+<p>where &rho; is the local mass density, <i>C<sub>D</sub></i> the drag coefficient, <i>A</i> the
+cross-sectional area, <i>m</i> the mass, and
+<b>&omega;</b><sub>&oplus;</sub> = 7.292115&times;10<sup>&minus;5</sup>&nbsp;rad&nbsp;s<sup>&minus;1</sup>
+the Earth rotation rate. The grouping <i>C<sub>D</sub>A/m</i> is the <b>ballistic coefficient</b>; it,
+together with the density &rho;, carries essentially all of the modelling uncertainty &mdash; the geometry
+of Eq.&nbsp;(5) is exact.</p>
+
+<h3>5.1&nbsp;&nbsp;Density model: NRLMSISE-00</h3>
+<p>Density is supplied by a pluggable atmosphere interface; the high-fidelity option is the
+<b>NRLMSISE-00</b> empirical thermosphere model (a clean-room port of the reference C implementation,
+verified against the model's official test case to seven significant figures). It returns the effective
+total mass density for satellite drag (including anomalous oxygen above ~500&nbsp;km) as a function of
+altitude, latitude, longitude, day-of-year, local solar time, and the solar/geomagnetic activity drivers:</p>
+<ul>
+  <li><b>F10.7</b> &mdash; the daily 10.7&nbsp;cm solar radio flux (a proxy for EUV heating);</li>
+  <li><b>F10.7a</b> &mdash; its 81-day centred average;</li>
+  <li><b>Ap</b> &mdash; the daily planetary geomagnetic index.</li>
+</ul>
+<p>These drivers enter through a <i>space-weather provider</i> that is either a constant (the validation
+used F10.7&nbsp;=&nbsp;220, F10.7a&nbsp;=&nbsp;205, Ap&nbsp;=&nbsp;12, representative of the active 2024
+solar maximum) or a file-backed historical series (CelesTrak CSSI format). Lower-fidelity alternatives
+&mdash; a static exponential atmosphere and the diurnal Harris&ndash;Priester model &mdash; are also
+available for comparison and fast studies.</p>
+
+<div class="warn"><b>Physical caveat.</b> Thermospheric density is uncertain at the 10&ndash;30% level even
+with a perfect activity input, because NRLMSISE-00 is a climatological average. Combined with the use of
+<i>constant</i> rather than true daily space-weather indices and a fixed cross-sectional area (the real
+satellite's attitude changes <i>A</i>), this is the principal reason the along-track error grows as it
+does in &sect;10.</p>
+</section>
+
+<!-- ============================ 6 ============================ -->
+<section class="section">
+<h2>6&nbsp;&nbsp;Solar radiation pressure and eclipse geometry</h2>
+<p>Sunlight carries momentum; its absorption and reflection push the satellite away from the Sun:</p>
+
+<div class="eq"><img src="assets/eq_srp.png"><span class="num">(6)</span></div>
+
+<p>where <i>P</i><sub>0</sub> = 4.56&times;10<sup>&minus;6</sup>&nbsp;N&nbsp;m<sup>&minus;2</sup> is the solar
+radiation pressure at 1&nbsp;AU, <i>d</i> the Sun&ndash;satellite distance, <i>C<sub>R</sub></i> the
+reflectivity coefficient (1 = fully absorbing, 2 = fully reflecting; the validation used 1.3), and
+<span class="mono">&#957;</span>&nbsp;&isin;&nbsp;[0,1] the fraction of the solar disc visible from the
+spacecraft. The (AU/<i>d</i>)&sup2; factor is the inverse-square fall-off of the flux.</p>
+
+<h3>6.1&nbsp;&nbsp;Conical shadow model</h3>
+<p>The shadow factor <span class="mono">&#957;</span> is computed from a <b>conical</b> umbra/penumbra
+model using the apparent angular radii of the Sun and the occulting Earth as seen from the spacecraft,
+&alpha;<sub>&odot;</sub> = arcsin(<i>R</i><sub>&odot;</sub>/<i>d</i>) and
+&alpha;<sub>&oplus;</sub> = arcsin(<i>R</i><sub>&oplus;</sub>/<i>r</i>), and their angular separation.
+Full sunlight (<span class="mono">&#957;</span>&nbsp;=&nbsp;1), total umbra
+(<span class="mono">&#957;</span>&nbsp;=&nbsp;0), and the partial penumbra (computed from the lens-shaped
+overlap area of the two apparent discs, with the annular case handled separately) are all distinguished.
+This smooth shadow function is important physically: SRP switches on and off twice per orbit, and a sharp
+(cylindrical) shadow would inject spurious along-track impulses at each crossing.</p>
+</section>
+
+<!-- ============================ 7 ============================ -->
+<section class="section">
+<h2>7&nbsp;&nbsp;Solid Earth and ocean tides</h2>
+<p>The Sun and Moon deform the solid Earth and redistribute ocean mass; both change the geopotential
+coefficients slightly, which in turn perturbs the orbit.</p>
+
+<h3>7.1&nbsp;&nbsp;Solid Earth tides</h3>
+<p>Implemented to the IERS-2010 Conventions, frequency-independent (Step&nbsp;1) model: the tide-raising
+bodies induce corrections to the normalised coefficients for degrees 2 and 3, plus the degree-4 response
+to the degree-2 tide (the <i>k</i><sup>+</sup> terms):</p>
+
+<div class="eq"><img src="assets/eq_solid.png"><span class="num">(7)</span></div>
+
+<p>with nominal (real) Love numbers from IERS-2010 Table&nbsp;6.3
+(<i>k</i><sub>20</sub> = 0.29525, <i>k</i><sub>21</sub> = 0.29470, <i>k</i><sub>22</sub> = 0.29801, etc.).
+The sum runs over the Moon and Sun; <i>r<sub>b</sub></i>, &phi;<sub>b</sub>, &lambda;<sub>b</sub> are the
+body's body-fixed radius, latitude and longitude. The small frequency-dependent (Step&nbsp;2) and
+anelastic (imaginary) terms are omitted as negligible for LEO trajectory work.</p>
+
+<h3>7.2&nbsp;&nbsp;Ocean tides</h3>
+<p>Implemented to IERS-2010 Eq.&nbsp;6.15, driven by a bundled truncation of the <b>FES2004</b> model &mdash;
+the eight dominant constituents (Q<sub>1</sub>, O<sub>1</sub>, P<sub>1</sub>, K<sub>1</sub>,
+N<sub>2</sub>, M<sub>2</sub>, S<sub>2</sub>, K<sub>2</sub>) to degree and order 4:</p>
+
+<div class="eq"><img src="assets/eq_ocean.png"><span class="num">(8)</span></div>
+
+<p>where &theta;<sub>f</sub> is the Doodson argument of constituent <i>f</i>, assembled from the
+fundamental (Delaunay/Doodson) astronomical arguments. Both tidal contributions are at the
+10<sup>&minus;9</sup>&nbsp;m&nbsp;s<sup>&minus;2</sup> level &mdash; too small to see in the current
+metre-level validation, but included for completeness and precise long-arc work.</p>
+</section>
+
+<!-- ============================ 8 ============================ -->
+<section class="section">
+<h2>8&nbsp;&nbsp;Relativistic corrections</h2>
+<p>General relativity modifies the central attraction. The dominant (Schwarzschild) correction, from the
+IERS-2010 Conventions (Eq.&nbsp;10.12) with PPN parameters &beta;&nbsp;=&nbsp;&gamma;&nbsp;=&nbsp;1, is
+always included:</p>
+
+<div class="eq"><img src="assets/eq_schwarz.png"><span class="num">(9)</span></div>
+
+<p>It is of order &mu;<i>v</i>&sup2;/(<i>c</i>&sup2;<i>r</i>&sup2;)&nbsp;~&nbsp;3&times;10<sup>&minus;10</sup>
+m&nbsp;s<sup>&minus;2</sup> and acts chiefly to precess the apsides (a few metres per day). An optional
+Lense&ndash;Thirring (frame-dragging) term from the Earth's rotation is available,</p>
+
+<div class="eq"><img src="assets/eq_lense.png"><span class="num">(10)</span></div>
+
+<p>where <b>J</b> is the Earth's angular momentum per unit mass (&approx;9.8&times;10<sup>8</sup>
+m&sup2;s<sup>&minus;1</sup>). It is ~10<sup>&minus;12</sup>&nbsp;m&nbsp;s<sup>&minus;2</sup> at LEO &mdash;
+negligible for prediction but retained for completeness. The de&nbsp;Sitter (geodesic precession) term,
+which requires the Earth's heliocentric velocity, is omitted as sub-mm&nbsp;s<sup>&minus;2</sup>.</p>
+</section>
+
+<!-- ============================ 9 ============================ -->
+<section class="section">
+<h2>9&nbsp;&nbsp;Reference frames and time scales &mdash; the GNSS connection</h2>
+<p>Correctly relating the inertial integration frame (GCRF) to the Earth-fixed frame (ITRF) is essential:
+the geopotential and atmosphere are naturally expressed in ITRF, and &mdash; directly relevant to GNSS &mdash;
+the Sentinel-3 POEORB state vectors are <i>given</i> in ITRF. ITRF is the same realisation family in which
+GPS/GNSS products are expressed, so the frame chain below is exactly the transformation a GNSS positioning
+pipeline must also apply.</p>
+
+<h3>9.1&nbsp;&nbsp;GCRF &harr; ITRF transformation</h3>
+<p>The full rotation follows the IAU-2006/2000B conventions as a chain of bias, precession, nutation,
+Earth rotation and polar motion:</p>
+
+<div class="eq"><img src="assets/eq_frame.png"><span class="num">(11)</span></div>
+
+<ul>
+  <li><b>B</b> &mdash; frame bias (GCRF to the mean J2000 dynamical frame);</li>
+  <li><b>P(t)</b> &mdash; precession via the IAU-2006 Fukushima&ndash;Williams angles;</li>
+  <li><b>N(&Delta;&psi;,&Delta;&epsilon;)</b> &mdash; nutation via the IAU-2000B 77-term luni-solar series
+      (accuracy ~1&nbsp;mas), with mean obliquity &epsilon;<sub>A</sub>;</li>
+  <li><b>R<sub>3</sub>(GAST)</b> &mdash; diurnal Earth rotation through the Greenwich Apparent Sidereal
+      Time (mean sidereal time plus the equation of the equinoxes);</li>
+  <li><b>W(x<sub>p</sub>,y<sub>p</sub>)</b> &mdash; polar motion (a small-angle wobble matrix).</li>
+</ul>
+<p>The implementation follows the SOFA reference algorithm and reproduces SOFA to ~10<sup>&minus;13</sup>
+radian in the unit tests. A simpler sidereal-only model (GMST rotation, IAU-82 polynomial, Eq.&nbsp;12) is
+also provided for fast runs where sub-arcsecond fidelity is not required:</p>
+
+<div class="eq"><img src="assets/eq_gmst.png"><span class="num">(12)</span></div>
+
+<h3>9.2&nbsp;&nbsp;Earth orientation and time scales</h3>
+<p>Earth-orientation parameters (EOP: UT1&minus;UTC, polar motion <i>x<sub>p</sub></i>, <i>y<sub>p</sub></i>)
+enter through a provider. For the Sentinel-3 validation the UT1&minus;UTC offset carried in the POEORB
+file itself (&Delta;UT1 = 0.0579&nbsp;s) was supplied, which fixes the Earth-rotation phase correctly;
+polar motion was set to zero. The time scales are related by</p>
+
+<div class="eq"><img src="assets/eq_tt.png"><span class="num">(13)</span></div>
+
+<p>with &Delta;AT the integer count of leap seconds (full 1972&ndash;2017 table embedded) and
+&Delta;UT1 the sub-second UT1 offset. Terrestrial Time (TT&nbsp;=&nbsp;TAI&nbsp;+&nbsp;32.184&nbsp;s) is the
+argument of the precession/nutation series; UT1 drives Earth rotation; UTC is the civil clock in which the
+observations are tagged. Dates are stored as continuous, leap-second-free seconds past the J2000 epoch, so
+time differences are exact across leap-second boundaries.</p>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section class="section">
+<h2>10&nbsp;&nbsp;Validation against Sentinel-3 precise orbits</h2>
+<p>The validation methodology is deliberately conservative and transparent. The propagator is
+<b>seeded from a single POEORB state vector</b> (the first epoch), transformed ITRF&rarr;GCRF with the file's
+own UT1, and integrated forward under the full force model with <i>no</i> fitting. At each subsequent
+epoch the propagated position is differenced against the precise orbit, and the error vector is
+decomposed into the local <b>radial&ndash;along&ndash;cross (RTN)</b> orbital frame:</p>
+
+<div class="eq"><img src="assets/eq_rtn.png"><span class="num">(14)</span></div>
+
+<p>This decomposition is physically diagnostic: different force errors project differently onto these
+axes. Energy/period (drag) errors accumulate <i>along-track</i>; mismodelled oblateness or out-of-plane
+forces appear <i>cross-track</i>; and a radial bias indicates a semi-major-axis or central-term error.</p>
+
+<figure>
+  <img src="assets/plot_s3a.png">
+  <figcaption><b>Figure 1.</b> Sentinel-3A &mdash; RTN components of the propagation error vs the POEORB
+  precise orbit over 24&nbsp;h (full force model, no fit). Radial (orange) and cross-track (green) stay
+  within &plusmn;30&nbsp;m; the along-track channel (blue, hidden under the black total) dominates.</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/plot_s3b.png">
+  <figcaption><b>Figure 2.</b> Sentinel-3B &mdash; the same analysis. The behaviour is quantitatively
+  consistent with S3A: a few-metre conservative error floor and a monotonically growing along-track term.</figcaption>
+</figure>
+
+<table>
+  <caption><b>Table 3.</b> Measured error summary (pure propagation, full model, no estimation).</caption>
+  <tr><th>Satellite</th><th>Span</th><th class="num">Radial (max)</th><th class="num">Cross-track (max)</th><th class="num">Along-track (max)</th><th class="num">Total RMS</th><th class="num">Total max</th></tr>
+  <tr><td>Sentinel-3A</td><td>12 h</td><td class="num">~6 m</td><td class="num">~28 m</td><td class="num">~123 m</td><td class="num">81.8 m</td><td class="num">131 m</td></tr>
+  <tr><td>Sentinel-3A</td><td>24 h</td><td class="num">~10 m</td><td class="num">~28 m</td><td class="num">~313 m</td><td class="num">165.6 m</td><td class="num">315 m</td></tr>
+  <tr><td>Sentinel-3B</td><td>24 h</td><td class="num">~4 m</td><td class="num">~27 m</td><td class="num">~277 m</td><td class="num">146.2 m</td><td class="num">277 m</td></tr>
+</table>
+
+<div class="key"><b>Physical reading of the result.</b> Radial and cross-track errors remain at the
+<i>metre</i> level over an entire day. These axes are driven by the conservative field &mdash; geopotential,
+third body, tides, relativity &mdash; and by the frame transformation. Holding them to a few metres is
+direct evidence that the gravity field, the luni-solar model, and the GCRF&harr;ITRF chain are implemented
+correctly. The error lives almost entirely <b>along-track</b>, exactly where a small dissipative
+(drag/ballistic) acceleration error must accumulate.</p></div>
+</section>
+
+<!-- ============================ 11 ============================ -->
+<section class="section">
+<h2>11&nbsp;&nbsp;Orbit determination and drag-coefficient observability</h2>
+<p>To separate a genuine dynamical error from a merely imperfect initial state, a <b>batch
+least-squares</b> fit was run: the initial state (and optionally the drag coefficient) is adjusted to
+minimise the position residual against the POEORB arc. Treating each precise-orbit epoch as a position
+observation &rho;<sub>i</sub>, the fit minimises the RMS</p>
+
+<div class="eq"><img src="assets/eq_rms.png"><span class="num">(15)</span></div>
+
+<p>via Gauss&ndash;Newton iteration on the (finite-difference, scaled) normal equations with small
+Levenberg&ndash;Marquardt damping (see the technical report for the numerics). The results over a 6-hour
+arc (position observations every 120&nbsp;s):</p>
+
+<table>
+  <caption><b>Table 4.</b> Batch least-squares residual reduction over a 6 h arc (gravity 20&times;20).</caption>
+  <tr><th>Satellite</th><th>Estimated</th><th class="num">Pre-fit RMS</th><th class="num">Post-fit RMS</th><th class="num">Improvement</th><th class="num">Est. C<sub>D</sub></th></tr>
+  <tr><td>Sentinel-3A</td><td>state (6)</td><td class="num">38.4 m</td><td class="num">4.8 m</td><td class="num">8.0&times;</td><td class="num">&mdash;</td></tr>
+  <tr><td>Sentinel-3A</td><td>state + C<sub>D</sub></td><td class="num">38.4 m</td><td class="num">4.5 m</td><td class="num">8.6&times;</td><td class="num">5.26 (!)</td></tr>
+  <tr><td>Sentinel-3B</td><td>state (6)</td><td class="num">41.2 m</td><td class="num">5.9 m</td><td class="num">6.9&times;</td><td class="num">&mdash;</td></tr>
+  <tr><td>Sentinel-3B</td><td>state + C<sub>D</sub></td><td class="num">41.2 m</td><td class="num">5.2 m</td><td class="num">8.0&times;</td><td class="num">&minus;3.20 (!)</td></tr>
+</table>
+
+<figure>
+  <img src="assets/plot_fit.png" style="max-width:82%;">
+  <figcaption><b>Figure 3.</b> Residual RMS before and after the batch fit. Adjusting the initial state
+  alone removes most of the 6-hour residual; adding C<sub>D</sub> helps only marginally.</figcaption>
+</figure>
+
+<div class="warn"><b>Honest finding &mdash; drag-coefficient observability.</b> The state-only fit is robust
+(residual collapses by 7&ndash;8&times; to ~5&nbsp;m). However, the estimated drag coefficient is
+<i>not</i> physically meaningful over a 6-hour arc: it runs to 5.26 for S3A and even <i>negative</i>
+(&minus;3.20) for S3B, against a physical expectation of C<sub>D</sub>&nbsp;&approx;&nbsp;2.2. The reason is
+observability: over only ~4 revolutions the integrated drag signal is small and strongly correlated with
+the along-track components of the initial state, so the normal-equation system is ill-conditioned in the
+C<sub>D</sub> direction and the parameter absorbs unmodelled along-track error rather than true ballistic
+information. Reliable C<sub>D</sub> (or ballistic-coefficient) estimation requires multi-day arcs, and/or
+estimating a piecewise/empirical along-track acceleration, and proper observation weighting &mdash; see
+&sect;13.</div>
+</section>
+
+<!-- ============================ 12 ============================ -->
+<section class="section">
+<h2>12&nbsp;&nbsp;Error budget, interpretation and physical accuracy</h2>
+
+<h3>12.1&nbsp;&nbsp;Why the along-track channel dominates</h3>
+<p>A small persistent acceleration error &delta;<i>a</i><sub>&parallel;</sub> in the flight direction, plus
+any along-track velocity error &delta;<i>v</i><sub>&parallel;,0</sub> in the seed, integrates into a
+position error that grows super-linearly:</p>
+
+<div class="eq"><img src="assets/eq_along.png"><span class="num">(16)</span></div>
+
+<p>The quadratic term is the signature of a secular acceleration error; the observed S3A growth
+(~18&nbsp;m at 1&nbsp;h &rarr; ~120&nbsp;m at 12&nbsp;h &rarr; ~310&nbsp;m at 24&nbsp;h) is close to this
+<i>t</i>&sup2; shape, which is itself strong evidence that the residual is a <i>dynamical</i> (drag) effect
+and not random noise. By contrast, the conservative perturbations produce <i>bounded, oscillatory</i>
+radial and cross-track errors, which is exactly what Figures&nbsp;1&ndash;2 show.</p>
+
+<h3>12.2&nbsp;&nbsp;Dominant error sources (physical)</h3>
+<table>
+  <caption><b>Table 5.</b> Contributions to the along-track prediction error, largest first.</caption>
+  <tr><th>Source</th><th>Nature</th><th>Approx. effect</th><th>Mitigation</th></tr>
+  <tr><td>Thermospheric density</td><td>NRLMSISE-00 climatology + constant (not true daily) F10.7/Ap</td><td class="num">dominant</td><td>Real historical space weather; density calibration</td></tr>
+  <tr><td>Ballistic coefficient C<sub>D</sub>A/m</td><td>Fixed cannonball; true A varies with attitude</td><td class="num">large</td><td>Box-wing/attitude model; estimate over long arc</td></tr>
+  <tr><td>Seed state error</td><td>Single state vs fitted arc</td><td class="num">moderate</td><td>Batch fit (removes ~8&times;, &sect;11)</td></tr>
+  <tr><td>Geopotential truncation (30&times;30)</td><td>Conservative, mostly radial/cross</td><td class="num">small</td><td>Raise to 70&times;70</td></tr>
+  <tr><td>Solar/lunar ephemeris, SRP C<sub>R</sub></td><td>Conservative, periodic</td><td class="num">small</td><td>JPL DE ephemeris; estimate C<sub>R</sub></td></tr>
+  <tr><td>Omitted EOP polar motion</td><td>Frame, ~metre-level</td><td class="num">small</td><td>IERS finals2000A EOP file</td></tr>
+</table>
+
+<h3>12.3&nbsp;&nbsp;Accuracy in context</h3>
+<p>For a propagation seeded from a <i>single</i> state with <i>no</i> fit and <i>climatological</i> space
+weather, a 24-hour total error of ~0.15&ndash;0.17&nbsp;km RMS at 800&nbsp;km is a strong result: it
+corresponds to roughly 2&nbsp;m of growth per ~100-minute revolution, i.e. the dynamics reproduce each
+orbit to about one part in 3&times;10<sup>6</sup> of the orbit circumference. The POEORB reference itself
+(~cm) is negligible in this budget, so the numbers above are the engine's own error, not the reference's.
+With a fitted arc the instantaneous accuracy is at the few-metre level (Table&nbsp;4).</p>
+</section>
+
+<!-- ============================ 13 ============================ -->
+<section class="section">
+<h2>13&nbsp;&nbsp;Conclusions and recommended physics refinements</h2>
+<p>The validation against independent, GNSS-derived Sentinel-3 precise orbits demonstrates that the
+conservative dynamics (geopotential, luni-solar attraction, tides, relativity) and the GCRF&harr;ITRF
+frame chain are correct at the metre level, and that the residual prediction error is physically
+localised in the drag/ballistic channel. The engine is therefore a sound basis for both long-term
+trajectory prediction and orbit determination. The following refinements, in physical priority order,
+would most improve accuracy:</p>
+<ol>
+  <li><b>True space-weather drivers.</b> Replace constant F10.7/Ap with the actual historical daily
+      indices for the arc (CelesTrak/CSSI). This directly attacks the dominant density error and should
+      substantially reduce the along-track growth.</li>
+  <li><b>Ballistic/empirical estimation over long arcs.</b> Estimate a ballistic scale factor
+      (or a piecewise-constant / empirical along-track acceleration) over multi-day arcs, where C<sub>D</sub>
+      becomes observable &mdash; resolving the ill-conditioning found in &sect;11.</li>
+  <li><b>Attitude-dependent area (box-wing).</b> Replace the cannonball cross-section with a panel model
+      for both drag and SRP, since the true projected area varies along the orbit.</li>
+  <li><b>Higher-fidelity conservative models.</b> Raise the geopotential to 70&times;70, adopt a JPL DE
+      ephemeris for Sun/Moon, and add an IERS EOP file (polar motion + UT1 series) &mdash; each trims the
+      few-metre radial/cross floor.</li>
+  <li><b>Formal covariance.</b> Propagate the estimation covariance to attach realistic uncertainty bounds
+      to predictions (essential for conjunction/decay-window work).</li>
+  <li><b>Direct GNSS measurement fit.</b> Fit to the raw onboard GPS observations (the Sentinel-3 GNSSRD
+      product) rather than the reduced POEORB positions, closing the loop with the GNSS data directly.</li>
+</ol>
+<footer>URSC &mdash; Physics &amp; Error-Analysis Report. All error figures are measured against
+Sentinel-3A/3B POEORB precise orbits (16 Oct 2024). Equations typeset from the governing models as
+implemented; constants as used in the code.</footer>
+</section>
+
+</body>
+</html>

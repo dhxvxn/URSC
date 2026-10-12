@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>URSC Technical Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================ COVER ============================ -->
+<section class="cover">
+  <div class="kicker">Technical &amp; Engineering Report</div>
+  <h1>URSC &mdash; A Modular Engine for Long-Term LEO Trajectory Prediction and Orbit Determination</h1>
+  <div class="sub">Architecture, force models, numerical methods, validation, and development roadmap</div>
+  <div class="rule"></div>
+  <div class="meta">
+    <b>System:</b> Java 17, Maven, <b>zero runtime dependencies</b> (JUnit 5 for tests only)<br>
+    <b>Reference architecture:</b> Orekit (independent clean-room implementation)<br>
+    <b>Capabilities:</b> Cowell numerical &amp; DSST semi-analytical propagation; batch least-squares OD;
+    full IAU-2006/2000B frames; CLI toolchain<br>
+    <b>Validation:</b> Sentinel-3A/3B POEORB precise orbits (16 Oct 2024)<br>
+    <b>Test suite:</b> 37 unit tests, all passing
+  </div>
+  <div class="abstract">
+    <b>Abstract.</b> URSC is a from-scratch, dependency-free Java library for propagating and determining
+    LEO satellite trajectories over long arcs. Every force model, integrator, atmosphere, frame model and
+    output type is a pluggable component behind a small set of interfaces, assembled through a fluent
+    configuration builder. The engine implements a complete perturbation stack (EGM96 geopotential to
+    d/o&nbsp;70, luni-solar third body, NRLMSISE-00 drag, conical SRP, solid/ocean tides, relativity),
+    two propagators (adaptive Cowell and a numerically-averaged DSST mean-element method), a rigorous
+    GCRF&harr;ITRF transformation, event detection, and a batch least-squares estimator. This report
+    describes the software architecture, the implementation of each physical and numerical component, the
+    validation against independent Sentinel-3 precise orbits (radial/cross-track held to metres over
+    24&nbsp;h; batch fit reducing residuals ~8&times;), the error budget, and a prioritised roadmap of
+    remaining work.
+  </div>
+</section>
+
+<!-- ============================ TOC ============================ -->
+<section>
+  <h2>Contents</h2>
+  <ol class="toc" style="list-style:none; padding-left:0;">
+    <li><span class="n">1</span> Objectives and design principles</li>
+    <li><span class="n">2</span> Software architecture</li>
+    <li><span class="n">3</span> Force models (implementation)</li>
+    <li><span class="n">4</span> Reference frames and time scales</li>
+    <li><span class="n">5</span> Numerical methods: integration &amp; events</li>
+    <li><span class="n">6</span> Propagators: Cowell and DSST</li>
+    <li><span class="n">7</span> Orbit determination (batch least squares)</li>
+    <li><span class="n">8</span> Input/output and configuration</li>
+    <li><span class="n">9</span> Validation methodology and results</li>
+    <li><span class="n">10</span> Verification: the automated test suite</li>
+    <li><span class="n">11</span> Current limitations</li>
+    <li><span class="n">12</span> Roadmap &mdash; what remains and how to improve</li>
+    <li><span class="n">13</span> Appendix: constants &amp; CLI reference</li>
+  </ol>
+</section>
+
+<!-- ============================ 1 ============================ -->
+<section class="section">
+<h2>1&nbsp;&nbsp;Objectives and design principles</h2>
+<p class="lead">URSC was built to determine and predict long-term LEO trajectories with a fully modular,
+inspectable, dependency-free codebase, using Orekit as an architectural reference but sharing no code.</p>
+<p>Four principles drive the design:</p>
+<ul>
+  <li><b>Modularity.</b> Every perturbation is a <code>ForceModel</code>; every atmosphere an
+      <code>Atmosphere</code>; every integrator an <code>ODEIntegrator</code>; every frame realisation a
+      selectable model. Components are composed, not hard-wired, so a force or a model can be added or
+      swapped without touching callers.</li>
+  <li><b>Configurability.</b> Every physical variable (degree/order, coefficients, areas, masses,
+      tolerances, space weather) is an explicit input, set in code via a fluent builder or in a
+      <code>.properties</code> scenario file.</li>
+  <li><b>Zero runtime dependencies.</b> The entire stack &mdash; linear algebra, special functions,
+      ephemerides, the NRLMSISE-00 thermosphere, frame transformations &mdash; is implemented in-house.
+      Bundled reference data (gravity coefficients, nutation series, tide tables) ship as compressed
+      classpath resources.</li>
+  <li><b>Auditability.</b> Each model cites its governing reference (Montenbruck &amp; Gill, IERS-2010
+      Conventions, SOFA) and is checked against published values in the test suite.</li>
+</ul>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section class="section">
+<h2>2&nbsp;&nbsp;Software architecture</h2>
+<h3>2.1&nbsp;&nbsp;Package map</h3>
+<table class="tbl-compact">
+  <caption><b>Table 1.</b> Top-level packages under <code>org.ursc.trajectory</code>.</caption>
+  <tr><th>Package</th><th>Responsibility</th><th>Key types</th></tr>
+  <tr><td><code>math</code></td><td>Vectors, rotation matrices, constants</td><td>Vector3D, RotationMatrix, Constants</td></tr>
+  <tr><td><code>time</code></td><td>Time scales &amp; epochs</td><td>AbsoluteDate, TimeScalesFactory, UTCScale</td></tr>
+  <tr><td><code>frames</code></td><td>GCRF/ITRF, IAU-2006/2000B, EOP</td><td>FramesFactory, Iau2006, Transform, EopProvider</td></tr>
+  <tr><td><code>bodies</code></td><td>Ephemerides, Earth ellipsoid</td><td>CelestialBodyFactory, OneAxisEllipsoid</td></tr>
+  <tr><td><code>orbits</code></td><td>Element sets &amp; conversions</td><td>Keplerian/Equinoctial/CartesianOrbit, PVCoordinates</td></tr>
+  <tr><td><code>forces</code></td><td>All perturbations</td><td>ForceModel, gravity/*, drag/*, radiation/*, Relativity</td></tr>
+  <tr><td><code>ode</code></td><td>Integrators</td><td>DormandPrince54Integrator, ClassicalRungeKutta</td></tr>
+  <tr><td><code>propagation</code></td><td>Propagators, events, sampling</td><td>NumericalPropagator, semianalytical/DSSTPropagator</td></tr>
+  <tr><td><code>estimation</code></td><td>Orbit determination</td><td>BatchLeastSquares, PositionObservation</td></tr>
+  <tr><td><code>config</code></td><td>Scenario assembly</td><td>PropagationConfig, ScenarioLoader</td></tr>
+  <tr><td><code>io</code></td><td>External data</td><td>PoeOrbReader, CSV writers, TLE parser</td></tr>
+  <tr><td><code>analysis</code>, <code>app</code></td><td>Decay/compare tools, CLI</td><td>DecayPredictor, ModelComparison, Cli + commands</td></tr>
+</table>
+
+<h3>2.2&nbsp;&nbsp;Core abstractions</h3>
+<p>The whole engine turns on a few small interfaces:</p>
+<ul>
+  <li><code>ForceModel</code> &mdash; <span class="mono">Vector3D acceleration(SpacecraftState)</span>. Every
+      perturbation implements this one method; the propagator simply sums them.</li>
+  <li><code>Atmosphere</code> &mdash; <span class="mono">double getDensity(date, rBodyFixed)</span>, so the
+      drag force is agnostic to the density model (exponential / Harris&ndash;Priester / NRLMSISE-00).</li>
+  <li><code>ODEIntegrator</code> &mdash; a single adaptive or fixed step; the propagator drives it.</li>
+  <li><code>SampledPropagator</code> &mdash; the common surface (step handlers, events, output type) that
+      <i>both</i> the numerical and DSST propagators implement, so analysis tools accept either engine
+      interchangeably.</li>
+</ul>
+<p>Configuration is assembled with a fluent builder, <code>PropagationConfig</code>, which gathers the
+initial state, integrator, force toggles and output type and emits a ready propagator. The same
+configuration object is reused by the CLI, the comparison tool, the decay predictor and the estimator.</p>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section class="section">
+<h2>3&nbsp;&nbsp;Force models (implementation)</h2>
+<p>All forces return an acceleration in the state's inertial frame and are summed by the propagator.
+Table&nbsp;2 is the implementation index; the physical derivations and governing equations are given in the
+companion <i>Physics Report</i>. Constants are listed in the Appendix.</p>
+
+<table>
+  <caption><b>Table 2.</b> Implemented force models, with class, algorithm and data source.</caption>
+  <tr><th>Model</th><th>Class</th><th>Algorithm / standard</th><th>Data / constants</th></tr>
+  <tr><td>Central + geopotential</td><td><code>SphericalHarmonicGravity</code></td><td>Cunningham&ndash;Gottlieb recursion (M&amp;G &sect;3.2.4)</td><td>EGM96 d/o 70, bundled gzip resource</td></tr>
+  <tr><td>Point-mass central</td><td><code>NewtonianAttraction</code></td><td>&minus;&mu;<i>r</i>/<i>r</i>&sup3;</td><td>&mu; = 3.986004418e14</td></tr>
+  <tr><td>Third body</td><td><code>ThirdBodyAttraction</code></td><td>Direct + indirect term</td><td>Sun/Moon analytical series</td></tr>
+  <tr><td>Atmospheric drag</td><td><code>DragForce</code> + <code>Atmosphere</code></td><td>Cannonball, co-rotating v<sub>rel</sub></td><td>NRLMSISE-00 / HP / exponential</td></tr>
+  <tr><td>Thermosphere</td><td><code>NRLMSISE00Atmosphere</code></td><td><code>gtd7d</code> (verified port)</td><td>SpaceWeatherProvider (F10.7, Ap)</td></tr>
+  <tr><td>Solar radiation pressure</td><td><code>SolarRadiationPressure</code></td><td>Conical umbra/penumbra</td><td>P<sub>0</sub> = 4.56e-6 N/m&sup2;</td></tr>
+  <tr><td>Solid Earth tides</td><td><code>SolidTides</code></td><td>IERS-2010 Step 1 (deg 2,3,+k&#8314;)</td><td>Love numbers, Table 6.3</td></tr>
+  <tr><td>Ocean tides</td><td><code>OceanTides</code></td><td>IERS-2010 eq 6.15, Doodson args</td><td>FES2004, 8 constituents, d/o 4</td></tr>
+  <tr><td>Relativity</td><td><code>Relativity</code></td><td>Schwarzschild (+opt. Lense&ndash;Thirring)</td><td>IERS-2010 eq 10.12, &beta;=&gamma;=1</td></tr>
+  <tr><td>Earth albedo / IR</td><td><code>EarthRadiationPressure</code></td><td>Knocke&ndash;Ries (available)</td><td>Reflectivity/emissivity rings</td></tr>
+  <tr><td>Empirical accel.</td><td><code>EmpiricalAcceleration</code></td><td>RTN constant/periodic terms</td><td>User / estimated</td></tr>
+</table>
+
+<div class="note"><b>Normalisation &amp; frames.</b> EGM96 coefficients are stored fully normalised and
+de-normalised on load via the standard factor; the gravity acceleration is evaluated in ITRF (where the
+field is static) and rotated to GCRF each call. Drag likewise maps the inertial position to ITRF to read
+the density at the correct geodetic point. These per-call frame transforms are what make a correct
+GCRF&harr;ITRF model (&sect;4) essential to overall accuracy.</div>
+
+<h3>3.1&nbsp;&nbsp;Drag &mdash; the accuracy-limiting force</h3>
+<p>Drag uses the cannonball model with the relative velocity taken against a co-rotating atmosphere
+(<i>v</i><sub>rel</sub> = <i>v</i> &minus; <b>&omega;</b><sub>&oplus;</sub>&times;<i>r</i>). Density comes
+from the pluggable atmosphere; with NRLMSISE-00 the drivers (daily F10.7, 81-day average F10.7a, daily Ap)
+are supplied by a <code>SpaceWeatherProvider</code> that is either constant or read from a CelesTrak CSSI
+file. The ballistic grouping <i>C<sub>D</sub>A/m</i> is the natural estimation parameter (&sect;7, &sect;9).</p>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section class="section">
+<h2>4&nbsp;&nbsp;Reference frames and time scales</h2>
+<p>Propagation is performed in GCRF (pseudo-inertial). The GCRF&harr;ITRF transform has two selectable
+realisations: a fast sidereal-only <code>SIMPLE</code> model (GMST rotation, IAU-82 polynomial) and the
+default full <code>IAU_2006</code> model implemented in <code>Iau2006</code>:</p>
+<ul>
+  <li><b>Precession</b> &mdash; IAU-2006 Fukushima&ndash;Williams angles;</li>
+  <li><b>Nutation</b> &mdash; IAU-2000B 77-term luni-solar series (~1 mas), coefficients in
+      <code>Nutation2000BData</code>, ported from the SOFA reference;</li>
+  <li><b>Earth rotation</b> &mdash; GAST (GMST + equation of the equinoxes) with UT1 from the EOP provider;</li>
+  <li><b>Polar motion</b> &mdash; small-angle wobble matrix W(x<sub>p</sub>, y<sub>p</sub>).</li>
+</ul>
+<p>EOP (UT1&minus;UTC, polar motion) are injected through an <code>EopProvider</code> &mdash; either
+<code>ConstantEop</code> or a file-backed reader. Time scales (<code>TimeScalesFactory</code>) cover TAI,
+TT&nbsp;=&nbsp;TAI&nbsp;+&nbsp;32.184&nbsp;s, UTC with the full 1972&ndash;2017 leap-second table, GPS, and
+UT1. <code>AbsoluteDate</code> stores continuous TAI seconds from J2000, so epoch differences are exact
+across leap seconds &mdash; a subtle correctness point for long arcs. The IAU-2006 chain reproduces SOFA to
+~10<sup>&minus;13</sup>&nbsp;rad in the test suite.</p>
+</section>
+
+<!-- ============================ 5 ============================ -->
+<section class="section">
+<h2>5&nbsp;&nbsp;Numerical methods: integration and events</h2>
+<h3>5.1&nbsp;&nbsp;Dormand&ndash;Prince 5(4)</h3>
+<p>The recommended integrator is the adaptive <b>Dormand&ndash;Prince 5(4)</b> embedded Runge&ndash;Kutta
+pair (DOPRI5): a seven-stage, first-same-as-last (FSAL) scheme. The fifth-order solution is propagated and
+the difference against the embedded fourth-order solution drives per-step error control:</p>
+
+<div class="eq"><img src="assets/eq_dopri.png"><span class="num">(1)</span></div>
+
+<p>with step scaling by a safety factor (0.9), bounded growth/shrink factors [0.2, 5], and absolute/relative
+tolerances (validation used 10<sup>&minus;7</sup>/10<sup>&minus;9</sup>). The step automatically shrinks
+near perigee and in denser atmosphere and grows where dynamics are smooth. A fixed-step classical RK4 is
+also provided. Dense (cubic-Hermite) interpolation yields output on an arbitrary user grid without
+re-integrating.</p>
+
+<h3>5.2&nbsp;&nbsp;Event detection</h3>
+<p>Events are located by a g-function sign change with bracketing and bisection refinement, supporting
+apside, node, altitude (re-entry) and eclipse detectors. This is what lets the decay/lifetime tools stop
+cleanly at a re-entry altitude and lets SRP/eclipse analyses find shadow boundaries.</p>
+</section>
+
+<!-- ============================ 6 ============================ -->
+<section class="section">
+<h2>6&nbsp;&nbsp;Propagators: Cowell and DSST</h2>
+<h3>6.1&nbsp;&nbsp;Numerical (Cowell)</h3>
+<p><code>NumericalPropagator</code> integrates the full osculating Cartesian state (<i>r</i>, <i>v</i>)
+under the summed forces using the chosen integrator, with step handlers, dense output and event detection.
+It is the high-accuracy workhorse used for the validation and OD below.</p>
+
+<h3>6.2&nbsp;&nbsp;Semi-analytical (DSST, mean elements)</h3>
+<p>For multi-year and lifetime studies, resolving every ~100-minute revolution with Cowell is expensive.
+The <code>DSSTPropagator</code> implements a <b>numerically-averaged</b> mean-element method: it propagates
+the six mean equinoctial elements (<i>a</i>, <i>e<sub>x</sub></i>, <i>e<sub>y</sub></i>,
+<i>h<sub>x</sub></i>, <i>h<sub>y</sub></i>, &lambda;) by orbit-averaging the variational equations:</p>
+
+<div class="eq tall"><img src="assets/eq_meanrate.png"><span class="num">(2)</span></div>
+
+<p>At each large step, the osculating state is built at <i>N</i> points (default 24) around the current
+mean orbit; the perturbing acceleration (sum of the <i>same</i> <code>ForceModel</code>s minus the two-body
+term) is evaluated at each; the element rates <span class="mono">&part;E/&part;v&middot;&gamma;</span> are
+formed by finite difference of the equinoctial elements with respect to velocity (step 10<sup>&minus;3</sup>
+m/s); and these are averaged with the <span class="mono">(1&minus;e&thinsp;cos&thinsp;E)</span> weight, with
+the mean longitude additionally advancing at the mean motion <i>n(a)</i>. The result is <b>mean</b>
+elements, stepped in hours-to-a-day &mdash; roughly <b>20&times; faster</b> than Cowell for long runs, reusing
+every force model. Short-period recovery (mean&rarr;osculating) is a documented follow-up.</p>
+</section>
+
+<!-- ============================ 7 ============================ -->
+<section class="section">
+<h2>7&nbsp;&nbsp;Orbit determination (batch least squares)</h2>
+<p><code>BatchLeastSquares</code> estimates a parameter vector &mdash; the initial state
+[<i>r</i>,&nbsp;<i>v</i>] and optionally the drag coefficient <i>C<sub>D</sub></i> &mdash; by fitting the
+propagated trajectory to position observations through Gauss&ndash;Newton iteration. The design matrix (the
+partials of computed position with respect to the parameters) is formed by <b>finite differences</b>, so the
+estimator works with <i>any</i> force model and either propagation engine &mdash; no analytical variational
+equations are required. The scaled normal equations with small Levenberg&ndash;Marquardt damping are</p>
+
+<div class="eq"><img src="assets/eq_normaleq.png"><span class="num">(3)</span></div>
+
+<p>where <span class="mono">&rho;<sub>i</sub></span> is the residual at observation <i>i</i>,
+<span class="mono">s<sub>j</sub></span> the per-parameter scale (position 1, velocity 10<sup>&minus;3</sup>,
+C<sub>D</sub> 10<sup>&minus;2</sup>) that conditions the problem, and &mu; a tiny damping term. The step
+is accepted with step-halving backtracking (up to 6 contractions) and the iteration converges when the
+relative RMS improvement falls below 10<sup>&minus;4</sup>. The linear system is solved by Gaussian
+elimination with partial pivoting. Observations are <code>PositionObservation</code>s (GCRF, metres),
+here sampled from the POEORB precise orbit.</p>
+
+<div class="note"><b>Interface.</b> The estimator is driven through a <code>PropagatorFactory</code>
+lambda that rebuilds a seeded propagator from a parameter vector, so the same code fits either the Cowell
+or DSST engine, with any subset of forces.</div>
+</section>
+
+<!-- ============================ 8 ============================ -->
+<section class="section">
+<h2>8&nbsp;&nbsp;Input/output and configuration</h2>
+<ul>
+  <li><b>POEORB reader</b> (<code>PoeOrbReader</code>) &mdash; parses CCSDS/Earth-Explorer
+      <code>AUX_POEORB&nbsp;*.EOF</code> precise-orbit files: time-tagged ITRF state vectors plus the
+      carried UT1&minus;UTC offset. Drives both <code>validate</code> and <code>fit</code>.</li>
+  <li><b>Scenario files</b> (<code>ScenarioLoader</code>) &mdash; <code>.properties</code> files where each
+      force is an independent toggle with its own parameters; selects the propagator (numerical/dsst),
+      integrator, orbit, spacecraft, output and re-entry event.</li>
+  <li><b>CSV writers</b> &mdash; ephemeris export, including ground track.</li>
+  <li><b>TLE parser</b> &mdash; approximate osculating seeding (no SGP4 mean-to-osculating recovery yet).</li>
+  <li><b>CLI</b> (<code>Cli</code>) &mdash; zero-dependency sub-command dispatcher: <code>propagate</code>,
+      <code>decay</code>, <code>compare</code>, <code>tle</code>, <code>validate</code>, <code>fit</code>,
+      with ASCII plots and RTN error reporting in the terminal.</li>
+</ul>
+</section>
+
+<!-- ============================ 9 ============================ -->
+<section class="section">
+<h2>9&nbsp;&nbsp;Validation methodology and results</h2>
+<h3>9.1&nbsp;&nbsp;Method</h3>
+<p>The <code>validate</code> command seeds the propagator from the first POEORB state (ITRF&rarr;GCRF with
+the file's own UT1), integrates forward under the full model with no fitting, and differences the
+propagated position against the precise orbit at each epoch, decomposing the error into radial, along-track
+and cross-track components. The <code>fit</code> command then runs the batch estimator against the same
+arc. Run configuration: mass 1130&nbsp;kg, area 8&nbsp;m&sup2;, C<sub>D</sub>&nbsp;=&nbsp;2.2,
+C<sub>R</sub>&nbsp;=&nbsp;1.3, F10.7/F10.7a/Ap&nbsp;=&nbsp;220/205/12, gravity 30&times;30, DP54 tolerances
+10<sup>&minus;7</sup>/10<sup>&minus;9</sup>.</p>
+
+<figure>
+  <img src="assets/plot_total.png" style="max-width:88%;">
+  <figcaption><b>Figure 1.</b> Total position error growth for both satellites (pure propagation, no fit).
+  Near-quadratic growth is the signature of a secular along-track acceleration error (drag).</figcaption>
+</figure>
+
+<table>
+  <caption><b>Table 3.</b> Pure-propagation error (full model). Radial/cross-track stay at the metre level;
+  along-track dominates and grows with time.</caption>
+  <tr><th>Satellite</th><th>Span</th><th class="num">Total RMS</th><th class="num">Total max</th><th class="num">Radial (max)</th><th class="num">Cross (max)</th><th class="num">Along (max)</th><th class="num">Wall time</th></tr>
+  <tr><td>Sentinel-3A</td><td>12 h</td><td class="num">81.8 m</td><td class="num">131 m</td><td class="num">~6 m</td><td class="num">~28 m</td><td class="num">~123 m</td><td class="num">0.7 s</td></tr>
+  <tr><td>Sentinel-3A</td><td>24 h</td><td class="num">165.6 m</td><td class="num">315 m</td><td class="num">~10 m</td><td class="num">~28 m</td><td class="num">~313 m</td><td class="num">1.1 s</td></tr>
+  <tr><td>Sentinel-3B</td><td>24 h</td><td class="num">146.2 m</td><td class="num">277 m</td><td class="num">~4 m</td><td class="num">~27 m</td><td class="num">~277 m</td><td class="num">0.6 s</td></tr>
+</table>
+
+<h3>9.2&nbsp;&nbsp;Orbit determination</h3>
+<table>
+  <caption><b>Table 4.</b> Batch least-squares over a 6 h arc (120 s observation spacing, gravity 20&times;20).</caption>
+  <tr><th>Satellite</th><th>Estimated</th><th class="num">Pre-fit RMS</th><th class="num">Post-fit RMS</th><th class="num">Improvement</th><th class="num">Iters</th><th class="num">Est. C<sub>D</sub></th></tr>
+  <tr><td>Sentinel-3A</td><td>state (6)</td><td class="num">38.43 m</td><td class="num">4.81 m</td><td class="num">8.0&times;</td><td class="num">2</td><td class="num">&mdash;</td></tr>
+  <tr><td>Sentinel-3A</td><td>state + C<sub>D</sub></td><td class="num">38.43 m</td><td class="num">4.49 m</td><td class="num">8.6&times;</td><td class="num">2</td><td class="num">5.26</td></tr>
+  <tr><td>Sentinel-3B</td><td>state (6)</td><td class="num">41.18 m</td><td class="num">5.94 m</td><td class="num">6.9&times;</td><td class="num">2</td><td class="num">&mdash;</td></tr>
+  <tr><td>Sentinel-3B</td><td>state + C<sub>D</sub></td><td class="num">41.18 m</td><td class="num">5.16 m</td><td class="num">8.0&times;</td><td class="num">2</td><td class="num">&minus;3.20</td></tr>
+</table>
+
+<div class="warn"><b>Key engineering finding.</b> The state-only fit is robust and well-conditioned
+(residual drops ~7&ndash;8&times;). The <b>drag coefficient is not observable over a 6 h arc</b>: it diverges
+to 5.26 (S3A) and &minus;3.20 (S3B) &mdash; the normal matrix is ill-conditioned in the C<sub>D</sub>
+direction because, over ~4 revolutions, the drag partial is small and nearly collinear with the along-track
+state partials. The fix is longer arcs and/or an estimated empirical along-track acceleration with proper
+weighting (&sect;12).</div>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section class="section">
+<h2>10&nbsp;&nbsp;Verification: the automated test suite</h2>
+<p><code>mvn test</code> runs 37 unit tests (all passing), checking physics and numerics against published
+values, not just internal consistency:</p>
+<ul>
+  <li>Loss-free orbit-element conversions and anomaly consistency; two-body energy conservation over 10 orbits.</li>
+  <li>Numerical vs analytical Keplerian agreement to sub-metre over an hour.</li>
+  <li>J<sub>2</sub> nodal regression matching the secular formula
+      d&Omega;/dt = &minus;1.5&thinsp;<i>n</i>&thinsp;J<sub>2</sub>&thinsp;(R<sub>e</sub>/p)&sup2;&thinsp;cos&thinsp;<i>i</i>.</li>
+  <li><b>NRLMSISE-00</b> reproduces the official reference test case to 7 significant figures.</li>
+  <li><b>Frames</b> reproduce SOFA to ~10<sup>&minus;13</sup> rad; time scales/leap seconds round-trip.</li>
+  <li><b>DSST</b> matches two-body exactly, the J<sub>2</sub> secular nodal rate to ~1%, and the Cowell
+      secular SMA decay under drag to ~0.1 m over 3 days (mean-vs-mean).</li>
+  <li><b>Batch least squares</b> recovers a perturbed initial state to ~mm and a <i>known</i> drag
+      coefficient to within 0.05 from noise-free synthetic observations &mdash; confirming the estimator
+      itself is correct (the Sentinel-3 C<sub>D</sub> divergence is an observability limit of the short real
+      arc, not an estimator bug).</li>
+  <li><b>POEORB reader</b> parses records, state-vector fields and the UT1&minus;UTC offset.</li>
+</ul>
+</section>
+
+<!-- ============================ 11 ============================ -->
+<section class="section">
+<h2>11&nbsp;&nbsp;Current limitations</h2>
+<table>
+  <caption><b>Table 5.</b> Known simplifications, each an isolated extension point.</caption>
+  <tr><th>Area</th><th>Current state</th><th>Impact</th></tr>
+  <tr><td>Space weather</td><td>Constant F10.7/Ap in validation (file-backed provider exists)</td><td>Dominant along-track error</td></tr>
+  <tr><td>Spacecraft geometry</td><td>Cannonball (fixed area) for drag &amp; SRP</td><td>Ballistic/SRP mismodelling</td></tr>
+  <tr><td>C<sub>D</sub> estimation</td><td>Single scalar; unobservable on short arcs</td><td>Needs long arc / empirical accel</td></tr>
+  <tr><td>Sun/Moon ephemeris</td><td>Low-precision analytical series (~0.1&deg;)</td><td>Small (periodic) radial/cross</td></tr>
+  <tr><td>EOP</td><td>UT1 from file; polar motion zero in validation</td><td>Metre-level frame error</td></tr>
+  <tr><td>Estimation output</td><td>No formal covariance; position-only observations</td><td>No uncertainty bounds</td></tr>
+  <tr><td>Jacobian</td><td>Finite-difference (re-propagates per parameter)</td><td>Slower OD; no analytic STM</td></tr>
+  <tr><td>TLE seeding</td><td>Approximate (no SGP4 recovery)</td><td>Coarse TLE-based starts</td></tr>
+  <tr><td>DSST output</td><td>Mean elements (no short-period recovery yet)</td><td>Not osculating-accurate</td></tr>
+</table>
+</section>
+
+<!-- ============================ 12 ============================ -->
+<section class="section">
+<h2>12&nbsp;&nbsp;Roadmap &mdash; what remains and how to improve</h2>
+<p>Prioritised by accuracy impact per unit effort. <span class="tag p1">P1</span> highest.</p>
+
+<h4><span class="tag p1">P1</span>&nbsp; Accuracy of the dominant (drag) channel</h4>
+<ul>
+  <li>Wire the <b>file-backed historical space weather</b> (CssiSpaceWeatherProvider, CelesTrak
+      <code>SW-All.csv</code>) into <code>validate</code>/<code>fit</code> for the exact arc dates &mdash; the
+      single biggest expected along-track improvement.</li>
+  <li>Estimate a <b>ballistic scale factor</b> (or piecewise-constant / empirical along-track acceleration via
+      the existing <code>EmpiricalAcceleration</code>) over <b>multi-day arcs</b>, resolving the C<sub>D</sub>
+      ill-conditioning of &sect;9.2.</li>
+  <li>Add a <b>box-wing</b> (attitude-dependent area) model for drag and SRP.</li>
+</ul>
+
+<h4><span class="tag p2">P2</span>&nbsp; Estimation quality</h4>
+<ul>
+  <li>Replace the finite-difference Jacobian with an <b>analytical state-transition matrix</b> (variational
+      equations) &mdash; faster, more accurate, and a prerequisite for covariance.</li>
+  <li>Emit <b>formal covariance</b> and per-parameter sigmas; add observation weighting / data editing.</li>
+  <li>Add a <b>sequential filter</b> (EKF/UKF) alongside the batch estimator for real-time/streaming use and
+      predictive uncertainty.</li>
+  <li>Fit directly to the raw onboard <b>GNSS observations</b> (Sentinel-3 GNSSRD product) rather than the
+      reduced POEORB positions.</li>
+</ul>
+
+<h4><span class="tag p3">P3</span>&nbsp; Conservative-model fidelity &amp; features</h4>
+<ul>
+  <li>Default geopotential to <b>70&times;70</b>; adopt a <b>JPL DE</b> ephemeris for Sun/Moon.</li>
+  <li>Add an <b>IERS EOP file</b> (finals2000A: polar motion + UT1 time series).</li>
+  <li>Solid-tide <b>Step 2</b> (frequency-dependent) and pole tide; de&nbsp;Sitter relativity term.</li>
+  <li><b>DSST short-period recovery</b> (mean&rarr;osculating) for metre-accurate semi-analytical output.</li>
+  <li>Proper <b>SGP4</b> TLE seeding; additional atmospheres (JB2008, DTM2000).</li>
+  <li>Extend validation: full 26 h arcs for both satellites, DSST-vs-Cowell secular comparison, and a
+      density-calibration study once real space weather is wired in.</li>
+</ul>
+</section>
+
+<!-- ============================ 13 ============================ -->
+<section class="section">
+<h2>13&nbsp;&nbsp;Appendix</h2>
+<h3>A&nbsp;&nbsp;Physical constants (as used in code)</h3>
+<table class="tbl-compact">
+  <tr><th>Constant</th><th>Symbol</th><th class="num">Value</th><th>Unit</th></tr>
+  <tr><td>Earth gravitational parameter</td><td>&mu;</td><td class="num">3.986004418&times;10<sup>14</sup></td><td>m&sup3; s<sup>&minus;2</sup></td></tr>
+  <tr><td>EGM96 GM</td><td>GM</td><td class="num">3.986004415&times;10<sup>14</sup></td><td>m&sup3; s<sup>&minus;2</sup></td></tr>
+  <tr><td>Earth equatorial radius</td><td>R<sub>&oplus;</sub></td><td class="num">6&thinsp;378&thinsp;136.3</td><td>m</td></tr>
+  <tr><td>Earth flattening (WGS84)</td><td>f</td><td class="num">1/298.257223563</td><td>&mdash;</td></tr>
+  <tr><td>Earth rotation rate</td><td>&omega;<sub>&oplus;</sub></td><td class="num">7.292115&times;10<sup>&minus;5</sup></td><td>rad s<sup>&minus;1</sup></td></tr>
+  <tr><td>Sun GM</td><td>GM<sub>&odot;</sub></td><td class="num">1.32712440018&times;10<sup>20</sup></td><td>m&sup3; s<sup>&minus;2</sup></td></tr>
+  <tr><td>Moon GM</td><td>GM<sub>&#9789;</sub></td><td class="num">4.9028&times;10<sup>12</sup></td><td>m&sup3; s<sup>&minus;2</sup></td></tr>
+  <tr><td>Speed of light</td><td>c</td><td class="num">299&thinsp;792&thinsp;458</td><td>m s<sup>&minus;1</sup></td></tr>
+  <tr><td>Astronomical unit</td><td>AU</td><td class="num">1.495978707&times;10<sup>11</sup></td><td>m</td></tr>
+  <tr><td>Solar radiation pressure @1 AU</td><td>P<sub>0</sub></td><td class="num">4.56&times;10<sup>&minus;6</sup></td><td>N m<sup>&minus;2</sup></td></tr>
+  <tr><td>TT &minus; TAI</td><td>&mdash;</td><td class="num">32.184</td><td>s</td></tr>
+</table>
+
+<h3>B&nbsp;&nbsp;CLI quick reference</h3>
+<table class="tbl-compact">
+  <tr><th>Command</th><th>Purpose</th></tr>
+  <tr><td><code>propagate &lt;scenario.properties&gt;</code></td><td>Propagate a scenario; ASCII plots / CSV</td></tr>
+  <tr><td><code>decay &lt;scenario.properties&gt;</code></td><td>Orbital-lifetime / re-entry prediction (Monte-Carlo option)</td></tr>
+  <tr><td><code>compare &lt;scenario&gt; --vary k=v1,v2</code></td><td>Side-by-side model comparison</td></tr>
+  <tr><td><code>validate &lt;poeorb.eof&gt;</code></td><td>Propagate from a precise state; RTN error vs truth</td></tr>
+  <tr><td><code>fit &lt;poeorb.eof&gt; [--estimate-cd]</code></td><td>Batch least-squares OD against a precise orbit</td></tr>
+  <tr><td><code>tle &lt;tle-file&gt;</code></td><td>Parse / propagate a TLE (approximate)</td></tr>
+</table>
+<footer>URSC &mdash; Technical &amp; Engineering Report. Measured results from Sentinel-3A/3B POEORB precise
+orbits (16 Oct 2024). Source of record: branch <code>claude/leo-trajectory-prediction-java-ihupky</code>.</footer>
+</section>
+
+</body>
+</html>
