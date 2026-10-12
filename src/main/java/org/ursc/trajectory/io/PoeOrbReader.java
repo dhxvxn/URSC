@@ -53,10 +53,74 @@ public final class PoeOrbReader {
     private PoeOrbReader() {
     }
 
+    /** Build an ephemeris directly from aligned ITRF records (for tests / programmatic use). */
+    public static Ephemeris of(final List<AbsoluteDate> dates, final List<Vector3D> positionItrf,
+                               final List<Vector3D> velocityItrf, final double ut1MinusUtc) {
+        return new Ephemeris(dates, positionItrf, velocityItrf, ut1MinusUtc);
+    }
+
     public static Ephemeris read(final Path path) throws IOException {
         try (InputStream in = Files.newInputStream(path)) {
             return read(in);
         }
+    }
+
+    /**
+     * Read and merge several POEORB files into one chronologically-ordered ephemeris,
+     * dropping duplicate epochs at file boundaries. Files may be supplied in any order.
+     * The UT1&minus;UTC offset is taken from the earliest record.
+     */
+    public static Ephemeris readAll(final java.util.List<Path> paths) throws IOException {
+        final List<AbsoluteDate> dates = new ArrayList<>();
+        final List<Vector3D> rItrf = new ArrayList<>();
+        final List<Vector3D> vItrf = new ArrayList<>();
+        final List<Integer> order = new ArrayList<>();
+        final List<Ephemeris> parts = new ArrayList<>();
+        for (final Path p : paths) {
+            final Ephemeris e = read(p);
+            final int base = dates.size();
+            for (int i = 0; i < e.size(); i++) {
+                dates.add(e.dates.get(i));
+                rItrf.add(e.positionItrf.get(i));
+                vItrf.add(e.velocityItrf.get(i));
+                order.add(base + i);
+            }
+            parts.add(e);
+        }
+        if (dates.isEmpty()) {
+            throw new IOException("no OSV records found across the supplied POEORB files");
+        }
+        // sort indices chronologically relative to the first record
+        final AbsoluteDate ref = dates.get(0);
+        order.sort((a, b) -> Double.compare(dates.get(a).durationFrom(ref), dates.get(b).durationFrom(ref)));
+        final List<AbsoluteDate> d = new ArrayList<>();
+        final List<Vector3D> r = new ArrayList<>();
+        final List<Vector3D> v = new ArrayList<>();
+        AbsoluteDate last = null;
+        for (final int idx : order) {
+            final AbsoluteDate cur = dates.get(idx);
+            if (last != null && cur.durationFrom(last) <= 1.0e-3) {
+                continue; // duplicate / overlapping epoch
+            }
+            d.add(cur);
+            r.add(rItrf.get(idx));
+            v.add(vItrf.get(idx));
+            last = cur;
+        }
+        double dut1 = 0.0;
+        if (!parts.isEmpty()) {
+            dut1 = parts.get(0).ut1MinusUtc;
+            // prefer the part whose first record is earliest
+            double best = Double.POSITIVE_INFINITY;
+            for (final Ephemeris e : parts) {
+                final double t0 = e.dates.get(0).durationFrom(ref);
+                if (t0 < best) {
+                    best = t0;
+                    dut1 = e.ut1MinusUtc;
+                }
+            }
+        }
+        return new Ephemeris(d, r, v, dut1);
     }
 
     public static Ephemeris read(final InputStream in) throws IOException {

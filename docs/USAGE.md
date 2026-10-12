@@ -137,6 +137,29 @@ differences, so it works with the full force model.
 java -jar …/leo-trajectory-0.1.0.jar fit S3A_…_POEORB_…​.EOF --estimate-cd --hours 6
 ```
 
+### `backtest <train.eof> <truth1.eof> [truth2.eof ...]`
+**Force-model selection by out-of-sample (hold-out) validation.** Determine the orbit from a
+short training arc (e.g. the first day of POEORB), predict forward over the remaining days,
+and score the prediction against the *held-out* precise orbit — then sweep force-model
+combinations and rank them by held-out prediction error. For each combination the day-1 fit
+estimates the state **plus Cd** (when drag is on) **plus Cr** (when SRP is on), so every
+model gets a fair fit.
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `--sweep ladder\|atmos\|full` | `ladder` | `ladder` = cumulative force ladder (two-body → +J2 → +gravity → +Sun/Moon → +drag → +SRP → +tides → +relativity → +albedo); `atmos` = full stack swapping the atmosphere (none/exponential/harris-priester/nrlmsise00); `full` = the full stack only |
+| `--sw-file <SW-All.csv>` | — | real CelesTrak space weather for the test window (fair drag comparison) |
+| `--gravity-degree <n>` | `20` | EGM96 degree/order at the "full gravity" rung |
+| `--sample-step <s>` | `120` | spacing of the training observations used for the fit |
+| `--mass`, `--area`, `--cd`, `--cr`, `--f107`, `--f107a`, `--ap`, `--max-iter` | | spacecraft / fit settings |
+
+Output: a ranked table (combo → est. Cd/Cr, training-fit RMS, held-out prediction RMS / max /
+final error) plus an ASCII plot of the best model's held-out error vs the two-body baseline.
+
+```bash
+java -jar …/leo-trajectory-0.1.0.jar backtest day1.EOF day2.EOF … day7.EOF --sw-file SW-All.csv
+```
+
 ### `help`, `version`
 Print the command list / the version string.
 

@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.ursc.trajectory.io.PoeOrbReader;
@@ -73,6 +77,43 @@ class PoeOrbReaderTest {
     void readsUt1MinusUtcFromFirstRecord() throws IOException {
         final PoeOrbReader.Ephemeris eph = parse(EOF);
         assertEquals(0.057942, eph.ut1MinusUtc, 1e-9);
+    }
+
+    private Path writeEof(final String... secondsOfMinute) throws IOException {
+        final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>\n<Data_Block>\n<List_of_OSVs>\n");
+        int i = 0;
+        for (final String sec : secondsOfMinute) {
+            sb.append("<OSV>\n")
+              .append("<UTC>UTC=2024-10-16T00:00:").append(sec).append("</UTC>\n")
+              .append("<UT1>UT1=2024-10-16T00:00:").append(sec).append("</UT1>\n")
+              .append("<X unit=\"m\">").append(1000.0 * i).append("</X>\n")
+              .append("<Y unit=\"m\">0.0</Y>\n<Z unit=\"m\">0.0</Z>\n")
+              .append("<VX unit=\"m/s\">0.0</VX>\n<VY unit=\"m/s\">0.0</VY>\n<VZ unit=\"m/s\">0.0</VZ>\n")
+              .append("</OSV>\n");
+            i++;
+        }
+        sb.append("</List_of_OSVs>\n</Data_Block>\n");
+        final Path p = Files.createTempFile("poe", ".EOF");
+        Files.write(p, sb.toString().getBytes(StandardCharsets.UTF_8));
+        p.toFile().deleteOnExit();
+        return p;
+    }
+
+    @Test
+    void readAllMergesAndDedupsAcrossFiles() throws IOException {
+        final Path f1 = writeEof("00.000000", "10.000000", "20.000000");
+        final Path f2 = writeEof("20.000000", "30.000000"); // first epoch overlaps f1's last
+        final List<Path> both = new ArrayList<>();
+        both.add(f2);
+        both.add(f1); // supplied out of order on purpose
+        final PoeOrbReader.Ephemeris eph = PoeOrbReader.readAll(both);
+
+        // four unique epochs (the duplicated :20 is dropped), in chronological order
+        assertEquals(4, eph.size());
+        assertEquals(0.0, eph.dates.get(0).durationFrom(eph.dates.get(0)), 1e-9);
+        assertEquals(10.0, eph.dates.get(1).durationFrom(eph.dates.get(0)), 1e-6);
+        assertEquals(20.0, eph.dates.get(2).durationFrom(eph.dates.get(0)), 1e-6);
+        assertEquals(30.0, eph.dates.get(3).durationFrom(eph.dates.get(0)), 1e-6);
     }
 
     @Test

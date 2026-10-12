@@ -8,8 +8,11 @@ import java.util.List;
 import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.bodies.OneAxisEllipsoid;
 import org.ursc.trajectory.config.PropagationConfig;
+import org.ursc.trajectory.forces.drag.Atmosphere;
 import org.ursc.trajectory.forces.drag.ConstantSpaceWeather;
 import org.ursc.trajectory.forces.drag.CssiSpaceWeatherProvider;
+import org.ursc.trajectory.forces.drag.ExponentialAtmosphere;
+import org.ursc.trajectory.forces.drag.HarrisPriesterAtmosphere;
 import org.ursc.trajectory.forces.drag.NRLMSISE00Atmosphere;
 import org.ursc.trajectory.forces.drag.SpaceWeatherProvider;
 import org.ursc.trajectory.forces.gravity.GravityFieldFactory;
@@ -91,23 +94,91 @@ final class OrbitFiles {
         return out;
     }
 
-    /** A full-fidelity configuration (gravity, Sun/Moon, NRLMSISE drag, SRP, tides, relativity). */
-    static PropagationConfig fullConfig(final SpacecraftState s0, final Setup s, final double cd) {
+    /**
+     * A toggleable selection of forces for one backtest combination. Defaults to the
+     * full-fidelity stack; individual forces can be switched off, the gravity truncation
+     * changed, and the atmosphere model selected, so a force-model ablation can be swept.
+     */
+    static final class ForceSet {
+        String label = "full";
+        int gravityDegree = 30;   // 1 ~ central (two-body); 2 (order 0) = J2 only
+        int gravityOrder = -1;    // -1 => equal to the degree (full tesseral)
+        boolean sun = true;
+        boolean moon = true;
+        String atmosphere = "nrlmsise00"; // none | exponential | harris-priester | nrlmsise00
+        boolean srp = true;
+        boolean solidTides = true;
+        boolean oceanTides = true;
+        boolean relativity = true;
+        boolean albedo = true;
+
+        boolean hasDrag() {
+            return !"none".equalsIgnoreCase(atmosphere);
+        }
+    }
+
+    /** Build an atmosphere model by name (drag density source). */
+    static Atmosphere buildAtmosphere(final String name, final OneAxisEllipsoid earth, final Setup s) {
+        switch (name.toLowerCase()) {
+            case "exponential":
+                return new ExponentialAtmosphere(earth);
+            case "harris-priester":
+            case "harrispriester":
+            case "hp":
+                return new HarrisPriesterAtmosphere();
+            case "nrlmsise00":
+            case "nrlmsise-00":
+            case "msis":
+            default:
+                final SpaceWeatherProvider weather = (s.spaceWeather != null)
+                        ? s.spaceWeather : new ConstantSpaceWeather(s.f107, s.f107a, s.ap);
+                return new NRLMSISE00Atmosphere(earth, weather);
+        }
+    }
+
+    /** Build a {@link PropagationConfig} for an explicit {@link ForceSet}, with fitted Cd/Cr. */
+    static PropagationConfig config(final ForceSet fs, final SpacecraftState s0, final Setup s,
+                                    final double cd, final double cr) {
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(
                 Constants.EARTH_EQUATORIAL_RADIUS, Constants.EARTH_FLATTENING);
-        final SpaceWeatherProvider weather = (s.spaceWeather != null)
-                ? s.spaceWeather : new ConstantSpaceWeather(s.f107, s.f107a, s.ap);
-        return new PropagationConfig()
+        final int order = fs.gravityOrder < 0 ? fs.gravityDegree : fs.gravityOrder;
+        final PropagationConfig c = new PropagationConfig()
                 .initialState(s0)
                 .integrator(new DormandPrince54Integrator(1e-7, 1e-9, 1e-3, 120.0), 60.0)
-                .gravityField(GravityFieldFactory.getEgm96(s.gravityDegree), s.gravityDegree, s.gravityDegree)
-                .thirdBody(CelestialBodyFactory.getSun())
-                .thirdBody(CelestialBodyFactory.getMoon())
-                .drag(new NRLMSISE00Atmosphere(earth, weather), cd, s.dragArea)
-                .solarRadiationPressure(CelestialBodyFactory.getSun(), s.cr, s.srpArea)
-                .earthRadiation(CelestialBodyFactory.getSun(), s.cr, s.srpArea)
-                .solidTides(true).oceanTides(true).relativity(true, true)
+                .gravityField(GravityFieldFactory.getEgm96(fs.gravityDegree), fs.gravityDegree, order)
                 .outputType(OrbitType.CARTESIAN);
+        if (fs.sun) {
+            c.thirdBody(CelestialBodyFactory.getSun());
+        }
+        if (fs.moon) {
+            c.thirdBody(CelestialBodyFactory.getMoon());
+        }
+        if (fs.hasDrag()) {
+            c.drag(buildAtmosphere(fs.atmosphere, earth, s), cd, s.dragArea);
+        }
+        if (fs.srp) {
+            c.solarRadiationPressure(CelestialBodyFactory.getSun(), cr, s.srpArea);
+        }
+        if (fs.albedo) {
+            c.earthRadiation(CelestialBodyFactory.getSun(), cr, s.srpArea);
+        }
+        if (fs.solidTides) {
+            c.solidTides(true);
+        }
+        if (fs.oceanTides) {
+            c.oceanTides(true);
+        }
+        if (fs.relativity) {
+            c.relativity(true, true);
+        }
+        return c;
+    }
+
+    /** A full-fidelity configuration (gravity, Sun/Moon, NRLMSISE drag, SRP, tides, relativity). */
+    static PropagationConfig fullConfig(final SpacecraftState s0, final Setup s, final double cd) {
+        final ForceSet fs = new ForceSet();
+        fs.gravityDegree = s.gravityDegree;
+        return config(fs, s0, s, cd, s.cr);
     }
 
     /** Radial / along-track / cross-track / total components of {@code comp − truth} (m). */

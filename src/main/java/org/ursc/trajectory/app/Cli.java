@@ -7,6 +7,7 @@ import java.util.Map;
 import org.ursc.trajectory.app.command.Command;
 import org.ursc.trajectory.app.command.CompareCommand;
 import org.ursc.trajectory.app.command.DecayCommand;
+import org.ursc.trajectory.app.command.BacktestCommand;
 import org.ursc.trajectory.app.command.FitCommand;
 import org.ursc.trajectory.app.command.PropagateCommand;
 import org.ursc.trajectory.app.command.TleCommand;
@@ -34,6 +35,7 @@ public final class Cli {
         register(new TleCommand());
         register(new ValidateCommand());
         register(new FitCommand());
+        register(new BacktestCommand());
     }
 
     private Cli() {
@@ -88,5 +90,6 @@ public final class Cli {
                 + "--vary atmosphere=exponential,harris-priester,nrlmsise00");
         System.out.println("  leoprop validate orbit.EOF --hours 24 --plot total");
         System.out.println("  leoprop fit orbit.EOF --estimate-cd --hours 6");
+        System.out.println("  leoprop backtest day1.EOF day2.EOF ... day7.EOF --sw-file SW-All.csv");
     }
 }
