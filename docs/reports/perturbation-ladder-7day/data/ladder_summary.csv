@@ -1,0 +1,11 @@
+step,label,active_models,est_cd,est_cr,rms_1day_m,rms_8day_m,max_8day_m,final_8day_m
+1,two-body (central),central gravity,-,-,46585.958,695127.445,1039881.841,200532.788
+2,+ J2,gravity J2,-,-,819.151,32742.032,42679.324,29192.973
+3,+ gravity 20x20,gravity 20x20,-,-,88.713,24975.975,27810.828,27754.340
+4,+ Sun/Moon,gravity 20x20 + Sun + Moon,-,-,87.864,25527.922,28419.218,28364.372
+5,+ drag (NRLMSISE est. Cd),gravity 20x20 + Sun + Moon + drag(nrlmsise00),2.046,-,10.652,4381.819,4931.123,4778.433
+6,+ SRP (est. Cr),gravity 20x20 + Sun + Moon + drag(nrlmsise00) + SRP,2.059,2.903,10.818,4275.986,4712.001,4707.663
+7,+ solid tides,gravity 20x20 + Sun + Moon + drag(nrlmsise00) + SRP + solid tides,2.061,2.932,10.556,4113.044,4532.040,4526.282
+8,+ ocean tides,gravity 20x20 + Sun + Moon + drag(nrlmsise00) + SRP + solid tides + ocean tides,2.053,2.948,10.535,4191.492,4619.616,4615.032
+9,+ relativity,gravity 20x20 + Sun + Moon + drag(nrlmsise00) + SRP + solid tides + ocean tides + relativity,2.053,2.948,10.534,4191.507,4619.601,4615.057
+10,+ albedo/IR (FULL stack),gravity 20x20 + Sun + Moon + drag(nrlmsise00) + SRP + solid tides + ocean tides + relativity + albedo/IR,2.054,3.091,10.533,4190.046,4617.688,4613.993
