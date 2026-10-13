@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      STANDALONE experiment — intentionally NOT a module of the URSC core.
+      Its only purpose is to run a real Orekit propagation head-to-head against
+      URSC's own from-scratch force stack (see README.md). Keeping it as a
+      separate Maven root means the URSC core stays zero-runtime-dependency and
+      its 47-test build is completely untouched.
+    -->
+    <groupId>org.ursc.experiments</groupId>
+    <artifactId>orekit-compare</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <orekit.version>13.1.9</orekit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>orekit</artifactId>
+            <version>${orekit.version}</version>
+        </dependency>
+    </dependencies>
+</project>
