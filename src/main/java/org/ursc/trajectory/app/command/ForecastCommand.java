@@ -44,6 +44,8 @@ public final class ForecastCommand implements Command {
         if (seedFile == null) {
             System.err.println("usage: forecast <seed.eof> [--days N] [--sw-file FILE] [--cd Cd] "
                     + "[--gravity-degree N] [--mass kg] [--area m2] [--cr Cr] "
+                    + "[--atmosphere nrlmsise00|jb2008] [--box-wing] "
+                    + "[--sw-forecast] [--scenario nominal|stressed] "
                     + "[--f107 v] [--f107a v] [--ap v] [--eop-file finals2000A.all] "
                     + "[--gravity-file model.gfc] [--step s] [--csv out.csv] [--plot alt|sma|ecc|none]");
             return 2;
@@ -64,6 +66,15 @@ public final class ForecastCommand implements Command {
         if (swFile != null) {
             s.spaceWeather = OrbitFiles.loadSpaceWeather(swFile, s);
         }
+        s.atmosphere = args.get("atmosphere", s.atmosphere);
+        s.boxWing = args.has("box-wing");
+        if ("jb2008".equalsIgnoreCase(s.atmosphere) || "jb".equalsIgnoreCase(s.atmosphere)) {
+            final String solf = args.get("jb-solfsmy", null);
+            final String dtc = args.get("jb-dtc", null);
+            s.jb2008Inputs = (solf != null && dtc != null)
+                    ? org.ursc.trajectory.forces.drag.SolfsmyDtcProvider.fromPaths(Paths.get(solf), Paths.get(dtc))
+                    : org.ursc.trajectory.forces.drag.SolfsmyDtcProvider.bundled();
+        }
         final String gravFile = args.get("gravity-file", null);
         if (gravFile != null) {
             s.gravityOverride = org.ursc.trajectory.forces.gravity.GravityFieldFactory
@@ -78,6 +89,27 @@ public final class ForecastCommand implements Command {
         final String plot = args.get("plot", "alt");
 
         final SpacecraftState seed = OrbitFiles.gcrfState(eph, 0, s.mass);
+
+        // Forecast mode: beyond the seed epoch, use only forecast drivers (persistence of the solar
+        // indices + a geomagnetic scenario), never observed future data. Storms are not
+        // deterministically predictable, so the scenario selects a band edge.
+        final boolean swForecast = args.has("sw-forecast");
+        final String scenario = args.get("scenario", "nominal");
+        if (swForecast) {
+            final boolean stressed = scenario.toLowerCase(Locale.US).startsWith("stress");
+            final double forecastAp = stressed ? 80.0 : 5.0;
+            final double forecastDtc = stressed ? 250.0 : 40.0;
+            if (s.jb2008Inputs != null) {
+                s.jb2008Inputs = new org.ursc.trajectory.forces.drag.ForecastJb2008Inputs(
+                        s.jb2008Inputs, seed.getDate(), forecastDtc);
+            }
+            final org.ursc.trajectory.forces.drag.SpaceWeatherProvider base = (s.spaceWeather != null)
+                    ? s.spaceWeather
+                    : new org.ursc.trajectory.forces.drag.ConstantSpaceWeather(s.f107, s.f107a, s.ap);
+            s.spaceWeather = new org.ursc.trajectory.forces.drag.ForecastSpaceWeatherProvider(
+                    base, seed.getDate(), forecastAp);
+        }
+
         final KeplerianOrbit k0 = new KeplerianOrbit(seed.getOrbit());
         final double perigeeAlt0 =
                 (k0.getA() * (1 - k0.getE()) - Constants.EARTH_EQUATORIAL_RADIUS) / 1000.0;
@@ -86,8 +118,11 @@ public final class ForecastCommand implements Command {
         System.out.println("Epoch : " + seed.getDate());
         System.out.printf(Locale.US, "Seed  : alt(perigee)=%.1f km, a=%.3f km, i=%.3f deg, e=%.5f%n",
                 perigeeAlt0, k0.getA() / 1000.0, Math.toDegrees(k0.getI()), k0.getE());
-        System.out.printf(Locale.US, "Model : gravity %dx%d + Sun/Moon + NRLMSISE drag (Cd=%.1f,A=%.1f) "
-                + "+ SRP + albedo/IR + tides + relativity%n", s.gravityDegree, s.gravityDegree, cd, s.dragArea);
+        System.out.printf(Locale.US, "Model : gravity %dx%d + Sun/Moon + %s drag (Cd=%.1f,%s) "
+                + "+ SRP + albedo/IR + tides + relativity%s%n",
+                s.gravityDegree, s.gravityDegree, s.atmosphere, cd,
+                s.boxWing ? "box-wing" : String.format(Locale.US, "A=%.1f", s.dragArea),
+                swForecast ? " [forecast: " + scenario + "]" : "");
         System.out.printf(Locale.US, "Space weather: %s%n", swFile != null
                 ? "file " + swFile + " (fallback F10.7=" + s.f107 + ", Ap=" + s.ap + ")"
                 : "constant F10.7=" + s.f107 + ", F10.7a=" + s.f107a + ", Ap=" + s.ap);

@@ -61,6 +61,36 @@ class ForecastTest {
                 "altitude should decay under drag: first=" + firstAlt + " last=" + lastAlt);
     }
 
+    @Test
+    void forecastWithJb2008AndForecastModeRuns() throws Exception {
+        FramesFactory.setModel(FramesFactory.Model.IAU_2006);
+        FramesFactory.setEopProvider(new ConstantEop(0.0, 0.0, 0.0));
+
+        final AbsoluteDate t0 = new AbsoluteDate(2024, 10, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final KeplerianOrbit k0 = new KeplerianOrbit(Constants.EARTH_EQUATORIAL_RADIUS + 800e3,
+                0.001, Math.toRadians(98.6), Math.toRadians(30), Math.toRadians(40), 0.0,
+                PositionAngle.TRUE, FramesFactory.getGCRF(), t0, Constants.EARTH_MU);
+        final PVCoordinates pv = k0.getPVCoordinates();
+        final Transform toItrf =
+                FramesFactory.getTransform(FramesFactory.getGCRF(), FramesFactory.getITRF(), t0);
+        final Vector3D rI = toItrf.transformPosition(pv.getPosition());
+        final Vector3D vI = toItrf.transformVelocity(pv.getVelocity(), rI);
+
+        final Path seed = Files.createTempFile("seedjb", ".EOF");
+        final Path csv = Files.createTempFile("forecastjb", ".csv");
+        seed.toFile().deleteOnExit();
+        csv.toFile().deleteOnExit();
+        Files.write(seed, oneOsvEof(rI, vI).getBytes(StandardCharsets.UTF_8));
+
+        // JB2008 (bundled drivers) + forecast mode with the stressed geomagnetic scenario + box-wing
+        final int rc = new ForecastCommand().run(new Args(new String[] {
+                seed.toString(), "--days", "0.5", "--step", "120", "--csv", csv.toString(),
+                "--plot", "none", "--atmosphere", "jb2008", "--sw-forecast",
+                "--scenario", "stressed", "--box-wing"}));
+        assertEquals(0, rc, "jb2008 forecast-mode run should succeed");
+        assertTrue(Files.readAllLines(csv).size() > 10, "ephemeris CSV should have many rows");
+    }
+
     private static double lastField(final String csvRow) {
         final String[] parts = csvRow.split(",");
         return Double.parseDouble(parts[parts.length - 1].trim());

@@ -57,6 +57,8 @@ final class OrbitFiles {
         double bodyY = 2.2;
         double bodyZ = 3.7;
         double wingArea = 10.5;  // solar-array area (m^2)
+        /** Atmosphere model name for the forecast/full path: none|exponential|harris-priester|nrlmsise00|jb2008. */
+        String atmosphere = "nrlmsise00";
         double f107 = 220.0;
         double f107a = 205.0;
         double ap = 12.0;
@@ -244,6 +246,7 @@ final class OrbitFiles {
     static PropagationConfig fullConfig(final SpacecraftState s0, final Setup s, final double cd) {
         final ForceSet fs = new ForceSet();
         fs.gravityDegree = s.gravityDegree;
+        fs.atmosphere = s.atmosphere;
         return config(fs, s0, s, cd, s.cr);
     }
 
