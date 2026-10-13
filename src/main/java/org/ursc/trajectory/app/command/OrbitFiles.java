@@ -14,7 +14,10 @@ import org.ursc.trajectory.forces.drag.CssiSpaceWeatherProvider;
 import org.ursc.trajectory.forces.drag.CssiTxtSpaceWeatherProvider;
 import org.ursc.trajectory.forces.drag.ExponentialAtmosphere;
 import org.ursc.trajectory.forces.drag.HarrisPriesterAtmosphere;
+import org.ursc.trajectory.forces.drag.JB2008Atmosphere;
+import org.ursc.trajectory.forces.drag.Jb2008Inputs;
 import org.ursc.trajectory.forces.drag.NRLMSISE00Atmosphere;
+import org.ursc.trajectory.forces.drag.SolfsmyDtcProvider;
 import org.ursc.trajectory.forces.drag.SpaceWeatherProvider;
 import org.ursc.trajectory.forces.gravity.GravityField;
 import org.ursc.trajectory.forces.gravity.GravityFieldFactory;
@@ -53,6 +56,8 @@ final class OrbitFiles {
         double ap = 12.0;
         /** Real space-weather provider (from a CelesTrak CSV); null = use the constants above. */
         SpaceWeatherProvider spaceWeather = null;
+        /** JB2008 solar/geomagnetic driver provider; null = bundled SOLFSMY/DTCFILE snapshots. */
+        Jb2008Inputs jb2008Inputs = null;
         /** Gravity field override (e.g. an orekit-data ICGEM model); null = bundled EGM96. */
         GravityField gravityOverride = null;
     }
@@ -147,7 +152,7 @@ final class OrbitFiles {
         int gravityOrder = -1;    // -1 => equal to the degree (full tesseral)
         boolean sun = true;
         boolean moon = true;
-        String atmosphere = "nrlmsise00"; // none | exponential | harris-priester | nrlmsise00
+        String atmosphere = "nrlmsise00"; // none | exponential | harris-priester | nrlmsise00 | jb2008
         boolean srp = true;
         boolean solidTides = true;
         boolean oceanTides = true;
@@ -168,6 +173,12 @@ final class OrbitFiles {
             case "harrispriester":
             case "hp":
                 return new HarrisPriesterAtmosphere();
+            case "jb2008":
+            case "jb":
+            case "jacchia-bowman":
+                final Jb2008Inputs jb = (s.jb2008Inputs != null)
+                        ? s.jb2008Inputs : SolfsmyDtcProvider.bundled();
+                return new JB2008Atmosphere(earth, jb);
             case "nrlmsise00":
             case "nrlmsise-00":
             case "msis":
