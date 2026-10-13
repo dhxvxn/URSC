@@ -4,20 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ursc.trajectory.bodies.CelestialBody;
+import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.forces.EmpiricalAcceleration;
 import org.ursc.trajectory.forces.ForceModel;
 import org.ursc.trajectory.forces.NewtonianAttraction;
 import org.ursc.trajectory.forces.Relativity;
 import org.ursc.trajectory.forces.ThirdBodyAttraction;
 import org.ursc.trajectory.forces.drag.Atmosphere;
+import org.ursc.trajectory.forces.drag.BoxWingDrag;
 import org.ursc.trajectory.forces.drag.DragForce;
+import org.ursc.trajectory.forces.drag.DragSensitive;
 import org.ursc.trajectory.forces.drag.IsotropicDrag;
 import org.ursc.trajectory.forces.gravity.GravityField;
 import org.ursc.trajectory.forces.gravity.OceanTides;
 import org.ursc.trajectory.forces.gravity.SolidTides;
 import org.ursc.trajectory.forces.gravity.SphericalHarmonicGravity;
+import org.ursc.trajectory.forces.radiation.BoxWingRadiation;
 import org.ursc.trajectory.forces.radiation.EarthRadiationPressure;
 import org.ursc.trajectory.forces.radiation.IsotropicRadiationSingleCoefficient;
+import org.ursc.trajectory.forces.radiation.RadiationSensitive;
 import org.ursc.trajectory.forces.radiation.SolarRadiationPressure;
 import org.ursc.trajectory.ode.ODEIntegrator;
 import org.ursc.trajectory.orbits.OrbitType;
@@ -65,6 +70,13 @@ public final class PropagationConfig {
     private double earthRadiationCr;
     private double earthRadiationArea;
     private double[] empiricalRtn;
+
+    // box-wing (attitude-dependent area) for drag + SRP; cannonball used when off
+    private boolean useBoxWing = false;
+    private double boxX;
+    private double boxY;
+    private double boxZ;
+    private double wingArea;
 
     public PropagationConfig initialState(final SpacecraftState state) {
         this.initialState = state;
@@ -148,6 +160,25 @@ public final class PropagationConfig {
         return this;
     }
 
+    /**
+     * Use an attitude-dependent box-wing geometry (body box + Sun-tracking array) for drag and SRP
+     * instead of the cannonball constant area. The scalar Cd/Cr still apply and are still fitted.
+     *
+     * @param bodyX body dimension along x (m)
+     * @param bodyY body dimension along y (m)
+     * @param bodyZ body dimension along z (m)
+     * @param solarArrayArea solar-array area (m^2)
+     */
+    public PropagationConfig boxWing(final double bodyX, final double bodyY, final double bodyZ,
+                                     final double solarArrayArea) {
+        this.useBoxWing = true;
+        this.boxX = bodyX;
+        this.boxY = bodyY;
+        this.boxZ = bodyZ;
+        this.wingArea = solarArrayArea;
+        return this;
+    }
+
     public PropagationConfig empiricalAcceleration(final double radial, final double transverse,
                                                    final double normal) {
         this.empiricalRtn = new double[] {radial, transverse, normal};
@@ -188,11 +219,16 @@ public final class PropagationConfig {
             forces.add(new ThirdBodyAttraction(body));
         }
         if (useDrag) {
-            forces.add(new DragForce(atmosphere, new IsotropicDrag(dragCoefficient, dragArea)));
+            final DragSensitive dragGeometry = useBoxWing
+                    ? new BoxWingDrag(dragCoefficient, boxX, boxY, boxZ, wingArea, CelestialBodyFactory.getSun())
+                    : new IsotropicDrag(dragCoefficient, dragArea);
+            forces.add(new DragForce(atmosphere, dragGeometry));
         }
         if (useSrp) {
-            forces.add(new SolarRadiationPressure(srpSun,
-                    new IsotropicRadiationSingleCoefficient(reflectionCoefficient, srpArea)));
+            final RadiationSensitive srpGeometry = useBoxWing
+                    ? new BoxWingRadiation(reflectionCoefficient, boxX, boxY, boxZ, wingArea, srpSun)
+                    : new IsotropicRadiationSingleCoefficient(reflectionCoefficient, srpArea);
+            forces.add(new SolarRadiationPressure(srpSun, srpGeometry));
         }
         if (useSolidTides) {
             forces.add(new SolidTides());

@@ -44,8 +44,10 @@ public final class DragForce implements ForceModel {
                 .transformPosition(rInertial);
         final double rho = atmosphere.getDensity(state.getDate(), rBodyFixed);
 
-        final double ballistic = spacecraft.getDragCoefficient() * spacecraft.getCrossSection()
-                / state.getMass();
+        final double area = (vRelNorm > 0.0)
+                ? spacecraft.getCrossSection(state, vRel.scalarMultiply(1.0 / vRelNorm))
+                : spacecraft.getCrossSection();
+        final double ballistic = spacecraft.getDragCoefficient() * area / state.getMass();
         final double factor = -0.5 * ballistic * rho * vRelNorm;
         return vRel.scalarMultiply(factor);
     }

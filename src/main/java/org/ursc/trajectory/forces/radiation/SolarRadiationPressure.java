@@ -43,8 +43,9 @@ public final class SolarRadiationPressure implements ForceModel {
 
         final double pressure = Constants.SOLAR_RADIATION_PRESSURE
                 * (Constants.ASTRONOMICAL_UNIT / d) * (Constants.ASTRONOMICAL_UNIT / d);
+        final double area = spacecraft.getCrossSection(state, satToSun.scalarMultiply(1.0 / d));
         final double acc = lighting * spacecraft.getReflectionCoefficient()
-                * spacecraft.getCrossSection() / state.getMass() * pressure;
+                * area / state.getMass() * pressure;
 
         // force pushes the spacecraft away from the Sun
         final Vector3D sunToSatUnit = satToSun.scalarMultiply(-1.0 / d);

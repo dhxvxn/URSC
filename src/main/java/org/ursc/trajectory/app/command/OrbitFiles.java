@@ -51,6 +51,12 @@ final class OrbitFiles {
         double srpArea = 8.0;
         double cr = 1.3;
         int gravityDegree = 30;
+        /** Attitude-dependent box-wing geometry for drag/SRP (else cannonball). */
+        boolean boxWing = false;
+        double bodyX = 2.2;      // Sentinel-3A body dimensions (m)
+        double bodyY = 2.2;
+        double bodyZ = 3.7;
+        double wingArea = 10.5;  // solar-array area (m^2)
         double f107 = 220.0;
         double f107a = 205.0;
         double ap = 12.0;
@@ -218,6 +224,9 @@ final class OrbitFiles {
         }
         if (fs.albedo) {
             c.earthRadiation(CelestialBodyFactory.getSun(), cr, s.srpArea);
+        }
+        if (s.boxWing) {
+            c.boxWing(s.bodyX, s.bodyY, s.bodyZ, s.wingArea);
         }
         if (fs.solidTides) {
             c.solidTides(true);
