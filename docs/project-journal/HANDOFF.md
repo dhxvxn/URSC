@@ -90,12 +90,12 @@ relativity, albedo) are physically correct but below the noise at a ~1-day horiz
 ## Reproduce the Day-4 results
 
 ```sh
-# OD improvement from real EOP
-leoprop fit docs/reports/error-analysis-oct2024/inputs/S3A_POEORB_truth_20241007-08.EOF \
+# OD improvement from real EOP (inputs now live in the kept example report's inputs/ folder)
+leoprop fit docs/reports/perturbation-ladder-truestate-7day/inputs/S3A_POEORB_truth_20241007-08.EOF \
   --estimate-cd --hours 6 --gravity-degree 20 \
-  --sw-file docs/reports/error-analysis-oct2024/inputs/SpaceWeather-All-v1.2.txt \
+  --sw-file docs/reports/perturbation-ladder-truestate-7day/inputs/SpaceWeather-All-v1.2.txt \
   --eop-file docs/project-journal/inputs/finals2000A.all
-
-# sweep with real EOP (harness in docs/reports/error-analysis-oct2024/sweep/ForceSweep.java)
-#   args: <truth.eof> <sw.txt> <out.csv> <trainHours> <gravDeg> [eopFile]
 ```
+
+(The earlier per-report sweep/ladder folders were consolidated into the single example report
+`docs/reports/perturbation-ladder-truestate-7day/`.)

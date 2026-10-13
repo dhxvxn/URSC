@@ -7,10 +7,10 @@ initial state is the *truth* (confirmed exactly against the Oct-15 POEORB), the 
 is the **pure contribution of the force models** — there is no initial-state or fit error mixed in.
 
 Satellite **Sentinel-3A**. **Real IERS Earth orientation** (`finals2000A.all`) and **real space
-weather** (CSSI F10.7/Ap). This is the complement to the fit-based report in
-`../perturbation-ladder-7day/`: there the state was *determined* from a 24 h arc; here it is the
-*exact true state*, with **no fitting** (a single state cannot be fitted), and drag therefore uses
-a **fixed** Cd = 2.2 (not estimated).
+weather** (CSSI F10.7/Ap). The initial state here is the **exact true state**, used with
+**no fitting** (a single state cannot be fitted), so drag uses a **fixed** Cd = 2.2 (not
+estimated). (A fit-based variant — state *determined* from a 24 h arc — gave ~4.2 km at 7–8 days;
+see the "true state vs fitted" comparison near the end.)
 
 ## How the propagator works
 
@@ -39,6 +39,16 @@ short/long-period motion. The ladder below shows how each added model pulls that
 ## Error progression (summary)
 
 ![progression](graphs/ladder_truestate_progression.png)
+
+> **How to read this chart.** The value in front of each bar is the **RMS position error at the
+> 8-day mark** — the average distance between the predicted orbit and the actual Sentinel-3A
+> orbit over the Oct-15/16 window, using two-body **plus every force listed down to that line**.
+> At each epoch the error is `‖Δr‖ = √((x−x₁)² + (y−y₁)² + (z−z₁)²)` (model minus actual
+> position); the bar shows its root-mean-square, `RMS = √(mean of ‖Δr‖²)`. It is **cumulative**
+> (each row keeps the forces above it), **lower is better**, and the **drop from one bar to the
+> next is how much that one perturbation contributed**. Example: "+ J2 = 10.9 km" means central
+> gravity *and* J2 together predict the orbit to 10.9 km at 8 days — and since two-body was
+> 13,171 km, J2 alone removed ~99.9 % of the error.
 
 | Step | Combination | 1-day RMS | **8-day RMS** | 8-day max |
 |---|---|---:|---:|---:|
@@ -276,11 +286,14 @@ error is **km-scale**, and the last few km are a drag / space-weather limit, not
 mvn -q -DskipTests compile
 javac -cp target/classes -d build docs/reports/perturbation-ladder-truestate-7day/src/LadderTrueState.java
 java  -cp target/classes:build org.ursc.trajectory.app.command.LadderTrueState \
-  docs/reports/error-analysis-oct2024/inputs/S3A_POEORB_truth_20241007-08.EOF \
-  docs/reports/perturbation-ladder-7day/inputs/S3A_POEORB_truth_20241015-16.EOF \
-  docs/reports/error-analysis-oct2024/inputs/SpaceWeather-All-v1.2.txt \
-  out 20 docs/project-journal/inputs/finals2000A.all
+  docs/reports/perturbation-ladder-truestate-7day/inputs/S3A_POEORB_truth_20241007-08.EOF \
+  docs/reports/perturbation-ladder-truestate-7day/inputs/S3A_POEORB_truth_20241015-16.EOF \
+  docs/reports/perturbation-ladder-truestate-7day/inputs/SpaceWeather-All-v1.2.txt \
+  out 20 docs/reports/perturbation-ladder-truestate-7day/inputs/finals2000A.all
 ```
+
+(All inputs are in this report's `inputs/` folder: the S3A Oct-7/8 arc, the S3A Oct-15/16 truth,
+the CSSI space-weather file, and the IERS `finals2000A.all` EOP file.)
 
 Files: `data/ladder_summary.csv` + per-combination `data/ladder_<NN>_*.csv`;
 `graphs/ladder_truestate_progression.png`; `src/LadderTrueState.java`.

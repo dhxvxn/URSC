@@ -47,9 +47,10 @@ orbit (state + Cd) from tracking data, not just propagate.
 - **`forecast`** command (predict forward from one seed) + an orekit CSSI-txt space-weather
   parser (`CssiTxtSpaceWeatherProvider`). `617eb62`
 - **Oct-2024 error analysis** (single Oct-1 seed vs. actual Oct-7/8 POEORB): position- and
-  velocity-error graphs + 6-element tables, two-body vs full-force. Key finding: the
-  ~13,000 km error is an **uncorrectable seed phase offset** (~12.6 km semi-major-axis gap),
-  not a force-model defect. `a4b8a15` (`docs/reports/error-analysis-oct2024/`)
+  velocity-error graphs + 6-element tables, two-body vs full-force. Then-believed cause of the
+  ~13,000 km error: a seed phase offset — **later found (Day 5) to be an S3A/S3B satellite
+  mismatch**: the Oct-1 seed was Sentinel-3B, the truth Sentinel-3A (~140° apart). `a4b8a15`
+  (this report was later consolidated into `docs/reports/perturbation-ladder-truestate-7day/`).
 - **Perturbation-model sweep**: with orbit determination the error floor drops from
   ~13,000 km to **224 m**. Ranking: gravity ≫ drag > Sun/Moon ≫ tides/relativity/albedo
   (the last group within noise at a ~1-day horizon). NRLMSISE-00 is the best atmosphere. `4f0763c`
