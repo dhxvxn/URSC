@@ -32,9 +32,12 @@ public final class ForceSweep {
         final String outCsv = a[2];
         final double trainHours = Double.parseDouble(a[3]);
         final int gravDeg = Integer.parseInt(a[4]);
+        final String eopPath = a.length > 5 && !a[5].isEmpty() ? a[5] : null;
 
         final PoeOrbReader.Ephemeris truth = PoeOrbReader.read(java.nio.file.Paths.get(truthPath));
-        OrbitFiles.configureFrames(truth);
+        final org.ursc.trajectory.frames.EopProvider eop =
+                eopPath != null ? OrbitFiles.loadEop(eopPath, truth) : null;
+        OrbitFiles.configureFrames(truth, eop);
 
         final OrbitFiles.Setup setup = new OrbitFiles.Setup();
         setup.gravityDegree = gravDeg;
@@ -103,7 +106,8 @@ public final class ForceSweep {
 
         // ---- run ----
         final long t0 = System.currentTimeMillis();
-        final double[] rms = BacktestCommand.scoreCombos(trainEph, truth, setup, combos, 2.2, 10, 30.0);
+        System.out.printf(Locale.US, "EOP: %s%n", eopPath != null ? eopPath : "none (zero polar motion)");
+        final double[] rms = BacktestCommand.scoreCombos(trainEph, truth, setup, combos, 2.2, 10, 30.0, eop);
         System.out.printf(Locale.US, "swept %d combinations in %.1f s%n%n",
                 combos.size(), (System.currentTimeMillis() - t0) / 1000.0);
 

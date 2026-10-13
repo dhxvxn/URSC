@@ -176,9 +176,15 @@ public final class GravityFieldFactory {
                     continue;
                 }
                 String[] tokens = trimmed.split("\\s+");
-                // tolerate an ICGEM "gfc" leading key
+                // tolerate an ICGEM leading key; accept only static coefficient lines
+                // ("gfc"/"gfct") so a time-variable model's rate lines ("trnd", "acos",
+                // "asin") and any prose are ignored rather than mistaken for coefficients.
                 int base = 0;
                 if (tokens.length > 0 && !isInteger(tokens[0])) {
+                    final String key = tokens[0].toLowerCase(java.util.Locale.ROOT);
+                    if (!"gfc".equals(key) && !"gfct".equals(key)) {
+                        continue;
+                    }
                     base = 1;
                 }
                 if (tokens.length - base < 4) {

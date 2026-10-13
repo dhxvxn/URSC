@@ -1,0 +1,23 @@
+group,combination,heldout_rms_m
+ladder,two-body (central),51818.945069
+ladder,+ J2,2446.144243
+ladder,+ gravity 20x20,240.597347
+ladder,+ Sun/Moon,240.365737
+ladder,+ drag (NRLMSISE, est. Cd),140.653558
+ladder,+ SRP (est. Cr),140.795991
+ladder,+ solid tides,140.905835
+ladder,+ ocean tides,143.703172
+ladder,+ relativity,143.694296
+ladder,+ albedo/IR (FULL stack),143.717012
+atmos,full, drag=none,240.651249
+atmos,full, drag=exponential,157.843392
+atmos,full, drag=harris-priester,144.884766
+atmos,full, drag=nrlmsise00,143.717012
+leaveout,FULL (reference),143.717012
+leaveout,full - drag,240.651249
+leaveout,full - Sun/Moon,147.653463
+leaveout,full - SRP,143.542504
+leaveout,full - solid tides,143.615647
+leaveout,full - ocean tides,140.929720
+leaveout,full - relativity,143.719937
+leaveout,full - albedo/IR,143.694296

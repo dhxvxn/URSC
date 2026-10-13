@@ -185,7 +185,16 @@ public final class BacktestCommand implements Command {
                                 final PoeOrbReader.Ephemeris truthEph, final OrbitFiles.Setup setup,
                                 final List<OrbitFiles.ForceSet> combos, final double cdGuess,
                                 final int maxIter, final double obsStep) {
-        OrbitFiles.configureFrames(truthEph);
+        return scoreCombos(trainEph, truthEph, setup, combos, cdGuess, maxIter, obsStep, null);
+    }
+
+    /** As above, with an explicit EOP provider (e.g. a real orekit-data finals2000A.all). */
+    static double[] scoreCombos(final PoeOrbReader.Ephemeris trainEph,
+                                final PoeOrbReader.Ephemeris truthEph, final OrbitFiles.Setup setup,
+                                final List<OrbitFiles.ForceSet> combos, final double cdGuess,
+                                final int maxIter, final double obsStep,
+                                final org.ursc.trajectory.frames.EopProvider eop) {
+        OrbitFiles.configureFrames(truthEph, eop);
         final AbsoluteDate epoch = truthEph.dates.get(0);
         final double cadence = truthEph.dates.get(1).durationFrom(epoch);
         final int stride = Math.max(1, (int) Math.round(60.0 / cadence));
