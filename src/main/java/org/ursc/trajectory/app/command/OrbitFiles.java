@@ -73,6 +73,10 @@ final class OrbitFiles {
         Jb2008Inputs jb2008Inputs = null;
         /** Gravity field override (e.g. an orekit-data ICGEM model); null = bundled EGM96. */
         GravityField gravityOverride = null;
+        // DP54 integrator tolerances (defaults reproduce the historical behaviour).
+        double integAbsTol = 1e-7;
+        double integRelTol = 1e-9;
+        double integMaxStep = 120.0;
     }
 
     /**
@@ -214,7 +218,7 @@ final class OrbitFiles {
         final int ord = Math.min(order, field.getMaxOrder());
         final PropagationConfig c = new PropagationConfig()
                 .initialState(s0)
-                .integrator(new DormandPrince54Integrator(1e-7, 1e-9, 1e-3, 120.0), 60.0)
+                .integrator(new DormandPrince54Integrator(s.integAbsTol, s.integRelTol, 1e-3, s.integMaxStep), 60.0)
                 .gravityField(field, degree, ord)
                 .outputType(OrbitType.CARTESIAN);
         if (fs.sun) {

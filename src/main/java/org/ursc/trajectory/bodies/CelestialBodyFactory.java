@@ -15,8 +15,27 @@ import org.ursc.trajectory.time.AbsoluteDate;
  * 0.1&deg; / a few hundred km &mdash; far better than needed for third-body and
  * radiation-pressure perturbation modelling. Positions are returned in GCRF
  * (mean equator and equinox of J2000).</p>
+ *
+ * <p>For higher fidelity, a JPL DE ephemeris can be installed via
+ * {@link #setEphemeris(EphemerisSource)} (e.g. {@link De440Ephemeris}); the Sun and Moon then use
+ * it and fall back to the analytic series only when no source is installed or it has no data for a
+ * date. Installation is process-global (the factory is a singleton); tests must clear it afterwards
+ * with {@code setEphemeris(null)}.</p>
  */
 public final class CelestialBodyFactory {
+
+    /** Optional high-precision ephemeris; null = analytic series. */
+    private static volatile EphemerisSource ephemeris;
+
+    /** Install (or clear, with {@code null}) a high-precision Sun/Moon ephemeris source. */
+    public static void setEphemeris(final EphemerisSource source) {
+        ephemeris = source;
+    }
+
+    /** @return the installed high-precision ephemeris, or {@code null} if using the analytic series. */
+    public static EphemerisSource getEphemeris() {
+        return ephemeris;
+    }
 
     private static final CelestialBody EARTH = new CelestialBody() {
         public String getName() {
@@ -38,7 +57,8 @@ public final class CelestialBodyFactory {
             return Constants.SUN_MU;
         }
         public Vector3D getPosition(final AbsoluteDate date, final Frame frame) {
-            return requireGcrf(frame, sunPositionGCRF(date));
+            final EphemerisSource eph = ephemeris;
+            return requireGcrf(frame, eph != null ? eph.sunGeocentric(date) : sunPositionGCRF(date));
         }
     };
 
@@ -50,7 +70,8 @@ public final class CelestialBodyFactory {
             return Constants.MOON_MU;
         }
         public Vector3D getPosition(final AbsoluteDate date, final Frame frame) {
-            return requireGcrf(frame, moonPositionGCRF(date));
+            final EphemerisSource eph = ephemeris;
+            return requireGcrf(frame, eph != null ? eph.moonGeocentric(date) : moonPositionGCRF(date));
         }
     };
 
