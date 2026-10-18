@@ -10,6 +10,7 @@ import org.ursc.trajectory.app.command.DecayCommand;
 import org.ursc.trajectory.app.command.BacktestCommand;
 import org.ursc.trajectory.app.command.FitCommand;
 import org.ursc.trajectory.app.command.ForecastCommand;
+import org.ursc.trajectory.app.command.PredictCommand;
 import org.ursc.trajectory.app.command.PropagateCommand;
 import org.ursc.trajectory.app.command.TleCommand;
 import org.ursc.trajectory.app.command.ValidateCommand;
@@ -38,6 +39,7 @@ public final class Cli {
         register(new FitCommand());
         register(new BacktestCommand());
         register(new ForecastCommand());
+        register(new PredictCommand());
     }
 
     private Cli() {
@@ -94,5 +96,8 @@ public final class Cli {
         System.out.println("  leoprop fit orbit.EOF --estimate-cd --hours 6");
         System.out.println("  leoprop backtest day1.EOF day2.EOF ... day7.EOF --sw-file SW-All.csv");
         System.out.println("  leoprop forecast seed.EOF --days 7 --sw-file SpaceWeather-All-v1.2.txt");
+        System.out.println("  leoprop predict   (interactive: type the UTC + 6 state elements)");
+        System.out.println("  leoprop predict --utc 2024-10-07T21:59:42 --pos 4.8e5,-1.6e6,... "
+                + "--vel ...,...,... --days 8 --eop-file finals2000A.all --truth d1.eof,d8.eof");
     }
 }
