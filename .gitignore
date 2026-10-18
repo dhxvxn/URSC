@@ -16,3 +16,6 @@ ephemeris*.csv
 
 # OS
 .DS_Store
+
+# Session scratch (local experiment harnesses, extracted uploads); never committed
+scratchpad/
