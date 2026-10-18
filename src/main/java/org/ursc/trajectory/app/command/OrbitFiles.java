@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ursc.trajectory.attitude.AttitudeProvider;
 import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.bodies.OneAxisEllipsoid;
 import org.ursc.trajectory.config.PropagationConfig;
@@ -53,10 +54,14 @@ final class OrbitFiles {
         int gravityDegree = 30;
         /** Attitude-dependent box-wing geometry for drag/SRP (else cannonball). */
         boolean boxWing = false;
-        double bodyX = 2.2;      // Sentinel-3A body dimensions (m)
-        double bodyY = 2.2;
-        double bodyZ = 3.7;
-        double wingArea = 10.5;  // solar-array area (m^2)
+        // Sentinel-3A CPOD 8-plate macro-model (GMV-CPOD-TN-0027): bus face areas (m^2) ...
+        double faceAreaX = 2.84;
+        double faceAreaY = 5.41;
+        double faceAreaZ = 6.10;
+        double wingArea = 10.5;             // solar-array area (m^2)
+        double arrayCantDeg = 24.0;         // array cant from the rotation plane (deg)
+        /** Attitude source for box-wing: null = nominal yaw-steering; else measured quaternions. */
+        AttitudeProvider attitude = null;
         /** Atmosphere model name for the forecast/full path: none|exponential|harris-priester|nrlmsise00|jb2008. */
         String atmosphere = "nrlmsise00";
         double f107 = 220.0;
@@ -228,7 +233,11 @@ final class OrbitFiles {
             c.earthRadiation(CelestialBodyFactory.getSun(), cr, s.srpArea);
         }
         if (s.boxWing) {
-            c.boxWing(s.bodyX, s.bodyY, s.bodyZ, s.wingArea);
+            c.boxWing(s.faceAreaX, s.faceAreaY, s.faceAreaZ, s.wingArea,
+                    Math.toRadians(s.arrayCantDeg));
+            if (s.attitude != null) {
+                c.attitude(s.attitude);
+            }
         }
         if (fs.solidTides) {
             c.solidTides(true);

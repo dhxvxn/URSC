@@ -3,6 +3,8 @@ package org.ursc.trajectory.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ursc.trajectory.attitude.AttitudeProvider;
+import org.ursc.trajectory.attitude.NominalYawSteering;
 import org.ursc.trajectory.bodies.CelestialBody;
 import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.forces.EmpiricalAcceleration;
@@ -73,10 +75,12 @@ public final class PropagationConfig {
 
     // box-wing (attitude-dependent area) for drag + SRP; cannonball used when off
     private boolean useBoxWing = false;
-    private double boxX;
-    private double boxY;
-    private double boxZ;
+    private double faceAreaX;
+    private double faceAreaY;
+    private double faceAreaZ;
     private double wingArea;
+    private double arrayCantRad;
+    private AttitudeProvider attitudeProvider = new NominalYawSteering();
 
     public PropagationConfig initialState(final SpacecraftState state) {
         this.initialState = state;
@@ -161,21 +165,32 @@ public final class PropagationConfig {
     }
 
     /**
-     * Use an attitude-dependent box-wing geometry (body box + Sun-tracking array) for drag and SRP
-     * instead of the cannonball constant area. The scalar Cd/Cr still apply and are still fitted.
+     * Use an attitude-dependent box-wing geometry (body box + Sun-tracking canted array) for drag
+     * and SRP instead of the cannonball constant area. The three body face areas are given directly
+     * (the CPOD 8-plate model specifies them independently), not derived from box dimensions. The
+     * scalar Cd/Cr still apply and are still fitted.
      *
-     * @param bodyX body dimension along x (m)
-     * @param bodyY body dimension along y (m)
-     * @param bodyZ body dimension along z (m)
+     * @param faceAreaX body face area normal to {@code Xsat} (m^2)
+     * @param faceAreaY body face area normal to {@code Ysat} (m^2)
+     * @param faceAreaZ body face area normal to {@code Zsat} (m^2)
      * @param solarArrayArea solar-array area (m^2)
+     * @param arrayCantRad array cant from the rotation plane (rad)
      */
-    public PropagationConfig boxWing(final double bodyX, final double bodyY, final double bodyZ,
-                                     final double solarArrayArea) {
+    public PropagationConfig boxWing(final double faceAreaX, final double faceAreaY,
+                                     final double faceAreaZ, final double solarArrayArea,
+                                     final double arrayCantRad) {
         this.useBoxWing = true;
-        this.boxX = bodyX;
-        this.boxY = bodyY;
-        this.boxZ = bodyZ;
+        this.faceAreaX = faceAreaX;
+        this.faceAreaY = faceAreaY;
+        this.faceAreaZ = faceAreaZ;
         this.wingArea = solarArrayArea;
+        this.arrayCantRad = arrayCantRad;
+        return this;
+    }
+
+    /** Supply the body-orientation source for the box-wing geometry (default: nominal yaw-steering). */
+    public PropagationConfig attitude(final AttitudeProvider provider) {
+        this.attitudeProvider = provider;
         return this;
     }
 
@@ -220,13 +235,15 @@ public final class PropagationConfig {
         }
         if (useDrag) {
             final DragSensitive dragGeometry = useBoxWing
-                    ? new BoxWingDrag(dragCoefficient, boxX, boxY, boxZ, wingArea, CelestialBodyFactory.getSun())
+                    ? new BoxWingDrag(dragCoefficient, faceAreaX, faceAreaY, faceAreaZ, wingArea,
+                            arrayCantRad, attitudeProvider, CelestialBodyFactory.getSun())
                     : new IsotropicDrag(dragCoefficient, dragArea);
             forces.add(new DragForce(atmosphere, dragGeometry));
         }
         if (useSrp) {
             final RadiationSensitive srpGeometry = useBoxWing
-                    ? new BoxWingRadiation(reflectionCoefficient, boxX, boxY, boxZ, wingArea, srpSun)
+                    ? new BoxWingRadiation(reflectionCoefficient, faceAreaX, faceAreaY, faceAreaZ,
+                            wingArea, arrayCantRad, attitudeProvider, srpSun)
                     : new IsotropicRadiationSingleCoefficient(reflectionCoefficient, srpArea);
             forces.add(new SolarRadiationPressure(srpSun, srpGeometry));
         }

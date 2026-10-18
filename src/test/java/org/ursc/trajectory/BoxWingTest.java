@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.ursc.trajectory.attitude.NominalYawSteering;
 import org.ursc.trajectory.bodies.CelestialBodyFactory;
 import org.ursc.trajectory.forces.drag.BoxWingDrag;
 import org.ursc.trajectory.forces.drag.IsotropicDrag;
@@ -20,12 +21,13 @@ import org.ursc.trajectory.time.TimeScalesFactory;
  *  cannonball {@link IsotropicDrag} is unaffected by the new direction-aware overload. */
 class BoxWingTest {
 
-    // Sentinel-3A geometry
-    private static final double BX = 2.2;
-    private static final double BY = 2.2;
-    private static final double BZ = 3.7;
+    // Sentinel-3A CPOD 8-plate macro-model: bus face areas (m^2) + solar array + cant
+    private static final double AX = 2.84;
+    private static final double AY = 5.41;
+    private static final double AZ = 6.10;
     private static final double WING = 10.5;
-    private static final double AREA_MAX = BY * BZ + BX * BZ + BX * BY + WING; // all faces + wing
+    private static final double CANT = Math.toRadians(24.0);
+    private static final double AREA_MAX = AX + AY + AZ + WING; // loose upper bound: all faces + wing
 
     private static SpacecraftState state() {
         final Vector3D r = new Vector3D(7.0e6, 0.0, 0.0);
@@ -38,7 +40,8 @@ class BoxWingTest {
 
     @Test
     void projectedAreaIsAttitudeDependentAndBounded() {
-        final BoxWingDrag bw = new BoxWingDrag(2.2, BX, BY, BZ, WING, CelestialBodyFactory.getSun());
+        final BoxWingDrag bw = new BoxWingDrag(2.2, AX, AY, AZ, WING, CANT,
+                new NominalYawSteering(), CelestialBodyFactory.getSun());
         final SpacecraftState s = state();
 
         final double aVel   = bw.getCrossSection(s, new Vector3D(0.0, 1.0, 0.0));  // along velocity
@@ -51,8 +54,9 @@ class BoxWingTest {
 
     @Test
     void constantFallback() {
-        final BoxWingDrag bw = new BoxWingDrag(2.2, BX, BY, BZ, WING, CelestialBodyFactory.getSun());
-        final double expected = (BY * BZ + BX * BZ + BX * BY) / 3.0 + WING;
+        final BoxWingDrag bw = new BoxWingDrag(2.2, AX, AY, AZ, WING, CANT,
+                new NominalYawSteering(), CelestialBodyFactory.getSun());
+        final double expected = (AX + AY + AZ) / 3.0 + WING;
         assertEquals(expected, bw.getCrossSection(), 1.0e-9);
     }
 

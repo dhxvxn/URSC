@@ -1,25 +1,30 @@
 package org.ursc.trajectory.forces;
 
+import org.ursc.trajectory.attitude.AttitudeProvider;
+import org.ursc.trajectory.attitude.BodyFrame;
 import org.ursc.trajectory.bodies.CelestialBody;
 import org.ursc.trajectory.math.Vector3D;
 import org.ursc.trajectory.propagation.SpacecraftState;
 
 /**
- * Attitude-dependent projected area for a simple box + Sun-tracking single-wing spacecraft
- * (e.g. Sentinel-3), used by both the drag and the solar-radiation-pressure "box-wing" models.
+ * Attitude-dependent projected area for the Sentinel-3 CPOD 8-plate macro-model
+ * (GMV-CPOD-TN-0027): a body box with three independent face areas plus a Sun-tracking
+ * solar array. The body orientation comes from an {@link AttitudeProvider} (the nominal
+ * yaw-steered law, or measured AUX_PROQUA quaternions), so the plates are oriented by the
+ * real attitude rather than an internally-assumed one.
  *
- * <p>The body is a rectangular box whose three face areas are given along the body axes; the
- * attitude is the nominal <b>nadir-pointing, yaw-steered</b> frame derived from the orbit
- * (z = nadir, y = −orbit-normal, x ≈ velocity). The solar array is a flat plate of fixed area that
- * tracks the Sun, so its normal is the Sun direction. The projected area along a flow direction
- * {@code f} (unit vector) is</p>
+ * <p>The three body face areas are given directly (not derived from box dimensions), because
+ * the CPOD model specifies them independently: bus &plusmn;X = 2.84, &plusmn;Y = 5.41,
+ * &plusmn;Z = 6.10 m&sup2;. The solar array is a flat plate of area {@code wingArea} (10.50 m&sup2;)
+ * that rotates about the body {@code Y} axis to track the Sun, canted by {@code cantRad} from the
+ * rotation plane. The projected area along a flow direction {@code f} (unit vector) is</p>
  * <pre>
- *   A(f) = |f·x|·Ax + |f·y|·Ay + |f·z|·Az  +  Awing·|f·sun|
+ *   A(f) = |f·X|·Ax + |f·Y|·Ay + |f·Z|·Az  +  Awing·|f·n_array|
  * </pre>
- * <p>For SRP the flow direction <em>is</em> the Sun direction, so the wing contributes its full
- * area; for drag it is the ram direction, so the wing contributes according to its tilt to the
- * flow. This is a nominal-attitude model (no attitude telemetry): it captures the geometry, making
- * the fitted drag/SRP coefficient physical, but it is not a substitute for measured attitude.</p>
+ * <p>where {@code n_array} is the array normal (the Sun direction projected perpendicular to the
+ * array rotation axis and tilted by the cant toward the Sun). For SRP the flow direction is the
+ * Sun direction; for drag it is the ram direction. The scalar Cd/Cr still apply and are still
+ * fitted; only the area becomes attitude-dependent.</p>
  */
 public final class BoxWingGeometry {
 
@@ -27,40 +32,68 @@ public final class BoxWingGeometry {
     }
 
     /**
-     * Projected area (m^2) of the box + Sun-tracking wing along a flow direction.
+     * Projected area (m&sup2;) of the box + Sun-tracking array along a flow direction, using the
+     * attitude from {@code attitude} and a Sun-tracking canted array.
      *
-     * @param state current state (inertial frame), for the nominal attitude and Sun direction
-     * @param flowDir unit flow direction in the inertial frame (ram for drag, Sun for SRP)
-     * @param sun the Sun (for the array orientation)
-     * @param faceAreaX body face area normal to the body x-axis (m^2)
-     * @param faceAreaY body face area normal to the body y-axis (m^2)
-     * @param faceAreaZ body face area normal to the body z-axis (m^2)
-     * @param wingArea solar-array area (m^2)
-     * @return the projected area (m^2)
+     * @param state    current state (its frame is the inertial frame of {@code flowDir})
+     * @param flowDir  unit flow direction in the inertial frame (ram for drag, Sun for SRP)
+     * @param sun      the Sun (for the array orientation)
+     * @param attitude the body-orientation source
+     * @param areaX    body face area normal to {@code Xsat} (m&sup2;)
+     * @param areaY    body face area normal to {@code Ysat} (m&sup2;)
+     * @param areaZ    body face area normal to {@code Zsat} (m&sup2;)
+     * @param wingArea solar-array area (m&sup2;)
+     * @param cantRad  array cant from the rotation plane (rad)
+     * @return the projected area (m&sup2;)
      */
     public static double projectedArea(final SpacecraftState state, final Vector3D flowDir,
-                                       final CelestialBody sun,
-                                       final double faceAreaX, final double faceAreaY,
-                                       final double faceAreaZ, final double wingArea) {
-        final Vector3D r = state.getPosition();
-        final Vector3D v = state.getVelocity();
-
-        // nominal nadir-pointing, yaw-steered body frame
-        final Vector3D ur = r.normalize();
-        final Vector3D h = r.crossProduct(v).normalize();   // orbit normal
-        final Vector3D zB = ur.negate();                    // nadir
-        final Vector3D yB = h.negate();                     // -orbit-normal
-        final Vector3D xB = yB.crossProduct(zB);            // ~velocity (roll)
-
-        double area = Math.abs(flowDir.dotProduct(xB)) * faceAreaX
-                    + Math.abs(flowDir.dotProduct(yB)) * faceAreaY
-                    + Math.abs(flowDir.dotProduct(zB)) * faceAreaZ;
-
-        // Sun-tracking array: normal points at the Sun
+                                       final CelestialBody sun, final AttitudeProvider attitude,
+                                       final double areaX, final double areaY, final double areaZ,
+                                       final double wingArea, final double cantRad) {
+        final BodyFrame body = attitude.attitude(state);
         final Vector3D sunDir = sun.getPosition(state.getDate(), state.getFrame())
-                .subtract(r).normalize();
-        area += wingArea * Math.abs(flowDir.dotProduct(sunDir));
+                .subtract(state.getPosition()).normalize();
+        final Vector3D arrayNormal = arrayNormal(body, sunDir, cantRad);
+        return projectedArea(flowDir, body, arrayNormal, areaX, areaY, areaZ, wingArea);
+    }
 
+    /**
+     * Core summation along a flow direction given an explicit body frame and array normal.
+     * Exposed for validation against the CPOD deployed projected-area table.
+     *
+     * @param flowDir     unit flow direction (inertial)
+     * @param body        body axes (inertial)
+     * @param arrayNormal solar-array normal (inertial), or {@code null} to omit the array
+     */
+    public static double projectedArea(final Vector3D flowDir, final BodyFrame body,
+                                       final Vector3D arrayNormal, final double areaX,
+                                       final double areaY, final double areaZ,
+                                       final double wingArea) {
+        double area = Math.abs(flowDir.dotProduct(body.x())) * areaX
+                    + Math.abs(flowDir.dotProduct(body.y())) * areaY
+                    + Math.abs(flowDir.dotProduct(body.z())) * areaZ;
+        if (arrayNormal != null) {
+            area += wingArea * Math.abs(flowDir.dotProduct(arrayNormal));
+        }
         return area;
+    }
+
+    /**
+     * The solar-array normal: the Sun direction projected perpendicular to the array rotation axis
+     * (body {@code Y}) and tilted by the cant toward the Sun hemisphere. Degenerates gracefully to
+     * the body {@code Z} axis when the Sun is along the rotation axis.
+     */
+    public static Vector3D arrayNormal(final BodyFrame body, final Vector3D sunDir,
+                                       final double cantRad) {
+        final Vector3D yB = body.y();
+        final double along = sunDir.dotProduct(yB);
+        Vector3D inPlane = sunDir.subtract(yB.scalarMultiply(along));
+        if (inPlane.getNorm() < 1.0e-9) {
+            inPlane = body.z();                         // Sun along the rotation axis
+        } else {
+            inPlane = inPlane.normalize();
+        }
+        final double tilt = (along >= 0 ? 1.0 : -1.0) * Math.sin(cantRad);
+        return inPlane.scalarMultiply(Math.cos(cantRad)).add(yB.scalarMultiply(tilt)).normalize();
     }
 }
