@@ -1,0 +1,19 @@
+arc,seed_utc,horizon_days,density_model,integrator,weather_mode,gravity_deg,cd,area_m2,mass_kg,error_m,note
+aug1,2024-08-01T21:59:42,1,NRLMSISE-00,tight,forecast,80,2.2,8,1130,172.7,1-day reference
+aug1,2024-08-01T21:59:42,1,JB2008,tight,forecast,20,2.2,8,1130,273.5,deg20 worse at 1-day (cancellation disproof)
+aug1,2024-08-01T21:59:42,7,NRLMSISE-00,loose,forecast,70,2.2,8,1130,9169.5,
+aug1,2024-08-01T21:59:42,7,JB2008,loose,forecast,70,2.2,8,1130,1790.9,
+aug1,2024-08-01T21:59:42,7,JB2008,tight,forecast,70,2.2,8,1130,1325.5,best single-state config
+aug1,2024-08-01T21:59:42,7,JB2008,tight,forecast,20,2.2,8,1130,785.7,cancellation artifact (not robust)
+aug1,2024-08-01T21:59:42,7,JB2008,tight,forecast,40,2.2,8,1130,1367.7,
+aug1,2024-08-01T21:59:42,7,JB2008,tight,forecast,80,2.2,8,1130,1327.0,
+aug1,2024-08-01T21:59:42,7,JB2008,tight,forecast,120,2.2,8,1130,1326.8,saturated
+oct7,2024-10-07T21:59:42,1,NRLMSISE-00,loose,reconstruction,70,2.2,8,1130,99.8,old baseline
+oct7,2024-10-07T21:59:42,8,NRLMSISE-00,loose,reconstruction,70,2.2,8,1130,1602.2,old baseline
+oct7,2024-10-07T21:59:42,8,NRLMSISE-00,loose,forecast,70,2.2,8,1130,1594.9,
+oct7,2024-10-07T21:59:42,8,JB2008,loose,forecast,70,2.2,8,1130,4852.4,
+oct7,2024-10-07T21:59:42,8,JB2008,tight,forecast,70,2.2,8,1130,4171.3,JB2008 worse for October
+aug7,2024-08-07T21:59:42,7,NRLMSISE-00,tight,forecast,70,2.2,8,1130,2579.5,
+aug7,2024-08-07T21:59:42,7,JB2008,tight,forecast,70,2.2,8,1130,12562.1,
+aug8,2024-08-08T21:59:42,6,NRLMSISE-00,tight,forecast,70,2.2,8,1130,1732.5,
+aug8,2024-08-08T21:59:42,6,JB2008,tight,forecast,70,2.2,8,1130,10021.5,
