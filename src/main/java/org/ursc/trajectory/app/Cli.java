@@ -12,6 +12,7 @@ import org.ursc.trajectory.app.command.FitCommand;
 import org.ursc.trajectory.app.command.ForecastCommand;
 import org.ursc.trajectory.app.command.PredictCommand;
 import org.ursc.trajectory.app.command.PropagateCommand;
+import org.ursc.trajectory.app.command.SppCommand;
 import org.ursc.trajectory.app.command.TleCommand;
 import org.ursc.trajectory.app.command.ValidateCommand;
 import org.ursc.trajectory.app.term.Ansi;
@@ -40,6 +41,7 @@ public final class Cli {
         register(new BacktestCommand());
         register(new ForecastCommand());
         register(new PredictCommand());
+        register(new SppCommand());
     }
 
     private Cli() {
