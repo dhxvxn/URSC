@@ -36,4 +36,19 @@ public final class GpsConstants {
      * term of the satellite-clock relativistic correction.
      */
     public static final double RELATIVISTIC_F = -4.442807633e-10;
+
+    /**
+     * First-order ionosphere-free pseudorange combination of dual-frequency code
+     * observations: {@code (f1^2*P1 - f2^2*P2) / (f1^2 - f2^2)} with f1 = L1,
+     * f2 = L2. Removes the (frequency-dependent) first-order ionospheric delay.
+     *
+     * @param p1L1 L1 pseudorange (m)
+     * @param p2L2 L2 pseudorange (m)
+     * @return the ionosphere-free pseudorange (m), or NaN if either input is NaN
+     */
+    public static double ionoFreePseudorange(final double p1L1, final double p2L2) {
+        final double f1sq = F_L1 * F_L1;
+        final double f2sq = F_L2 * F_L2;
+        return (f1sq * p1L1 - f2sq * p2L2) / (f1sq - f2sq);
+    }
 }
