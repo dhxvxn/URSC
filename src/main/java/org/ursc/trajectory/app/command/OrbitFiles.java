@@ -73,6 +73,8 @@ final class OrbitFiles {
         Jb2008Inputs jb2008Inputs = null;
         /** Gravity field override (e.g. an orekit-data ICGEM model); null = bundled EGM96. */
         GravityField gravityOverride = null;
+        /** Inject an explicit Atmosphere instance, bypassing the name-based factory. */
+        Atmosphere atmosphereOverride = null;
         // DP54 integrator tolerances (defaults reproduce the historical behaviour).
         double integAbsTol = 1e-7;
         double integRelTol = 1e-9;
@@ -183,6 +185,9 @@ final class OrbitFiles {
 
     /** Build an atmosphere model by name (drag density source). */
     static Atmosphere buildAtmosphere(final String name, final OneAxisEllipsoid earth, final Setup s) {
+        if (s.atmosphereOverride != null) {
+            return s.atmosphereOverride;
+        }
         switch (name.toLowerCase()) {
             case "exponential":
                 return new ExponentialAtmosphere(earth);
