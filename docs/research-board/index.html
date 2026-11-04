@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>URSC Project Mind-Map</title>
+<style>
+/* Layout: an expandable node-link mind-map on a pan/zoom canvas; click a node to reveal its subtopics, click again for the detail panel. */
+:root{
+  --bg:#e7ebf1; --surface:#ffffff; --ink:#15202e; --muted:#5a6676; --line:#c7d0db; --hair:#dde3ea;
+  --c-mission:#d8452a; --c-data:#b5701a; --c-frames:#8a6d1e; --c-prop:#1f9d57; --c-pert:#2b6cb0;
+  --c-density:#0e8a8a; --c-strategy:#7a4fd0; --c-od:#c23b83; --c-gnss:#2457d6; --c-status:#4a5568;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1218; --surface:#161d27; --ink:#e7edf4; --muted:#95a2b2; --line:#2a333f; --hair:#222b36;
+  --c-mission:#f06b52; --c-data:#e0a44a; --c-frames:#d4bd57; --c-prop:#3fbf74; --c-pert:#5698e0;
+  --c-density:#2bb3b3; --c-strategy:#a583f0; --c-od:#ec6bb0; --c-gnss:#6f9bf0; --c-status:#9aa6b4;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0d1218; --surface:#161d27; --ink:#e7edf4; --muted:#95a2b2; --line:#2a333f; --hair:#222b36;
+  --c-mission:#f06b52; --c-data:#e0a44a; --c-frames:#d4bd57; --c-prop:#3fbf74; --c-pert:#5698e0;
+  --c-density:#2bb3b3; --c-strategy:#a583f0; --c-od:#ec6bb0; --c-gnss:#6f9bf0; --c-status:#9aa6b4;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+header{padding:10px max(14px,env(safe-area-inset-left,0px)) 10px max(14px,env(safe-area-inset-right,0px));
+  padding-top:calc(10px + env(safe-area-inset-top,0px));
+  border-bottom:1px solid var(--line);background:var(--bg);z-index:5;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+header h1{margin:0;font-size:clamp(15px,2.6vw,20px);font-weight:700;letter-spacing:-.01em}
+header .sub{color:var(--muted);font-size:12px}
+header .how{color:var(--muted);font-size:11.5px;font-style:italic;margin-left:auto}
+#view{flex:1;position:relative;overflow:hidden;cursor:grab;touch-action:none}
+#view.drag{cursor:grabbing}
+#world{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
+#edges{position:absolute;top:0;left:0;overflow:visible;pointer-events:none}
+.node{position:absolute;width:214px;background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--k,var(--muted));border-radius:9px;padding:7px 9px;cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.node:hover{border-color:var(--k,var(--muted))}
+.node.sel{box-shadow:0 0 0 2px var(--k,var(--muted))}
+.node .t{font-size:12.5px;font-weight:600;line-height:1.25}
+.node .b{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.3}
+.node .exp{position:absolute;right:-11px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;
+  background:var(--k,var(--muted));color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+.node .leaftag{position:absolute;right:8px;top:7px;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.root{border-left-width:4px}
+.root .t{font-size:13.5px}
+/* controls */
+#ctrl{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;z-index:4;flex-wrap:wrap}
+#ctrl button{font-family:var(--sans);font-size:12px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:7px;padding:5px 9px;cursor:pointer}
+#ctrl button:hover{border-color:var(--ink)}
+#legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--surface) 88%,transparent);
+  border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:10px;z-index:4;max-width:160px}
+#legend b{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+#legend span{display:flex;align-items:center;gap:5px;color:var(--muted);line-height:1.6}
+#legend i{width:9px;height:9px;border-radius:2px;flex:none}
+/* drawer */
+#drawer{position:absolute;top:0;right:0;height:100%;width:min(460px,94vw);background:var(--surface);
+  border-left:1px solid var(--line);box-shadow:-6px 0 24px rgba(0,0,0,.14);transform:translateX(100%);
+  transition:transform .25s ease;z-index:8;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+#drawer .dhead{padding:14px 16px 10px;padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--hair);display:flex;gap:10px;align-items:flex-start}
+#drawer .chip{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;padding:3px 8px;border-radius:6px;white-space:nowrap}
+#drawer h2{margin:0;font-size:16px;letter-spacing:-.01em;flex:1}
+#drawer .x{border:none;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:0 2px}
+#dbody{padding:12px 16px 48px;overflow-y:auto;font-size:13.5px;line-height:1.58}
+#dbody p{margin:0 0 10px;color:var(--ink)}
+#dbody ul{margin:0 0 10px 18px;padding:0}
+#dbody li{margin:0 0 4px}
+#dbody .blurb{color:var(--muted);font-style:italic;margin-bottom:10px}
+#dbody h4{margin:15px 0 5px;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+#dbody .f{font-family:var(--mono);font-size:12px;background:color-mix(in srgb,var(--ink) 6%,var(--surface));
+  border-radius:7px;padding:8px 10px;overflow-x:auto;white-space:pre;margin:4px 0 10px}
+#dbody pre.ex{font-family:var(--mono);font-size:10.5px;background:color-mix(in srgb,var(--ink) 7%,var(--surface));
+  border:1px solid var(--hair);border-radius:7px;padding:9px 10px;overflow-x:auto;margin:4px 0 10px;line-height:1.45}
+#dbody table{border-collapse:collapse;width:100%;font-size:11.5px;margin:4px 0 11px}
+#dbody th,#dbody td{border:1px solid var(--hair);padding:3px 7px;text-align:left;vertical-align:top}
+#dbody th{background:color-mix(in srgb,var(--ink) 5%,var(--surface));font-weight:600}
+#dbody .why{background:color-mix(in srgb,var(--c-prop) 10%,var(--surface));border-left:3px solid var(--c-prop);border-radius:0 6px 6px 0;padding:8px 11px;margin:4px 0 10px;font-size:12.5px}
+#dbody .rej{background:color-mix(in srgb,var(--c-mission) 10%,var(--surface));border-left:3px solid var(--c-mission);border-radius:0 6px 6px 0;padding:8px 11px;margin:4px 0 10px;font-size:12.5px}
+#dbody .why b,#dbody .rej b{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+.hint{color:var(--muted);font-size:11.5px}
+@media (max-width:640px){
+  #drawer{width:100%;height:76%;top:auto;bottom:0;border-left:none;border-top:1px solid var(--line);
+    transform:translateY(100%);border-radius:14px 14px 0 0}
+  #drawer.open{transform:none}
+  #legend{display:none}
+  header .how{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>URSC &mdash; LEO Orbit Determination &amp; Prediction</h1>
+    <span class="sub">Sentinel-3A &bull; interactive research map</span>
+    <span class="how">Click a node to open its subtopics &middot; click again for detail &middot; drag to pan, scroll to zoom</span>
+  </header>
+  <div id="view">
+    <div id="world">
+      <svg id="edges"></svg>
+    </div>
+    <div id="ctrl">
+      <button data-a="in">+</button><button data-a="out">&minus;</button>
+      <button data-a="fit">Fit</button><button data-a="expand">Expand all</button><button data-a="collapse">Collapse</button>
+    </div>
+    <div id="legend"><b>Categories</b>
+      <span><i style="background:var(--c-mission)"></i>Mission / satellite</span>
+      <span><i style="background:var(--c-data)"></i>Inputs &amp; data</span>
+      <span><i style="background:var(--c-frames)"></i>Frames &amp; time</span>
+      <span><i style="background:var(--c-prop)"></i>Propagator</span>
+      <span><i style="background:var(--c-pert)"></i>Perturbations</span>
+      <span><i style="background:var(--c-density)"></i>Density models</span>
+      <span><i style="background:var(--c-strategy)"></i>Strategy</span>
+      <span><i style="background:var(--c-od)"></i>Orbit determination</span>
+      <span><i style="background:var(--c-gnss)"></i>GNSS / SPP</span>
+      <span><i style="background:var(--c-status)"></i>Status</span>
+    </div>
+  </div>
+  <aside id="drawer">
+    <div class="dhead"><span class="chip" id="dchip"></span><h2 id="dtitle"></h2><button class="x" id="dclose">&times;</button></div>
+    <div id="dbody"></div>
+  </aside>
+</div>
+<script>
+"use strict";
+// ---- content tree. Each node: {t title, b blurb, c category, d detail-html, f formula, ex example, tbl table, why, rej, ch children} ----
+const L={mission:"Mission / satellite",data:"Inputs & data",frames:"Frames & time",prop:"Propagator",pert:"Perturbations",density:"Density models",strategy:"Strategy",od:"Orbit determination",gnss:"GNSS / SPP",status:"Status"};
+const DATA={
+ t:"URSC",b:"LEO orbit determination & prediction",c:"status",
+ d:`<p><b>The one-sentence version:</b> URSC is a Java software library that answers two questions about a satellite flying a few hundred kilometres above Earth &mdash; <i>where exactly is it right now?</i> (orbit determination) and <i>where will it be hours or days from now?</i> (orbit prediction).</p>
+ <p>Every satellite needs this. To point an antenna at it, to avoid a collision, to schedule when it can photograph a city, or to plan the little thruster burns that keep it in its lane, you must know its position and velocity to high accuracy and be able to extrapolate them into the future.</p>
+ <p>Two ingredients make that possible. First, a <b>propagator</b>: a physics engine that takes a known starting position and velocity and integrates the equations of motion forward through every force that acts on the satellite (Earth's lumpy gravity, the pull of the Sun and Moon, the faint drag of the upper atmosphere, the pressure of sunlight, and more). Second, an <b>orbit determiner</b>: a procedure that takes raw measurements from the satellite's onboard GPS receiver and works backwards to reconstruct the true orbit that produced them.</p>
+ <p>URSC is built with <b>zero runtime dependencies</b> &mdash; it is self-contained pure Java, which makes it easy to audit, port, and trust. The test satellite throughout is <b>Sentinel-3A</b>, a real European ocean-monitoring satellite, because its true orbit is published and can be used as an answer key to grade everything the software produces.</p>
+ <p>This board is the whole project laid out as a map. Each branch below is a pillar of the system; click into them to go from the big picture down to the real files, equations, and numbers.</p>`,
+ ch:[
+  {t:"Mission & test satellite",b:"Sentinel-3A, ~814 km Sun-sync",c:"mission",
+   d:`<p>You cannot tell whether orbit software is <i>correct</i> unless you can compare its output against a known-true answer. That is why the whole project is anchored to one real, well-documented satellite: <b>Sentinel-3A</b>.</p>
+   <p>Sentinel-3A is an ESA / EUMETSAT Earth-observation satellite (part of Europe's Copernicus programme) that watches the oceans and land &mdash; sea-surface temperature, ocean colour, land and ice. For this project its science is not what matters; three practical things are:</p>
+   <ul>
+   <li>It flies in a <b>low Earth orbit</b> (~814 km) where atmospheric drag is strong enough to be the hardest thing to model &mdash; the interesting challenge.</li>
+   <li>It carries a <b>GPS receiver</b>, so there are real onboard measurements to feed an orbit determiner.</li>
+   <li>Its agencies publish a <b>precise, post-processed orbit</b> (the POEORB product) that is accurate to a few centimetres &mdash; a trustworthy answer key.</li>
+   </ul>
+   <p>So the loop is: feed URSC real inputs, let it compute an orbit, and grade the result against the published truth. Every number elsewhere on this board was produced and scored this way. Click into the children for the orbit, the physical model of the spacecraft, and how it is oriented in space.</p>`,
+   ch:[
+    {t:"Orbit",b:"~814 km, Sun-synchronous, LEO",c:"mission",
+     d:`<p><b>Low Earth Orbit (LEO)</b> simply means close to the planet &mdash; hundreds of km up, where the International Space Station and most imaging satellites live, as opposed to the ~36,000 km of a geostationary TV satellite. Sentinel-3A orbits at roughly <b>814 km</b> and circles the Earth about every <b>101 minutes</b>, so it completes roughly 14 laps a day.</p>
+     <p><b>Sun-synchronous</b> is a clever choice of orbit tilt. The orbit plane is tipped about <b>98.6&deg;</b> (slightly "over the top" of the poles). At this inclination, Earth's equatorial bulge nudges the orbit plane to rotate by almost exactly <b>1&deg; per day</b> &mdash; the same rate the Earth moves around the Sun. The payoff: the satellite always crosses the equator at the <i>same local solar time</i>, so every place it photographs is lit by the Sun at a consistent angle. Great for science; and notably, that slow, predictable turning of the orbit plane is itself caused by a perturbation (J2, covered later), which is one reason getting the gravity model right matters.</p>
+     <p>Why this altitude is the hard case: at 814 km the air is almost a vacuum, but "almost" is not "completely." A thin residual atmosphere still drags on the satellite, slowly stealing energy and lowering the orbit. That drag depends on how puffed-up the upper atmosphere is, which depends on solar activity and can swing by large factors &mdash; and that unpredictability is the dominant source of prediction error in this whole project.</p>`,
+     f:`altitude       ~ 814 km
+orbital period ~ 100.9 min  (~14 orbits/day)
+inclination    ~ 98.6°  (Sun-synchronous)
+speed          ~ 7.5 km/s (~27,000 km/h)`},
+    {t:"Physical model (CPOD)",b:"mass, size, 8-plate box-wing",c:"mission",
+     d:`<p>To compute drag and the push of sunlight you need to know the satellite's <b>mass</b> and its <b>shape</b> &mdash; specifically, how much area it presents to the oncoming air and to the Sun. The flight-dynamics team publishes exactly this as a "macro-model" (the GMV <b>CPOD</b> document).</p>
+     <p>Rather than model every bolt, the spacecraft is approximated as a small set of <b>flat plates</b> &mdash; a boxy bus body (six faces) plus the solar array (a wing). This is called a <b>box-wing</b> model. As the satellite flies and turns, the software adds up the projected area of each plate facing into the airflow (for drag) or facing the Sun (for sunlight pressure), so the effective area changes realistically with orientation instead of being a single fixed guess.</p>
+     <p>Two coefficients tune the physics: the <b>drag coefficient C<sub>d</sub></b> (how efficiently the thin air transfers momentum, ~2.2) and the <b>reflectivity C<sub>r</sub></b> (how much sunlight bounces off rather than being absorbed, ~1.3).</p>
+     <p>One honest implementation note: URSC's box-wing uses the plate <i>areas</i> and mass; it does not use the published centre-of-gravity offset (that would matter for torques / attitude dynamics, not for the position-level drag and sunlight forces modelled here). The CoG values are listed below only for completeness.</p>`,
+     tbl:`<tr><th>Quantity</th><th>Value</th><th>Plain meaning</th></tr>
+     <tr><td>Mass</td><td>~1130 kg (doc 1129.648)</td><td>how heavy &mdash; heavier resists drag more</td></tr>
+     <tr><td>Bus faces &plusmn;X / &plusmn;Y / &plusmn;Z</td><td>2.84 / 5.41 / 6.10 m&sup2;</td><td>area of each side of the body box</td></tr>
+     <tr><td>Solar array</td><td>10.5 m&sup2;</td><td>the big wing &mdash; dominates Sun-facing area</td></tr>
+     <tr><td>Array cant angle</td><td>24&deg;</td><td>tilt of the wing relative to the body</td></tr>
+     <tr><td>Drag C<sub>d</sub></td><td>2.2</td><td>air-to-spacecraft momentum efficiency</td></tr>
+     <tr><td>Reflectivity C<sub>r</sub></td><td>1.3</td><td>how reflective the surfaces are to sunlight</td></tr>
+     <tr><td>CoG X,Y,Z (doc only)</td><td>+1.489, +0.217, +0.009 m</td><td>balance point &mdash; not used by the position model</td></tr>`},
+    {t:"Attitude",b:"how the satellite is oriented",c:"mission",
+     d:`<p><b>Attitude</b> means which way the spacecraft is pointing &mdash; its orientation in space, separate from its position. It matters here because the box-wing plates only present the right area to the air and Sun if the software knows how the body is turned.</p>
+     <p>Sentinel-3A flies a <b>yaw-steering law</b>: its instruments point straight down at Earth (nadir), its body stays aligned with the direction of travel, and it slowly rotates ("yaws") so the solar array keeps facing the Sun as the orbit carries it around the planet. The project can get this orientation two ways:</p>
+     <ul>
+     <li><b>Nominal (computed) attitude:</b> derive the pointing purely from geometry &mdash; where the satellite is, where it is heading, and where the Sun is. Needs no extra data and works for any date. This is the default.</li>
+     <li><b>Measured attitude (AUX_PROQUA files):</b> the flight-dynamics team's own recorded orientation, delivered as <b>quaternions</b> (a compact four-number way to describe a rotation) sampled once per second.</li>
+     </ul>
+     <p>A key finding of this project: the measured orientation sits only about <b>2&deg;</b> away from the computed nominal law. That tiny difference changes the projected area by roughly 0.06%, which moves the orbit error by less than a metre. So the simple computed attitude is an excellent stand-in &mdash; a reassuring result, examined in the density/attitude study later.</p>`,
+     tbl:`<tr><th>Convention</th><th>Points</th></tr>
+     <tr><td>+Z axis</td><td>nadir &mdash; straight down at Earth</td></tr>
+     <tr><td>&minus;X axis</td><td>ram &mdash; into the direction of travel</td></tr>
+     <tr><td>Y axis</td><td>~orbit-normal &mdash; the solar-array axis</td></tr>`,
+     why:`<b>Why it barely matters</b>Measured attitude is ~2&deg; off the computed law &rarr; ~0.06% area change &rarr; sub-metre orbit effect. The nominal law is an adequate, data-free substitute.`},
+    {t:"Why Sentinel-3A",b:"real inputs + a trusted answer key",c:"mission",
+     d:`<p>Choosing the test case well is half of building trustworthy software. Sentinel-3A was picked because it closes the loop end-to-end with <b>public, real data</b>:</p>
+     <ul>
+     <li><b>Real inputs</b> to drive orbit determination: the raw onboard GPS observations (the GNSSRD product).</li>
+     <li><b>A trusted answer key</b> to grade every result: the precise post-processed orbit (POEORB), accurate to centimetres.</li>
+     <li><b>A demanding regime:</b> low altitude, so atmospheric drag is strong &mdash; if the software handles this orbit well, easier orbits are comfortable.</li>
+     </ul>
+     <p>This means no claim on the board is hand-waved: a propagated or determined orbit is always compared against the published truth, and the error is reported in metres. Being able to say "we were off by N metres" against a real reference is what separates a demo from an engineering result.</p>`}
+   ]},
+
+  {t:"Inputs & data products",b:"the files the system reads",c:"data",
+   d:`<p>Orbit work is only as good as the data fed in. This branch is a tour of every file type the system consumes, grouped into three kinds:</p>
+   <ul>
+   <li><b>Measurements</b> &mdash; what the satellite actually recorded (GNSSRD GPS observations, PROQUA attitude).</li>
+   <li><b>The truth</b> &mdash; the published precise orbit used only to grade results (POEORB).</li>
+   <li><b>The environment</b> &mdash; models of the world the satellite flies through: how active the Sun is, how the Earth is oriented, the exact shape of Earth's gravity, where the Sun and Moon are, and the ocean tides.</li>
+   </ul>
+   <p>A lot of practical engineering lives here: these are real, quirky, text-and-binary files in standardized formats, and reading them correctly (right units, right time scale, right reference frame) is a prerequisite for everything downstream. Click into each for what it is, the file format, and a real excerpt.</p>`,
+   ch:[
+    {t:"POEORB",b:"precise orbit = the answer key",c:"data",
+     d:`<p><b>POEORB</b> stands for <b>Precise Orbit Ephemeris</b> &mdash; the gold-standard, after-the-fact best estimate of where Sentinel-3A actually was. It is produced on the ground days later using the full GPS data and the most sophisticated processing, reaching a few centimetres of accuracy.</p>
+     <p>Think of it as the <b>answer key</b>. It is never an <i>input</i> to a prediction (that would be cheating); it is used only to <i>score</i> what the propagator or the orbit determiner produced. When the board says "1-day error 118 m," it means: the software's predicted position, compared against this file at the same instant, was 118 m away.</p>
+     <p>The file is a text (XML) product with a header plus a long list of <b>Orbit State Vectors (OSVs)</b> &mdash; one position-and-velocity snapshot every <b>10 seconds</b> over about 26 hours (about 9,361 snapshots). Important details the software must honour: positions are in the <b>Earth-fixed</b> frame (a frame that rotates with the planet), velocities in metres per second, and every epoch is tagged in three time scales at once.</p>
+     <h4>File (.EOF) header &mdash; real excerpt</h4>`,
+     ex:`&lt;Mission&gt;Sentinel-3A&lt;/Mission&gt;
+&lt;File_Type&gt;AUX_POEORB&lt;/File_Type&gt;
+&lt;Validity_Start&gt;UTC=2024-10-07T21:59:42&lt;/Validity_Start&gt;
+&lt;Ref_Frame&gt;EARTH_FIXED&lt;/Ref_Frame&gt;
+&lt;Time_Reference&gt;UTC&lt;/Time_Reference&gt;
+&lt;List_of_OSVs count="9361"&gt; ...`,
+     ch:[
+      {t:"Example OSV record",b:"one real state vector",c:"data",
+       d:`<p>Here is one real Orbit State Vector straight from the Sentinel-3A POEORB (first record, 2024-10-07). This is the atomic unit of the "truth": at one instant, the satellite's exact position and velocity.</p>
+       <p>How to read it: the three position numbers (X, Y, Z, in metres) locate the satellite in the Earth-fixed frame; the three velocity numbers (VX, VY, VZ, in metres per second) give how fast and which way it is moving. The same moment is stamped in <b>TAI</b> (a continuous atomic clock), <b>UTC</b> (civil time, which includes leap seconds), and <b>UT1</b> (time tied to the Earth's actual rotation) &mdash; the software must use the right one in the right place or it will be off by hundreds of metres. "Quality NOMINAL" flags this as a good point.</p>
+       <p>A sanity check you can do by eye: the position magnitude is about 7.2 million metres from Earth's centre, which minus Earth's ~6,371 km radius gives the ~800 km altitude &mdash; exactly the Sentinel-3A orbit.</p>`,
+       ex:`&lt;OSV&gt;
+  &lt;TAI&gt;TAI=2024-10-07T22:00:19.000000&lt;/TAI&gt;
+  &lt;UTC&gt;UTC=2024-10-07T21:59:42.000000&lt;/UTC&gt;
+  &lt;UT1&gt;UT1=2024-10-07T21:59:42.059178&lt;/UT1&gt;
+  &lt;Absolute_Orbit&gt;+45004&lt;/Absolute_Orbit&gt;
+  &lt;X unit="m"&gt;482304.989602&lt;/X&gt;
+  &lt;Y unit="m"&gt;1077999.632437&lt;/Y&gt;
+  &lt;Z unit="m"&gt;-7091304.589548&lt;/Z&gt;
+  &lt;VX unit="m/s"&gt;7497.731211&lt;/VX&gt;
+  &lt;VY unit="m/s"&gt;-93.447784&lt;/VY&gt;
+  &lt;VZ unit="m/s"&gt;495.577989&lt;/VZ&gt;
+  &lt;Quality&gt;NOMINAL&lt;/Quality&gt;
+&lt;/OSV&gt;`}
+     ]},
+    {t:"GNSSRD",b:"raw GPS observations = the input",c:"data",
+     d:`<p><b>GNSSRD</b> is the raw data from the satellite's own <b>GPS receiver</b> &mdash; the real, noisy measurements from which an orbit must be reconstructed. If POEORB is the answer key, GNSSRD is the question.</p>
+     <p>It comes in <b>RINEX</b> format (Receiver Independent Exchange format, the universal standard for GPS data). For each measurement epoch, and for each GPS satellite the receiver can currently see, it records:</p>
+     <ul>
+     <li><b>Pseudorange</b> &mdash; the apparent distance to that GPS satellite, measured from the signal's travel time. "Pseudo" because the receiver's clock is imperfect, so the raw number is off by a common clock error that must be solved for.</li>
+     <li><b>Carrier phase</b> &mdash; a far more precise (millimetre-level) distance measurement from the signal's wave itself, but ambiguous by a whole number of wavelengths.</li>
+     <li><b>Signal strength</b> &mdash; a quality indicator.</li>
+     </ul>
+     <p>Crucially these are measured on <b>two frequencies</b> (L1 and L2). The ionosphere bends and delays GPS signals by a frequency-dependent amount, so combining the two frequencies cancels that delay almost entirely &mdash; the "ionosphere-free combination." The header below also records which receiver and antenna produced the data and the exact start time.</p>
+     <h4>RINEX 3.03 header &mdash; real excerpt</h4>`,
+     ex:`     3.03           O                   G       RINEX VERSION / TYPE
+L741                RUAG GPS                        REC # / TYPE / VERS
+L741                SEN-3A-GPSA                     ANT # / TYPE
+G    9 C1C L1C S1C C1W L1W S1W C2W L2W S2W          SYS / # / OBS TYPES
+  2024    10    16     0     0    0.0000000  GPS    TIME OF FIRST OBS`,
+     ch:[
+      {t:"Example epoch",b:"first epoch, 8 satellites",c:"data",
+       d:`<p>This is the very first observation epoch in the real Sentinel-3A GNSSRD file. The "&gt;" line is the timestamp header: 2024-10-16, 00:00:00 in GPS time, 8 GPS satellites visible, and the receiver's own clock offset for that instant (about 0.0082 s &mdash; the error the solver will estimate and remove).</p>
+       <p>Each following line is one visible GPS satellite (G02, G04, ...). Reading the G02 line: the first big number (~22,756,293 m) is the pseudorange on the L1 frequency &mdash; roughly 22,756 km to that GPS satellite. The next number is the carrier-phase measurement in cycles, then the signal strength, then the same quantities for the other frequency/code. The orbit determiner takes a full epoch like this, works out where each named GPS satellite was, and triangulates the receiver's position (see the GNSS / SPP branch).</p>
+       <p>The formula below is the two-frequency trick: combining the L1 and L2 pseudoranges with these specific weights removes the ionospheric delay, leaving a much cleaner distance.</p>`,
+       ex:`&gt; 2024 10 16  0  0  0.0000000  0  8   0.008219661246
+G02 22756293.467  -3152045.0100  44.140  22756291.983 ...
+G04 23327226.811 -13707615.4970  39.980  23327227.536 ...`,
+       f:`ionosphere-free pseudorange:
+ P_IF = (f1²·C1W − f2²·C2W) / (f1² − f2²)
+ f1 = 1575.42 MHz (L1),  f2 = 1227.60 MHz (L2)`}
+     ]},
+    {t:"AUX_PROQUA (attitude)",b:"measured orientation quaternions",c:"data",
+     d:`<p>The <b>AUX_PROQUA</b> product is the flight-dynamics team's record of how the spacecraft was actually oriented, moment by moment. It supplies the <i>measured</i> attitude option for the box-wing model.</p>
+     <p>Format specifics the software must get right: the orientation is given as <b>unit quaternions</b> (four numbers describing a 3-D rotation, scalar part first) at <b>1 Hz</b> (once per second), stamped in <b>GPS time</b>, and representing the rotation from the spacecraft body frame to the inertial frame. Getting that direction convention backwards produces garbage (tens of degrees of error), so it was verified empirically: the "body-to-inertial" reading matches the computed nominal law to ~2&deg;, confirming the convention is right.</p>
+     <p>As noted under Attitude, feeding these measured values in instead of the computed law changes the final orbit by less than a metre &mdash; a useful negative result that justifies relying on the simpler computed attitude when no file is available.</p>`},
+    {t:"Space weather (CSSI)",b:"solar & geomagnetic drivers",c:"data",
+     d:`<p>The upper atmosphere is not static &mdash; it swells and shrinks with the Sun's activity. When the Sun is active, extra ultraviolet energy heats and puffs up the thermosphere, so there is more air at 800 km and therefore more drag. A geomagnetic storm does the same thing, suddenly.</p>
+     <p>These files provide the two numbers that drive density models:</p>
+     <ul>
+     <li><b>F10.7</b> &mdash; the Sun's radio output at 10.7 cm wavelength, a long-standing proxy for how much the Sun is heating the atmosphere.</li>
+     <li><b>Ap / Kp</b> &mdash; geomagnetic activity indices; high values mean a magnetic storm is stirring the atmosphere.</li>
+     </ul>
+     <p>These are the single most important &mdash; and most unpredictable &mdash; drivers of prediction error. For honest forecasting the software must <i>forecast</i> these drivers forward from the seed day (it is not allowed to peek at the real future values), which is covered in the Strategy branch.</p>`},
+    {t:"EOP (finals2000A)",b:"Earth-orientation parameters",c:"data",
+     d:`<p>The Earth does not rotate perfectly smoothly. Its axis wobbles slightly (polar motion) and its rotation speeds up and slows down by milliseconds (the UT1&minus;UTC difference). To convert accurately between a space-fixed frame and an Earth-fixed frame, you must know these tiny irregularities for the exact day.</p>
+     <p><b>EOP</b> (Earth Orientation Parameters), published by the IERS in files like <b>finals2000A.all</b>, supply them: the pole's x/y position and the UT1&minus;UTC offset. They sound like a footnote, but using the real measured EOP instead of assuming a perfectly regular Earth lowered the short-arc orbit error by around <b>40%</b> in this project &mdash; a large, cheap win.</p>`},
+    {t:"Gravity / DE440 / tides",b:"models of the environment",c:"data",
+     d:`<p>Three environment models round out what the propagator needs, all loaded as bundled data:</p>
+     <ul>
+     <li><b>Gravity field</b> (EGM96, with EIGEN-6S as an alternative) &mdash; a long list of coefficients describing exactly how lumpy Earth's gravity is, beyond a simple point mass. See the Perturbations &rarr; Geopotential node.</li>
+     <li><b>DE440 ephemeris</b> &mdash; NASA JPL's high-precision tables of where the Sun and Moon (and planets) are at any time, so their gravitational pull and the Sun's direction can be computed accurately.</li>
+     <li><b>FES2004 ocean tides</b> &mdash; coefficients describing how the oceans' tidal bulges subtly change Earth's gravity field over time.</li>
+     </ul>
+     <p>These are shared physical constants of the world, not satellite-specific inputs &mdash; the same files would be used for any LEO satellite.</p>`}
+   ]},
+
+  {t:"Reference frames & time",b:"GCRF↔ITRF and time scales",c:"frames",
+   d:`<p>This branch is the "plumbing" that quietly decides whether everything else is accurate. It sounds dry, but a mistake here is worth hundreds of metres or more.</p>
+   <p>The core problem: the <b>laws of orbital motion are simplest in a non-rotating, space-fixed frame</b> (an inertial frame, called GCRF) &mdash; Newton's equations assume you are not spinning. But <b>measurements and the published truth live in an Earth-fixed frame</b> (called ITRF) that rotates once a day with the planet, because that is how you give a location on Earth. So the software is constantly translating positions and velocities between the two.</p>
+   <p>That translation is a rotation that changes every instant (the Earth keeps turning), and it depends on precession, nutation, Earth's rotation angle, and the small wobbles from the EOP data. On top of that, five different <b>time scales</b> are in play, and each conversion must use the correct one. Get the plumbing right and the physics shines through; get it wrong and no amount of force-modelling helps. The children cover the frame transform, the time scales, and a real bug-and-fix that cut the error by 30x.</p>`,
+   ch:[
+    {t:"GCRF ↔ ITRF",b:"space-fixed ↔ Earth-fixed",c:"frames",
+     d:`<p><b>GCRF</b> (the space-fixed, non-rotating frame) is where the orbit is integrated, because the physics is cleanest there. <b>ITRF</b> (the Earth-fixed frame, which turns with the planet) is where GPS measurements and the POEORB truth are expressed, because that is how you say "this spot over the Pacific."</p>
+     <p>Converting between them is a precise, time-dependent rotation built from four effects, following the international IAU-2006/2000 standards:</p>
+     <ul>
+     <li><b>Precession</b> &mdash; the ~26,000-year slow cone-traced wobble of Earth's axis.</li>
+     <li><b>Nutation</b> &mdash; smaller, faster nods of the axis, driven mainly by the Moon.</li>
+     <li><b>Earth rotation</b> &mdash; the daily spin itself (the dominant term).</li>
+     <li><b>Polar motion</b> &mdash; the tiny drift of the rotation pole across Earth's surface, supplied by the EOP data.</li>
+     </ul>
+     <p>Only when all four are applied with the real EOP of the day does a position round-trip between the frames without introducing error.</p>`},
+    {t:"Time scales",b:"UTC / TAI / TT / GPS / UT1",c:"frames",
+     d:`<p>There is no single "time" in precise orbit work &mdash; there are several, each defined for a different purpose, and using the wrong one is a classic, expensive mistake. A 1-second slip at orbital speed (~7.5 km/s) is a 7.5 km position error.</p>
+     <ul>
+     <li><b>UTC</b> &mdash; civil time on your wall clock. It contains occasional leap seconds, so it is not perfectly continuous.</li>
+     <li><b>TAI</b> &mdash; International Atomic Time, a smooth continuous count with no leap seconds. The backbone the others are defined from.</li>
+     <li><b>TT</b> &mdash; Terrestrial Time, used for the physics of propagation; a fixed offset from TAI.</li>
+     <li><b>GPS time</b> &mdash; the GPS system's own clock, a fixed offset from TAI (no leap seconds since 1980). GNSSRD and PROQUA are stamped in this.</li>
+     <li><b>UT1</b> &mdash; time tied to the Earth's <i>actual</i> rotation angle; drifts from UTC by a fraction of a second (the dUT1 value from EOP). Needed for the Earth-rotation part of the frame transform.</li>
+     </ul>`,
+     f:`TT  = TAI + 32.184 s
+GPS = TAI − 19 s
+TAI = UTC + (leap seconds)
+UT1 = UTC + dUT1   (dUT1 from EOP, |dUT1| < 0.9 s)`},
+    {t:"Frame velocity transform",b:"the dR/dt bug & its fix",c:"frames",
+     d:`<p>This is the single most instructive fix in the project &mdash; a small, subtle error that was quietly costing hundreds of metres.</p>
+     <p>The issue is about converting <b>velocity</b> (not position) between the rotating and non-rotating frames. Because the Earth-fixed frame is itself turning, an object standing still on Earth still has velocity in the space-fixed frame. The correct conversion has two parts: rotate the measured velocity, <b>and</b> add a term for the rotation of the frame itself acting on the position. The naive version used only a simple constant spin rate for that second part; the accurate version uses the full, exact time-derivative of the rotation matrix (written dR/dt), computed numerically.</p>
+     <p>Why it matters so much: the propagator is seeded with a starting velocity. If that seed velocity is slightly wrong, the error grows over the whole prediction. Fixing this term corrected the seed velocity by only a couple of millimetres per second &mdash; but that was enough to drop the <b>1-day prediction error from about 400 m to about 14 m</b>. A 30x improvement from one correctly-written line of frame math: a vivid lesson that in this field the "boring" plumbing is where accuracy is won or lost.</p>`,
+     f:`v_GCRF = R · v_ITRF  +  (dR/dt) · r_ITRF
+          ↑ rotate       ↑ the term that was wrong
+R    = ITRF→GCRF rotation matrix at time t
+dR/dt = full numerical time-derivative (central difference)`,
+     why:`<b>The payoff</b>Adding the full dR/dt term fixed a ~2.4 mm/s seed-velocity error and cut 1-day error ~400 m &rarr; ~14 m &mdash; the biggest single accuracy gain in the project.`}
+   ]},
+
+  {t:"The propagator",b:"the physics engine that flies the orbit forward",c:"prop",
+   d:`<p>The <b>propagator</b> is the heart of prediction. Give it a starting position and velocity (a "seed state") and a list of forces, and it computes where the satellite will be at any future time by stepping the equations of motion forward.</p>
+   <p>Mechanically it does what a careful physics simulation does: at the current position it sums up every force (gravity, drag, sunlight, and the rest) to get the total acceleration, uses that to nudge the velocity and position forward by a tiny time step, and repeats &mdash; thousands of times &mdash; until it reaches the target time. The art is in doing this <i>accurately</i> and <i>efficiently</i>: taking steps small enough to be precise but large enough to be fast, and never letting the numerical method itself introduce error that masquerades as physics.</p>
+   <p>The children cover the three design choices that define URSC's propagator: the equation it integrates, the method it uses to organize that integration (Cowell), and the specific numerical integrator with its accuracy settings.</p>`,
+   ch:[
+    {t:"Equation of motion",b:"two-body + every perturbation",c:"prop",
+     d:`<p>At its simplest, a satellite obeys Newton's law of gravity around a point-mass Earth &mdash; the "two-body" term that produces a clean ellipse. Reality adds many smaller nudges on top. The full equation says: the satellite's acceleration equals the ideal two-body pull <b>plus the sum of every perturbing acceleration</b>.</p>
+     <p>Each extra term is a real physical effect &mdash; Earth's gravity is lumpy, the Sun and Moon tug, thin air drags, sunlight pushes, the Earth and oceans flex, relativity bends things slightly, and reflected Earth-light pushes too. The propagator evaluates all of them at every step. The Perturbations branch breaks each one down; here the point is simply that the right-hand side of this one equation is the entire force model.</p>`,
+     f:`r̈ = −μ·r/|r|³     (two-body: point-mass Earth)
+    + a_gravity        (Earth's lumpy field, beyond point mass)
+    + a_drag           (atmospheric drag)
+    + a_SRP            (solar radiation pressure)
+    + a_Sun + a_Moon   (third-body gravity)
+    + a_tides          (solid Earth + ocean tides)
+    + a_relativity     (general-relativistic correction)
+    + a_albedo         (Earth-reflected radiation)
+
+r = position,  r̈ = acceleration,  μ = Earth's gravitational constant`},
+    {t:"Cowell formulation",b:"integrate the accelerations directly",c:"prop",
+     d:`<p>There are several mathematical strategies for propagating an orbit. URSC uses <b>Cowell's method</b>, which is the most direct: integrate the total acceleration straight in ordinary x-y-z (Cartesian) coordinates, with no clever change of variables.</p>
+     <p>The trade-off is deliberate. Some alternative methods (variation of parameters, semi-analytical / DSST) are faster for long spans or smoother orbits, but they are specialized and harder to extend. Cowell is simple and completely general &mdash; it works with <i>any</i> combination of forces, which is exactly what you want when the whole project is about testing force models and density models against each other. The cost (many small steps) is acceptable because the prediction spans here are short (days, not years) and modern integrators handle it efficiently.</p>`},
+    {t:"DP5(4) integrator",b:"adaptive Runge-Kutta + tolerances",c:"prop",
+     d:`<p>The <b>integrator</b> is the numerical engine that actually advances the state step by step. URSC uses <b>Dormand-Prince 5(4)</b>, a widely-trusted adaptive-step Runge-Kutta method. "5(4)" means it computes a 5th-order-accurate step alongside a 4th-order one; the difference between them estimates the error of each step, so the method can <b>automatically shrink the step where the physics is changing fast and grow it where things are smooth</b> &mdash; efficient and self-regulating.</p>
+     <p>How accurate it is depends on the <b>tolerances</b> you set. This project repeatedly found that loose tolerances leak numerical error that can be mistaken for model error, muddying every comparison. So the studies use a <b>"tight"</b> setting &mdash; very small absolute and relative tolerances and a capped maximum step &mdash; to guarantee the result reflects the physics, not the arithmetic. With tight settings the integrator is effectively "converged": tightening further changes nothing.</p>`,
+     f:`tight settings used throughout the studies:
+  absolute tolerance  1e-10
+  relative tolerance  1e-12
+  maximum step        30 s
+
+(loose settings integrate faster but can add
+ tens of metres of purely numerical error)`}
+   ]},
+
+  {t:"Perturbations",b:"every force acting on the orbit",c:"pert",
+   d:`<p>A satellite would trace a perfect, unchanging ellipse if Earth were a smooth point mass and nothing else existed. It isn't, and things do &mdash; so the real orbit is the ideal ellipse plus a stack of small, continuous nudges called <b>perturbations</b>. Modelling them well is most of what makes a propagator accurate.</p>
+   <p>Each child below is one perturbing force, explained the same way so you can compare them: <b>what it physically is</b>, <b>the math</b> that captures it, <b>which model URSC uses</b>, <b>what alternatives exist</b>, and <b>why</b> that choice was made. They are listed roughly from strongest to weakest at this altitude. The headline: Earth's lumpy gravity is by far the biggest correction, atmospheric drag is the biggest <i>uncertainty</i>, and a tail of small forces (tides, relativity, reflected light) each matter at the metre level.</p>`,
+   ch:[
+    {t:"Geopotential (gravity)",b:"Earth's lumpy field: J2 & harmonics",c:"pert",
+     d:`<p>Earth is not a perfect sphere of uniform density &mdash; it bulges at the equator, is slightly squashed at the poles, and has mountains, ocean trenches, and dense and light regions underground. Its gravity therefore varies slightly from place to place, and a satellite feels every bit of that.</p>
+     <p>Mathematically this lumpy field is described as a sum of <b>spherical harmonics</b> &mdash; a hierarchy of increasingly fine-grained "ripples" in the gravity field, each with a measured coefficient. The very first and largest ripple, called <b>J2</b>, captures the equatorial bulge; it alone is responsible for the slow turning of the orbit plane that makes the Sun-synchronous orbit work. Higher-degree terms capture ever-finer detail.</p>
+     <p>URSC uses the <b>EGM96 field to degree and order 70&times;70</b> (about 5,000 coefficients), with EIGEN-6S available as an alternative. In practice the field "saturates" &mdash; at 814 km altitude the fine ripples are so smoothed out by distance that going beyond ~degree 70-80 adds computation but no measurable accuracy.</p>`,
+     f:`U = (μ/r) · Σₙ Σₘ (aₑ/r)ⁿ · Pₙₘ(sinφ) ·
+        [ Cₙₘ cos(mλ) + Sₙₘ sin(mλ) ]
+
+n = degree, m = order,  aₑ = Earth radius
+Pₙₘ = Legendre functions,  C/S = measured coefficients
+J2 term (n=2,m=0) dominates → drives Sun-sync precession`,
+     tbl:`<tr><th>Choice</th><th>Detail</th></tr>
+     <tr><td>Used</td><td>EGM96, degree/order 70&times;70</td></tr>
+     <tr><td>Alternatives</td><td>EIGEN-6S, EGM2008 (via an ICGEM loader)</td></tr>`,
+     why:`<b>Why 70&times;70</b>The field saturates by ~degree 80 at this altitude; EIGEN at high degree matches EGM96 here, and extra harmonics cost time without measurable accuracy. More is not better once saturated.`},
+    {t:"Atmospheric drag",b:"the dominant uncertainty",c:"pert",
+     d:`<p>Even at 814 km there is a whisper of atmosphere, and the satellite plows through it at 7.5 km/s. The resulting <b>drag</b> is a backward force that slowly saps orbital energy, lowering and reshaping the orbit. It is small compared to gravity, but it is the <b>single hardest thing to predict</b> in this whole project &mdash; and therefore the main source of error.</p>
+     <p>The force depends on three things: the satellite's <b>ballistic coefficient</b> (its drag coefficient times area over mass &mdash; how "draggy" it is), the <b>square of its speed</b>, and the local <b>air density &rho;</b>. The first two are well known. The third is the problem: air density at this altitude swings by large factors with solar activity and geomagnetic storms, and those cannot be forecast precisely days ahead. That is why a whole branch of this board is devoted to density models.</p>
+     <p>The deeper issue is that the drag coefficient is held <i>fixed</i> while the real density varies. With a single fixed guess, drag becomes the error floor &mdash; the only true fix is to <b>estimate</b> the effective drag from an arc of real observations, which is what orbit determination does.</p>`,
+     f:`a_drag = −½ · (C_d·A / m) · ρ · |v_rel| · v_rel
+
+C_d = drag coefficient (~2.2)   A = cross-section area
+m   = mass                      ρ = local air density (the unknown)
+v_rel = velocity relative to the rotating atmosphere
+B = C_d·A/m  = ballistic coefficient ("draggability")`,
+     why:`<b>The real lever</b>With a fixed C_d and a single seed state, drag is the error floor. The only genuine fix is to estimate the effective drag coefficient from a span of observations &mdash; i.e. do orbit determination, not just prediction.`},
+    {t:"Solar radiation pressure",b:"the push of sunlight",c:"pert",
+     d:`<p>Light carries momentum, so sunlight falling on the satellite gives it a tiny but continuous push away from the Sun &mdash; <b>solar radiation pressure (SRP)</b>. It is far weaker than gravity, but over days it bends the orbit measurably, so it must be modelled.</p>
+     <p>The force scales with the <b>Sun-facing area</b> (dominated by the big solar array), the surface <b>reflectivity C<sub>r</sub></b> (shiny surfaces get pushed harder than black ones, because reflected light transfers twice the momentum), and the intensity of sunlight. URSC computes the lit area from the same box-wing geometry used for drag, and it handles <b>eclipse / shadow</b>: when the satellite passes behind the Earth, the push switches off.</p>`,
+     f:`a_SRP = − C_r · (A_sun / m) · (S / c) · ŝ
+
+C_r = reflectivity (~1.3)   A_sun = Sun-facing area
+S = solar flux (~1361 W/m²) c = speed of light
+ŝ = unit vector from satellite to Sun  (push is away from Sun)
+(force set to zero while the satellite is in Earth's shadow)`},
+    {t:"Third-body (Sun & Moon)",b:"luni-solar gravity",c:"pert",
+     d:`<p>Earth is not the only body pulling on the satellite &mdash; the <b>Sun and Moon</b> tug on it too. Because they also tug on the Earth itself, what actually perturbs the orbit is the <i>difference</i> between their pull on the satellite and their pull on Earth's centre (a "tidal" differential). Small, but steady, and it accumulates over days.</p>
+     <p>To compute it you need accurate positions of the Sun and Moon, which URSC gets from <b>NASA JPL's DE440 ephemeris</b> &mdash; high-precision tables good to far better than needed. A cruder analytic series (good to ~0.1&deg;) exists as a fallback. Using DE440 improves not just this third-body term but also SRP (the Sun's direction) and the Sun-angle inputs to the density model, so it was a broadly useful upgrade.</p>`,
+     f:`a_3body = G·M_body · [ (r_body − r_sat)/|r_body − r_sat|³
+                      −  r_body / |r_body|³ ]
+
+first term = pull on the satellite
+second term = pull on Earth's centre (subtracted → the tidal part)`,
+     tbl:`<tr><th>Choice</th><th>Detail</th></tr>
+     <tr><td>Used</td><td>JPL DE440 ephemeris (Sun & Moon positions)</td></tr>
+     <tr><td>Alternative</td><td>analytic low-precision series (~0.1&deg;)</td></tr>`,
+     why:`<b>Why DE440</b>Precise Sun/Moon positions improve third-body gravity, SRP direction and the density model's Sun geometry all at once &mdash; it helped close the 1-day accuracy gap, not just the third-body term.`},
+    {t:"Solid & ocean tides",b:"the flexing Earth",c:"pert",
+     d:`<p>The same Sun-and-Moon pull that raises ocean tides also flexes the solid Earth and sloshes the oceans into bulges. Because mass moves around, Earth's gravity field itself changes slightly from hour to hour &mdash; and the satellite feels those changes as a small extra perturbation.</p>
+     <p>URSC models both parts: the <b>solid-Earth tide</b> (the whole planet deforming elastically) and the <b>ocean tide</b>, the latter using the <b>FES2004</b> tidal coefficients. Each is a metre-level effect over the prediction spans here &mdash; not the headline, but included for completeness and for honest accounting of where the remaining error comes from.</p>`},
+    {t:"Relativity",b:"the Schwarzschild correction",c:"pert",
+     d:`<p>Newton's gravity is not the final word &mdash; Einstein's general relativity adds a tiny correction near a massive body. For an Earth satellite the dominant piece is the <b>Schwarzschild term</b>, a small adjustment to the two-body acceleration.</p>
+     <p>The effect is minute (well below the metre level per day here), but it is a clean, exactly-known physical term, so URSC includes it rather than leaving a known gap. Including the small, certain forces is part of making sure the <i>remaining</i> error can be honestly attributed to the one genuinely uncertain force &mdash; drag.</p>`},
+    {t:"Earth albedo / IR",b:"reflected & emitted radiation",c:"pert",
+     d:`<p>Sunlight does not only arrive straight from the Sun &mdash; a good fraction bounces off the Earth's clouds, oceans, and land (<b>albedo</b>), and the warm Earth also glows in <b>infrared</b>. Both streams of radiation hit the satellite from below and give it a faint upward push, a cousin of solar radiation pressure.</p>
+     <p>URSC models this with a Knocke-style scheme that divides the visible Earth into zones and sums their reflected and emitted contributions. It is the smallest of the modelled forces, but like relativity it is included so that the error budget is complete and the drag residual stands alone.</p>`}
+   ]},
+
+  {t:"Density models",b:"the drag lever, four models compared",c:"density",
+   d:`<p>Since atmospheric drag is the biggest uncertainty, and drag depends on <b>air density</b>, the choice of <b>density model</b> is the most important knob on the force side. A density model is an empirical formula that, given altitude, latitude, local time, and the space-weather drivers (F10.7, Ap), estimates how much air is there.</p>
+   <p>This project did something unusually thorough: it ported and compared <b>four</b> leading models head-to-head on two months of real Sentinel-3A data, to answer a practical question &mdash; <i>does switching to a newer, fancier density model actually make predictions better?</i> The children describe each model, the drivers they share, and the sometimes-surprising verdict. (A licensing twist: two of the four cannot legally ship inside the library, so they were used only for research comparison.)</p>`,
+   ch:[
+    {t:"NRLMSISE-00",b:"the baseline, shipped in URSC",c:"density",
+     d:`<p><b>NRLMSISE-00</b> is the workhorse empirical atmosphere model from the US Naval Research Laboratory, released in 2000 and used across the industry for decades. It takes the date, location, altitude, and the F10.7 and Ap drivers and returns the densities of each atmospheric constituent and the total mass density.</p>
+     <p>URSC implements it natively (pure Java, no dependency) and <b>ships it as the default</b> because it is public-domain, well-validated, and &mdash; as the comparison found &mdash; actually the most accurate of the four at the 1-day horizon for this satellite. It is the baseline every other model is measured against.</p>`},
+    {t:"JB2008",b:"storm-aware, ported from scratch",c:"density",
+     d:`<p><b>JB2008</b> (Jacchia-Bowman 2008) is a later empirical model designed to do better during solar and geomagnetic disturbances. It uses extra solar indices (S10, M10, Y10, capturing different wavelengths of solar activity) and a dedicated storm-time temperature correction (driven by the Dst index), which can make it more accurate at lower altitudes during storms.</p>
+     <p>It was ported into URSC from scratch and validated to better than one part in ten thousand against a reference implementation. Because it is openly usable, it is one of the two models that can ship in the library (alongside NRLMSISE-00).</p>`},
+    {t:"NRLMSIS 2.0",b:"newer NRL model (research-only)",c:"density",
+     d:`<p><b>NRLMSIS 2.0</b> is the 2020 successor to NRLMSISE-00 &mdash; a rebuilt model with improved physics and a better fit to modern data. The natural question is whether this newer model beats the 20-year-old one in practice.</p>
+     <p>To answer that fairly, the project ran NRLMSIS 2.0 through the Naval Research Lab's own official implementation (the <b>pymsis</b> package) via a small subprocess bridge, driven from the same forecast weather as the others, and validated against NRL's published test vectors. The verdict is in the Comparison node.</p>`,
+     rej:`<b>Why it is not shipped</b>NRLMSIS 2.0 carries a non-commercial / research-only licence, so it cannot be distributed inside URSC. Its code and coefficient files are deliberately kept out of the repository &mdash; used for comparison only.`},
+    {t:"DTM2020",b:"CNES model (research-only)",c:"density",
+     d:`<p><b>DTM2020</b> (Drag Temperature Model 2020) is the French space agency CNES's modern density model, developed in the European SWAMI project. It is another "is newer better?" contender, built on a different heritage from the NRL models.</p>
+     <p>The project ported the F10.7+Kp variant from the public SWAMI reference and validated it to within two parts in a hundred thousand against the official benchmark &mdash; a faithful port. It was driven from the same forecast weather as the rest for an apples-to-apples comparison.</p>`,
+     rej:`<b>Why it is not shipped</b>DTM2020 is CNES non-commercial with no redistribution allowed &mdash; even more restrictive than NRLMSIS 2.0. It is a research comparison only; the port and its coefficient file are never committed to the library.`},
+    {t:"Drivers: F10.7 & Ap",b:"what feeds every model",c:"density",
+     d:`<p>All four density models are steered by the same two space-weather inputs, so understanding them explains what the models can and cannot do:</p>
+     <ul>
+     <li><b>F10.7</b> &mdash; the Sun's 10.7 cm radio flux, a proxy for the extreme-ultraviolet energy that heats and inflates the upper atmosphere. High F10.7 &rarr; thicker air at 814 km &rarr; more drag. Models also use its 81-day average (F10.7a) to capture the slow solar-cycle trend.</li>
+     <li><b>Ap / Kp</b> &mdash; geomagnetic activity. A storm dumps energy into the upper atmosphere within hours, puffing it up suddenly and spiking the drag.</li>
+     </ul>
+     <p>The crucial consequence: because every model shares these drivers, swapping models cannot overcome bad driver <i>forecasts</i>. If you cannot predict tomorrow's storm, no density model will save the prediction &mdash; which is exactly what the comparison showed.</p>`},
+    {t:"Comparison result",b:"what actually won",c:"density",
+     d:`<p>This is the payoff of porting four models: a real, measured verdict from two months of Sentinel-3A predictions (August-October 2024), each model run both with and without measured attitude, at 1-day and 7-day horizons, per-day seeded.</p>
+     <p><b>At 1 day, the oldest model wins.</b> NRLMSISE-00 had the lowest median error (118 m) and was best on 36 of 61 days &mdash; beating both newer models. "Newer" did not mean "better" here.</p>
+     <p><b>At 7 days, the model choice barely matters.</b> The 7-day error is dominated not by the atmosphere model but by Sentinel-3A's weekly station-keeping thruster burns, which no density model can predict. On the clean windows with no burn, the three models essentially tie (~1.9 km). The honest conclusion: the real levers are handling the maneuvers and fitting the drag coefficient from data &mdash; not chasing a newer density model.</p>`,
+     tbl:`<tr><th>Horizon</th><th>NRLMSISE-00</th><th>NRLMSIS 2.0</th><th>DTM2020</th></tr>
+     <tr><td>1-day median error</td><td><b>118 m</b></td><td>150 m</td><td>129 m</td></tr>
+     <tr><td>1-day: best on N days</td><td><b>36 / 61</b></td><td>5 / 61</td><td>20 / 61</td></tr>
+     <tr><td>7-day (maneuver-free)</td><td>1904 m</td><td>1900 m</td><td>1985 m</td></tr>`,
+     why:`<b>The honest takeaway</b>At 1 day NRLMSISE-00 is best; at 7 days error is maneuver-limited and the models tie. A newer density model is not automatically better &mdash; the productive levers lie elsewhere (maneuvers, fitted drag).`}
+   ]},
+
+  {t:"Processing strategy",b:"the discipline that keeps results honest",c:"strategy",
+   d:`<p>It is easy to make orbit software <i>look</i> accurate by accidentally letting it peek at the answer. This branch is the set of rules that prevent that &mdash; the discipline that makes every number on the board an honest, forward-looking prediction rather than a hindsight fit.</p>
+   <p>The core principles: start from <b>one</b> known state and never read any future data; forecast the space weather forward instead of using the real future values; seed each day independently and score against the true orbit; look at <i>where</i> the error points (it is almost all along-track); and be honest about the one thing nothing can predict &mdash; the satellite's weekly thruster burns. The children unpack each.</p>`,
+   ch:[
+    {t:"Single-state discipline",b:"no peeking at the future",c:"strategy",
+     d:`<p>The governing rule of every prediction study here: a forecast is seeded from <b>exactly one</b> starting state (position, velocity, attitude, and the space weather known at that moment) and must propagate <b>forward only</b>, never consulting any information from after the seed time.</p>
+     <p>This sounds obvious but is surprisingly easy to violate &mdash; for example by using the <i>observed</i> future space weather, which in real operations you would not have. Enforcing single-state, forward-only discipline is what makes the reported errors represent genuine predictive skill. It also makes the problem honest-hard: with only one state you cannot fit the drag coefficient, so prediction is fundamentally limited until you move to orbit determination over an arc.</p>`},
+    {t:"Forecast-only weather",b:"project F10.7 forward, persist Ap",c:"strategy",
+     d:`<p>Since the space-weather drivers cannot be read from the future, they must be <b>forecast</b> from the seed day using only what is known then. URSC uses a simple, defensible scheme:</p>
+     <ul>
+     <li><b>F10.7</b> (solar flux) is relaxed smoothly toward its 81-day average with a 4-day time constant &mdash; i.e. "assume the Sun drifts back toward its recent average."</li>
+     <li><b>Ap</b> (geomagnetic activity) is persisted at the seed-day value &mdash; "assume today's magnetic conditions continue," because storms genuinely cannot be predicted days ahead.</li>
+     </ul>
+     <p>This is the honest substitute for peeking. It is also why a sudden storm after the seed day blows up the error no matter which density model is used &mdash; the forecast simply did not know it was coming.</p>`,
+     f:`F10.7(t)  =  F10.7a + (F10.7_seed − F10.7a) · e^(−Δt / τ)
+             τ = 4 days,  F10.7a = 81-day average
+Ap(t)     =  Ap_seed        (persisted — storms are unforecastable)`},
+    {t:"Per-day seeding & scoring",b:"how error is measured",c:"strategy",
+     d:`<p>To get a fair, statistically meaningful picture rather than one lucky or unlucky run, the studies seed <b>every day independently</b>. For each of the ~60 days in the two-month span: take that day's true state, propagate forward to +1 day and +7 days, convert the result into the Earth-fixed frame, and measure the straight-line 3-D distance to the true orbit at those future times.</p>
+     <p>That distance, in metres, is "the error." Reporting it across many independent days &mdash; as medians and win-counts &mdash; is what lets the project make solid claims like "NRLMSISE-00 is best on 36 of 61 days" instead of anecdotes.</p>`,
+     f:`for each seed day D:
+   predict state at D+1 and D+7
+   convert GCRF → ITRF
+   error = || r_predicted − r_truth ||   (3-D distance, metres)
+report median & win-counts across all ~60 days`},
+    {t:"Error geometry (RTN)",b:"it's almost all along-track",c:"strategy",
+     d:`<p>A position error is not just a number &mdash; it has a <i>direction</i>, and that direction tells you the cause. Orbit errors are usually split into three components: <b>radial</b> (up/down, toward or away from Earth), <b>along-track</b> (ahead of or behind where the satellite should be, in the direction of flight), and <b>cross-track</b> (left/right of the orbit plane).</p>
+     <p>In this project the error is almost entirely <b>along-track</b> &mdash; the predicted satellite ends up slightly ahead of or behind the real one, like a runner who is on the right track but a little off-pace. That is the classic fingerprint of a <b>drag / energy mismatch</b>: if the modelled drag is a touch too strong or weak, the satellite gradually leads or lags in its orbit. Knowing the error is along-track confirms that drag (density) is the thing to fix, not the gravity field or the frames.</p>`},
+    {t:"Maneuvers",b:"the 7-day wall",c:"strategy",
+     d:`<p>Here is the honest ceiling on 7-day prediction, and it is not a modelling failure &mdash; it is physics plus operations. Roughly once a week, ground controllers fire Sentinel-3A's thrusters in a brief <b>station-keeping burn</b> to nudge it back into its planned orbit (drag keeps dragging it down, so it must be boosted).</p>
+     <p>A burn is essentially an instantaneous change in velocity. From a pre-burn seed state there is <b>no way to predict it</b> &mdash; the software cannot know when controllers will fire the thrusters or how hard. So any 7-day prediction window that happens to cross a burn diverges to many kilometres, regardless of how good the force model is.</p>
+     <p>In the two-month study, 32 of 55 seven-day windows crossed a maneuver; those windows, not the density model, set the multi-kilometre 7-day error. This is precisely why the roadmap points toward <b>maneuver detection and estimation</b> and toward orbit determination over arcs &mdash; the only ways to handle burns honestly.</p>`,
+     why:`<b>Why 7-day error is maneuver-limited</b>32 of 55 seven-day windows crossed a thruster burn. A burn is an unpredictable velocity jump, so those windows dominate the error &mdash; the density model is almost irrelevant at this horizon.`}
+   ]},
+
+  {t:"Orbit determination",b:"reconstructing the orbit from measurements",c:"od",
+   d:`<p>Prediction asks "given where it is, where will it go?" <b>Orbit determination (OD)</b> asks the reverse and harder question: "given only noisy measurements, where <i>is</i> it really?" This is the second half of the project &mdash; building the determiner, not just the propagator.</p>
+   <p>There are two fundamentally different philosophies for doing OD, plus the operational blend that the best precise orbits (like POEORB itself) actually use. The children lay out <b>dynamic OD</b> (lean on the physics), <b>kinematic OD</b> (lean on pure geometry), a direct comparison of the two, and <b>reduced-dynamic OD</b> &mdash; the hybrid that is the project's ultimate target. Understanding the trade-off between physics and geometry is the key idea of this whole branch.</p>`,
+   ch:[
+    {t:"Dynamic OD",b:"fit a physics-propagated orbit",c:"od",
+     d:`<p><b>Dynamic OD</b> trusts the physics. The idea: there is one true starting state (plus a couple of force parameters like the drag and reflectivity coefficients) that, when propagated through the full force model, best matches all the observations over a span of time. So you adjust those few unknowns until the propagated orbit threads through the measurements as closely as possible.</p>
+     <p>The fitting is done by <b>batch least squares</b> (a Gauss-Newton iteration): start with a guess, see how far the propagated orbit misses each observation, compute how each unknown would need to change to reduce those misses, update, and repeat until it converges.</p>
+     <p>Strengths: the result is physically smooth and can bridge gaps where measurements are missing (the physics carries it through). Weakness: it is only as good as the force model &mdash; if drag is mismodelled, or a thruster fires mid-arc, the fit is biased because it assumes the physics is complete.</p>`,
+     f:`solve for x = [position, velocity, C_d, C_r] that minimises
+the misfit to all observations:
+
+ (Aᵀ W A) Δx = Aᵀ W r        (normal equations, iterate)
+ A = sensitivity of predictions to x   r = residuals
+ W = measurement weights`},
+    {t:"Kinematic OD",b:"pure geometry, epoch by epoch",c:"od",
+     d:`<p><b>Kinematic OD</b> trusts the geometry and ignores the physics entirely. At each measurement epoch it solves for the satellite's position independently, purely from the GPS triangulation at that instant &mdash; no force model, no connection to the epoch before or after.</p>
+     <p>This is exactly what GNSS Single Point Positioning (the GNSS / SPP branch) does, applied to a satellite's receiver. Strengths: it is immune to force-model error and to maneuvers &mdash; a thruster burn simply shows up as the satellite being where it is, with no assumption violated. Weaknesses: it is noisier (each point stands alone with no smoothing), and it requires at least four GPS satellites in view at <i>every</i> epoch, with no ability to bridge gaps.</p>`},
+    {t:"Kinematic vs dynamic",b:"the core trade-off, side by side",c:"od",
+     d:`<p>The two philosophies are complementary &mdash; each is strong exactly where the other is weak. Dynamic OD is smooth and gap-filling but trusts the physics; kinematic OD is robust to physics errors and maneuvers but noisy and demanding of continuous coverage. This table is the heart of the OD branch:</p>`,
+     tbl:`<tr><th>Property</th><th>Kinematic</th><th>Dynamic</th></tr>
+     <tr><td>Force model</td><td>none</td><td>full physics</td></tr>
+     <tr><td>What it estimates</td><td>position at each epoch</td><td>one state + a few parameters</td></tr>
+     <tr><td>Needs &ge;4 sats every epoch</td><td>yes</td><td>no &mdash; bridges gaps</td></tr>
+     <tr><td>Reaction to maneuvers</td><td>fine (no assumption broken)</td><td>breaks the fit</td></tr>
+     <tr><td>Mismodelled force</td><td>immune</td><td>biases the result</td></tr>
+     <tr><td>Noise / smoothness</td><td>noisier, point-by-point</td><td>smooth</td></tr>`},
+    {t:"Reduced-dynamic (the target)",b:"how POEORB itself is made",c:"od",
+     d:`<p><b>Reduced-dynamic OD</b> is the best of both worlds and the project's end goal. It starts from a dynamic fit (keep the physics for its smoothing and gap-bridging) but adds small, loosely-constrained <b>empirical accelerations</b> &mdash; little fudge forces the solver is allowed to introduce wherever the real physics is imperfect. These let the solution flex toward the GPS geometry exactly where the force model would otherwise bias it (during storms, around maneuvers).</p>
+     <p>The result combines the smoothness of dynamics with the fidelity of kinematics, reaching <b>centimetre-level</b> accuracy &mdash; and this is precisely how the POEORB "truth" products this project grades against are themselves produced. Reaching reduced-dynamic OD, after the SPP foundation, is the natural summit of the roadmap.</p>`}
+   ]},
+
+  {t:"GNSS positioning / SPP",b:"the first rung: a GPS fix",c:"gnss",
+   d:`<p>This branch is the concrete, <b>built-and-tested</b> first step of the orbit determiner. Before reconstructing a whole orbit, you must be able to answer the simplest GPS question: <b>given the distances to several GPS satellites right now, where am I?</b> That is <b>Single Point Positioning (SPP)</b>, and it is the same math your phone uses to put a dot on a map &mdash; here applied to a satellite's own receiver data.</p>
+   <p>SPP is a form of kinematic OD: it solves position epoch by epoch from pure geometry. The project implemented the complete pipeline in Java &mdash; reading the RINEX observations, computing where each GPS satellite was, and solving the four-unknown least-squares problem &mdash; with about 85 tests passing. The children explain the measurements, the exact math of the fix, how GPS satellite positions are computed, the code that runs it, and the one remaining blocker to a full real-data run. This is where the propagator knowledge meets real measurements.</p>`,
+   ch:[
+    {t:"Observables",b:"pseudorange, phase, iono-free, DOP",c:"gnss",
+     d:`<p>The raw material of a GPS fix is a set of <b>observables</b> &mdash; the quantities the receiver actually measures from each visible GPS satellite. Understanding them is understanding what SPP has to work with:</p>
+     <ul>
+     <li><b>Pseudorange</b> &mdash; apparent distance from signal travel time; off by the receiver's clock error (hence "pseudo").</li>
+     <li><b>Carrier phase</b> &mdash; a millimetre-precise distance from the signal's wave, ambiguous by a whole number of wavelengths (used in the precise, later stages).</li>
+     <li><b>Two frequencies (L1, L2)</b> combined into the <b>ionosphere-free</b> measurement, which cancels the atmosphere's signal delay.</li>
+     </ul>
+     <p>Two more essentials: the <b>Sagnac correction</b> accounts for the Earth rotating during the ~0.07 s the signal is in flight, and <b>DOP</b> (Dilution of Precision) is a single number summarizing whether the visible satellites are well spread across the sky (good geometry, small error) or bunched together (poor geometry, large error).</p>`,
+     f:`ionosphere-free combination (removes atmospheric delay):
+ P_IF = (f1²·P1 − f2²·P2) / (f1² − f2²)`},
+    {t:"Measurement model & math",b:"how the fix is computed",c:"gnss",
+     d:`<p>This is the mathematical core of SPP &mdash; and it is approachable. Each pseudorange is, ideally, the true geometric distance from the receiver to that GPS satellite, plus the clock errors and atmospheric delays. There are <b>four unknowns</b>: the receiver's three position coordinates (x, y, z) and its clock error (written as c&middot;&delta;t, the clock error times the speed of light so it is in metres). Four unknowns need at least four satellites &mdash; which is why GPS needs four in view.</p>
+     <p>The relationship is slightly non-linear (distance involves a square root), so it is solved by <b>iteration</b>: start from a guess, linearize around it, solve a linear least-squares step, update the guess, and repeat until it stops moving (usually 3-4 iterations). The linearization is elegant: the sensitivity of a pseudorange to moving the receiver is just the <b>line-of-sight unit vector</b> to that satellite, and its sensitivity to the clock error is simply 1. Stack those rows for all satellites into a matrix, solve the weighted normal equations, and you have the correction.</p>
+     <p>As a by-product, the geometry matrix also yields the DOP values, and the leftover misfit (post-fit RMS) tells you how well it all agreed.</p>`,
+     f:`measurement model (one per satellite):
+ ρ = |r_rcv − r_sat| + c·(δt_rcv − δt_sat) + ionosphere + troposphere
+
+linearize → each row of the Jacobian is:
+ ∂ρ / ∂[x, y, z, c·δt] = [ −e_x, −e_y, −e_z, 1 ]
+   (e = unit line-of-sight vector to the satellite)
+
+solve iteratively:
+ (Aᵀ W A) Δx = Aᵀ W r      repeat to convergence
+ DOP from the diagonal of (Aᵀ A)⁻¹`},
+    {t:"GPS satellite position",b:"from the broadcast ephemeris",c:"gnss",
+     d:`<p>To triangulate, you must know <b>where each GPS satellite was</b> at the instant it transmitted. GPS satellites broadcast their own orbit information &mdash; a small set of Keplerian-style parameters called the <b>broadcast ephemeris</b> &mdash; and the standard IS-GPS-200 recipe turns those into a precise position and clock correction.</p>
+     <p>The steps: from the broadcast parameters, solve <b>Kepler's equation</b> (a short iteration that converts "average" orbital progress into the true geometric angle), build the satellite's position in its orbit plane, rotate it into the Earth-fixed frame, and apply a small <b>relativistic clock correction</b> (the GPS satellite's clock ticks slightly differently due to its speed and altitude). The Sagnac / Earth-rotation correction mentioned earlier is then applied for the signal's flight time. Getting these details right is what makes the fix accurate to metres rather than tens of metres.</p>`,
+     f:`Kepler's equation (iterate for E):
+ E = M + e·sin(E)        M = mean anomaly, e = eccentricity
+
+relativistic clock correction:
+ Δt_rel = F · e · √A · sin(E),   F = −4.442807633×10⁻¹⁰
+ (A = semi-major axis)`},
+    {t:"SPP pipeline (built)",b:"the code that runs it",c:"gnss",
+     d:`<p>All of the above is implemented as a working, tested pipeline in the <span style="font-family:var(--mono)">org.ursc.trajectory.gnss</span> package. These are the real components, each with its own responsibility, and about 85 tests pass across them:</p>`,
+     tbl:`<tr><th>Component</th><th>What it does</th></tr>
+     <tr><td>RinexObsReader</td><td>parses the RINEX 3.03 observation file; forms the ionosphere-free combination</td></tr>
+     <tr><td>TarGz</td><td>pure-Java streaming of the data file out of its .tgz archive</td></tr>
+     <tr><td>RinexNavReader / GpsBroadcastEphemeris</td><td>reads the broadcast nav message; computes each GPS satellite's position & clock</td></tr>
+     <tr><td>SppSolver / SppSolution</td><td>the weighted Gauss-Newton fix; outputs position, clock, DOP, residuals</td></tr>
+     <tr><td>SppEngine</td><td>per-epoch orchestration: transmit-time + Sagnac + clock, carrying the fix forward</td></tr>
+     <tr><td>spp CLI</td><td>command-line tool: observations + nav &rarr; per-epoch CSV, scored against POEORB</td></tr>`},
+    {t:"Status & blocker",b:"built & validated; one missing file",c:"gnss",
+     d:`<p>Where this stands: the SPP solver is <b>built and validated</b> four ways &mdash; it recovers a known position to sub-millimetre on synthetic data, closes the loop on the engine's own simulated data, correctly parses the real Sentinel-3A observations (288 five-minute epochs per day), and the command-line tool recovers position to better than a centimetre on synthetic input.</p>
+     <p>The one thing standing between this and a full real-data run against the POEORB truth is a single external file.</p>`,
+     rej:`<b>The blocker</b>A GPS broadcast-navigation file for the observation day (2024-10-16, day-of-year 290) is needed to compute the GPS satellite positions. The session's network blocks the public GNSS data centres (403 errors), so that file must be uploaded before the real-data SPP run can complete. Everything else is ready.`}
+   ]},
+
+  {t:"Status & roadmap",b:"done, remaining, and findings",c:"status",
+   d:`<p>A plain accounting of where the project is &mdash; what is finished and tested, what comes next, and the handful of hard-won lessons that shaped it. This branch is the honest project summary you could hand to anyone.</p>`,
+   ch:[
+    {t:"Done",b:"built & tested",c:"status",
+     d:`<p>A lot is already working, all with tests passing and zero runtime dependencies:</p>
+     <ul>
+     <li>A full numerical <b>propagator</b> with the complete force stack (lumpy gravity, drag, SRP, Sun/Moon via DE440, solid & ocean tides, relativity, albedo).</li>
+     <li>Correct <b>frames and time scales</b>, including the frame-velocity fix and real Earth-orientation data.</li>
+     <li>Four <b>density models</b> ported and compared (NRLMSISE-00 and JB2008 shippable; NRLMSIS 2.0 and DTM2020 for research).</li>
+     <li>The forecast-weather layer and the single-state prediction discipline.</li>
+     <li>Command-line tools for predict / forecast / backtest / validate / spp.</li>
+     <li>The complete, tested <b>GNSS SPP</b> pipeline and a batch-least-squares dynamic OD.</li>
+     <li>Several written studies and reports (the two-month density/attitude study, the before/after frame-fix tables).</li>
+     </ul>
+     <p>Around 85 tests pass across the codebase.</p>`},
+    {t:"Left",b:"the next steps",c:"status",
+     d:`<p>The road ahead, in order:</p>
+     <ul>
+     <li>Run <b>SPP on the real Sentinel-3A data</b> against POEORB (waiting only on the broadcast-nav file upload).</li>
+     <li>Add <b>carrier-phase</b> processing and move to <b>reduced-dynamic precise orbit determination</b> (the centimetre-level target).</li>
+     <li><b>Maneuver detection and estimation</b> &mdash; the key to breaking the 7-day wall.</li>
+     <li><b>Fit the drag coefficient</b> from a GNSS observation arc &mdash; the lever that actually lowers the drag-limited error.</li>
+     </ul>`},
+    {t:"Key findings",b:"the hard-won lessons",c:"status",
+     d:`<p>Four results worth remembering, each of which redirected the work:</p>
+     <ul>
+     <li><b>The frames plumbing dominated accuracy.</b> One frame-velocity correction cut 1-day error from ~400 m to ~14 m &mdash; far more than any force-model tweak.</li>
+     <li><b>A newer density model is not automatically better.</b> The 20-year-old NRLMSISE-00 was the most accurate at 1 day.</li>
+     <li><b>Measured attitude barely matters</b> (&lt;1 m) &mdash; the computed nominal law is an excellent stand-in.</li>
+     <li><b>The 7-day error is maneuver- and fixed-drag-limited</b>, not density-limited &mdash; so the real levers are maneuver handling and drag estimation, which is why orbit determination, not a fancier force model, is the path forward.</li>
+     </ul>`}
+   ]}
+ ]
+};
+
+// ---- assign ids, parents ----
+let NODES=[];
+(function walk(n,parent,depth){ n._p=parent; n._depth=depth; n._id=NODES.length; NODES.push(n);
+  n.expanded=(depth<1); // root's children shown at start
+  (n.ch||[]).forEach(c=>walk(c,n,depth+1)); })(DATA,null,0);
+DATA.expanded=true;
+
+const COLW=252, ROWH=58, CARDW=214;
+const world=document.getElementById('world'), edges=document.getElementById('edges'),
+      view=document.getElementById('view');
+let pan={x:40,y:0}, zoom=1, selected=null;
+const nodeEls=new Map();
+
+function catColor(c){return getComputedStyle(document.documentElement).getPropertyValue('--c-'+c).trim()||'var(--muted)';}
+
+function layout(){
+  let leaf=0; const vis=[];
+  (function place(n){ vis.push(n);
+    const kids=(n.expanded&&n.ch&&n.ch.length)?n.ch:null;
+    if(kids){ kids.forEach(place); n._y=(kids[0]._y+kids[kids.length-1]._y)/2; }
+    else { n._y=leaf*ROWH; leaf++; }
+    n._x=n._depth*COLW;
+  })(DATA);
+  return vis;
+}
+
+function render(){
+  const vis=layout(); const show=new Set(vis);
+  // nodes
+  nodeEls.forEach((el,n)=>{ if(!show.has(n)){ el.remove(); nodeEls.delete(n);} });
+  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+  vis.forEach(n=>{
+    let el=nodeEls.get(n);
+    if(!el){ el=document.createElement('div'); el.className='node'+(n===DATA?' root':'');
+      el.innerHTML='<div class="t"></div><div class="b"></div>';
+      el.addEventListener('click',ev=>{ev.stopPropagation(); onNode(n);});
+      world.appendChild(el); nodeEls.set(n,el);
+      el.querySelector('.t').textContent=n.t; el.querySelector('.b').textContent=n.b||'';
+    }
+    el.style.setProperty('--k',catColor(n.c));
+    el.style.left=n._x+'px'; el.style.top=n._y+'px';
+    el.classList.toggle('sel',n===selected);
+    // expand badge / leaf tag
+    let badge=el.querySelector('.exp'); const has=n.ch&&n.ch.length;
+    if(has){ if(!badge){badge=document.createElement('div');badge.className='exp';el.appendChild(badge);} badge.textContent=n.expanded?'−':'+'; }
+    else if(badge){badge.remove();}
+    minX=Math.min(minX,n._x); minY=Math.min(minY,n._y);
+    maxX=Math.max(maxX,n._x+CARDW); maxY=Math.max(maxY,n._y+44);
+  });
+  world._bbox={minX,minY,maxX,maxY};
+  // edges
+  let paths='';
+  vis.forEach(n=>{ if(n.expanded&&n.ch) n.ch.forEach(c=>{ if(show.has(c)){
+    const x1=n._x+CARDW, y1=n._y+22, x2=c._x, y2=c._y+22, mx=(x1+x2)/2;
+    paths+='<path d="M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'" fill="none" stroke="'+catColor(c.c)+'" stroke-width="1.6" opacity="0.55"/>';
+  }});});
+  edges.innerHTML=paths;
+  edges.setAttribute('width',(maxX-minX+200)); edges.setAttribute('height',(maxY-minY+200));
+  applyT();
+}
+function applyT(){ world.style.transform='translate('+pan.x+'px,'+pan.y+'px) scale('+zoom+')'; }
+
+function onNode(n){ if(n.ch&&n.ch.length){ n.expanded=!n.expanded; } selected=n; openDrawer(n); render(); }
+
+// drawer
+const drawer=document.getElementById('drawer'), dbody=document.getElementById('dbody');
+function openDrawer(n){
+  document.getElementById('dtitle').textContent=n.t;
+  const chip=document.getElementById('dchip'); chip.textContent=L[n.c]||''; chip.style.background=catColor(n.c);
+  let h='';
+  if(n.b) h+='<p class="blurb">'+n.b+'</p>';
+  if(n.d) h+=n.d;
+  if(n.f) h+='<h4>Mathematics</h4><div class="f">'+n.f+'</div>';
+  if(n.ex) h+='<h4>Example</h4><pre class="ex">'+n.ex+'</pre>';
+  if(n.tbl) h+='<table>'+n.tbl+'</table>';
+  if(n.why) h+='<div class="why">'+n.why+'</div>';
+  if(n.rej) h+='<div class="rej">'+n.rej+'</div>';
+  if(n.ch&&n.ch.length) h+='<p class="hint">→ '+n.ch.length+' subtopic'+(n.ch.length>1?'s':'')+' on the board'+(n.expanded?'':' (click the node to open)')+'.</p>';
+  dbody.innerHTML=h; dbody.scrollTop=0; drawer.classList.add('open');
+}
+document.getElementById('dclose').addEventListener('click',()=>{drawer.classList.remove('open'); selected=null; render();});
+
+// pan & zoom
+let dragging=false,last=null;
+view.addEventListener('pointerdown',e=>{ if(e.target.closest('.node'))return; dragging=true;last={x:e.clientX,y:e.clientY};view.classList.add('drag');view.setPointerCapture(e.pointerId); });
+view.addEventListener('pointermove',e=>{ if(!dragging)return; pan.x+=e.clientX-last.x; pan.y+=e.clientY-last.y; last={x:e.clientX,y:e.clientY}; applyT(); });
+view.addEventListener('pointerup',e=>{dragging=false;view.classList.remove('drag');});
+view.addEventListener('pointercancel',()=>{dragging=false;view.classList.remove('drag');});
+view.addEventListener('wheel',e=>{ e.preventDefault(); const r=view.getBoundingClientRect(); const cx=e.clientX-r.left,cy=e.clientY-r.top;
+  const f=e.deltaY<0?1.12:0.89, nz=Math.min(2.2,Math.max(0.25,zoom*f));
+  pan.x=cx-(cx-pan.x)*(nz/zoom); pan.y=cy-(cy-pan.y)*(nz/zoom); zoom=nz; applyT(); },{passive:false});
+
+function fit(){ const b=world._bbox; if(!b)return; const r=view.getBoundingClientRect();
+  const w=b.maxX-b.minX, h=b.maxY-b.minY; const z=Math.min(2,Math.max(0.3,Math.min((r.width-80)/w,(r.height-80)/h)));
+  zoom=z; pan.x=(r.width-w*z)/2 - b.minX*z; pan.y=(r.height-h*z)/2 - b.minY*z; applyT(); }
+function setAll(v){ NODES.forEach(n=>{ if(n.ch&&n.ch.length)n.expanded=v; }); DATA.expanded=true; render(); }
+document.getElementById('ctrl').addEventListener('click',e=>{ const a=e.target.dataset.a; if(!a)return;
+  if(a==='in'){zoom=Math.min(2.2,zoom*1.15);applyT();}
+  else if(a==='out'){zoom=Math.max(0.25,zoom*0.87);applyT();}
+  else if(a==='fit'){fit();}
+  else if(a==='expand'){setAll(true);fit();}
+  else if(a==='collapse'){setAll(false);fit();}
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){drawer.classList.remove('open');selected=null;render();} });
+
+render(); fit();
+</script>
+</body>
+</html>
