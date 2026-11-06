@@ -8,8 +8,13 @@ and duplicate aliases. Navigation has its own detailed manifest under
 | Input | Location | Coverage |
 |---|---|---|
 | GPS broadcast navigation | `gnss/navigation/2024/` | 34days: September1–22 and September24–October5,2024 |
-| Sentinel-3A GNSS observations | `gnss/observations/2024/` | GPS November1 and2,2024; two unique GNSSRD archives |
-| Sentinel-3A measured attitude | `attitude/2024/` | GPS October16,2024; one PROQUA archive |
+| Sentinel-3A GNSS observations | `gnss/observations/2024/` | October15–16 and November1–2,2024; three unique GNSSRD archives |
+| Sentinel-3B GNSS observations | `gnss/observations/2024/` | October15–16,2024; one GNSSRD archive |
+| Sentinel-3A measured attitude | `attitude/2024/` | daily September17–October2 (15 files) and October15–16,2024; 16 PROQUA archives |
+| Sentinel-3A precise orbit (POEORB) | `orbits/2024/` | October1–2,2024 (Oct7–8 and Oct15–16 remain under the report inputs) |
+| Sentinel-3B precise orbit (POEORB) | `orbits/2024/` | October15–16,2024 |
+| Sentinel-3A two-month seed states | `seed-states/` | 62 daily first-OSV ITRF states, August1–October1,2024 |
+| JPL DE440 ephemeris | `ephemeris/` | Sun/Moon/planet binary ephemeris (environment input) |
 | August initial/reference states | `../docs/reports/august-2024-holdout/inputs/` | August1 seed, August2/8 reference endpoints |
 | Daily seed/reference pairs | `../docs/reports/one-day-multi-epoch-audit/` | Four cases: August1/7 and October7/15 |
 | Numerical reference fixture | `../src/test/resources/numerics/j2-dop853-reference.csv` | Synthetic Cartesian J2/DOP853 reference, not satellite truth |
@@ -17,8 +22,10 @@ and duplicate aliases. Navigation has its own detailed manifest under
 The older POEORB files, weather, and EOP inputs remain at
 `docs/reports/perturbation-ladder-truestate-7day/inputs/`.
 Gravity/EOP inputs also remain at `docs/project-journal/inputs/`.
-No original August–October two-month POEORB file set is present; committed study
-reports and error tables are not substitutes for those original input records.
+The full original August–October two-month POEORB *file* set is not present, but the
+62 daily first-OSV ITRF seed states derived from it are archived at
+`seed-states/first_osv_blocks_2024-08-01_to_10-01.txt` — the exact per-day seeds used by
+the two-month study.
 
 ## Times and evaluation
 

@@ -2,6 +2,111 @@
   "scope": "Previously uncommitted input data only; published navigation retained unchanged",
   "new_input_files": [
     {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240919T070047_V20240917T235942_20240918T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1531409,
+      "sha256": "40e0063f9a99d3e27d71aff616479a9947df3abdbe235b1402e81638869dae74",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240919T070047_V20240917T235942_20240918T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240920T070049_V20240918T235942_20240919T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1529675,
+      "sha256": "7491df64d76bd009c5d31bb7912a39bd6395c077dd9af50f97f38f2b4c0c8256",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240920T070049_V20240918T235942_20240919T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240921T070046_V20240919T235942_20240920T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1529521,
+      "sha256": "5c6d4cf4cf094d95c0372a07b46828dba9141f29b27e2aefea3cbe5ec1da74e5",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240921T070046_V20240919T235942_20240920T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240922T070050_V20240920T235942_20240921T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1529421,
+      "sha256": "8d8bdb641d7f78f7e1fd57addd871b7f8b6f7af8810d41ca3e95d2625d4e75d8",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240922T070050_V20240920T235942_20240921T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240923T070045_V20240921T235942_20240922T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1529474,
+      "sha256": "4fd6f3c0ef5cdfa5d47f71f345d23ef6506b8ba342f2b7e4f3c20ddc093ee82b",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240923T070045_V20240921T235942_20240922T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240924T070043_V20240922T235942_20240923T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1526165,
+      "sha256": "d4eb9ea0871985615f7c400563cdf71c341d85b4f0be927ebf148f959f085ac7",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240924T070043_V20240922T235942_20240923T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240925T070048_V20240923T235942_20240924T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1516220,
+      "sha256": "6b30ea5227a37ba0bb7df30d1ebdfbd8bf4994ec70d2e489de0cd4ca954af462",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240925T070048_V20240923T235942_20240924T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240926T070051_V20240924T235942_20240925T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1526107,
+      "sha256": "24ef3fa861b1022b179bb2d16669164c307b2a3177ad93f1087428c6c10aef25",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240926T070051_V20240924T235942_20240925T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240927T070046_V20240925T235942_20240926T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1521618,
+      "sha256": "ed0e13c6616151758ebe84e623d52b7bd2b5102f4a316bc971e42069a839a1d6",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240927T070046_V20240925T235942_20240926T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240928T070054_V20240926T235942_20240927T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1517716,
+      "sha256": "fa346ee1fcdf88b77c2887daf6c2b29bda7db1b9adcfb09445a00a515581c6e0",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240928T070054_V20240926T235942_20240927T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240929T070050_V20240927T235942_20240928T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1514394,
+      "sha256": "33a2cdc9a7bf400caaa788ea7beef12ac5eb692e74666538273c08dc113b2fc1",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240929T070050_V20240927T235942_20240928T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240930T070052_V20240928T235942_20240929T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1508937,
+      "sha256": "d83d140fcd46cb724c8f05c9fbd2304e2b7a80e390c7aef7f2b603443d13a340",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20240930T070052_V20240928T235942_20240929T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20241001T070122_V20240929T235942_20240930T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1512206,
+      "sha256": "f28e1c4744a7db9ab41c6437b84a0d3ac19c56da5a9ce96876d1364363d7c697",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20241001T070122_V20240929T235942_20240930T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20241002T070049_V20240930T235942_20241001T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1509462,
+      "sha256": "3393eeac3e970ca96792caa175117f4b6660df705c8c9371e8121608785b122f",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20241002T070049_V20240930T235942_20241001T235941.tgz"
+    },
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20241003T070107_V20241001T235942_20241002T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive (PROQUA)",
+      "bytes": 1506220,
+      "sha256": "7268aa2ab6e22f644203abf3db2b4f6f3bf86f3184d4187493d30ecc7bde1c4d",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20241003T070107_V20241001T235942_20241002T235941.tgz"
+    },
+    {
       "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20241017T104044_V20241015T235942_20241016T235941.tgz",
       "kind": "Sentinel-3A measured attitude archive",
       "bytes": 1477151,
@@ -17,6 +122,20 @@
           "bytes": 1012
         }
       ]
+    },
+    {
+      "path": "data/ephemeris/lnxp1990.440",
+      "kind": "JPL DE440 Sun/Moon/planet binary ephemeris",
+      "bytes": 14895376,
+      "sha256": "00a3863ec1ee692d4779a3ba3ad10fca5c90871f5a9c6a5ba4752b8ad8a5df08",
+      "origin": "lnxp1990.440"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241022T121051_V20241015T235942_20241016T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27415531,
+      "sha256": "738c4ce279c04760221681627eee71005d67b660b9eda915bd16d788dcf1fb8b",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241022T121051_V20241015T235942_20241016T235941.tgz"
     },
     {
       "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz",
@@ -51,6 +170,34 @@
           "bytes": 1335
         }
       ]
+    },
+    {
+      "path": "data/gnss/observations/2024/S3B_OPER_AUX_GNSSRD_POD__20241022T122053_V20241015T235942_20241016T235941.tgz",
+      "kind": "Sentinel-3B GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27270672,
+      "sha256": "197f392f66cb5305dbedced6dc22802f0d1b054bdb9ce69b5e2b586839ef96fb",
+      "origin": "S3B_OPER_AUX_GNSSRD_POD__20241022T122053_V20241015T235942_20241016T235941.tgz"
+    },
+    {
+      "path": "data/orbits/2024/S3A_POEORB_20241001-02.EOF",
+      "kind": "Sentinel-3A precise orbit ephemeris (POEORB, truth)",
+      "bytes": 4653570,
+      "sha256": "8cd32c73c528c5fa8289b2e3ce02867ba704b77b96ccd85cc40d291649140e0d",
+      "origin": "S3A_POEORB_20241001-02.EOF"
+    },
+    {
+      "path": "data/orbits/2024/S3B_OPER_AUX_POEORB_POD__20241110T080556_V20241015T215942_20241016T235942_DGNS.EOF",
+      "kind": "Sentinel-3B precise orbit ephemeris (POEORB, truth)",
+      "bytes": 4653698,
+      "sha256": "7b9a774f61601f825d9833d4f78177f9551d5f655ff73d327ff1ac840476ba91",
+      "origin": "S3B_OPER_AUX_POEORB_POD__20241110T080556_V20241015T215942_20241016T235942_DGNS.EOF"
+    },
+    {
+      "path": "data/seed-states/first_osv_blocks_2024-08-01_to_10-01.txt",
+      "kind": "Sentinel-3A daily first-OSV seed states (Aug01-Oct01 two-month set)",
+      "bytes": 16929,
+      "sha256": "ca27532032dd519fe78df175e2bfec4212dab6a7dd5d9917ea5d9d4a943c0b67",
+      "origin": "first_osv_blocks_2024-08-01_to_10-01.txt"
     },
     {
       "path": "docs/reports/august-2024-holdout/inputs/seed.EOF",
