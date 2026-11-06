@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Data_Block>
+<List_of_OSVs>
+<OSV>
+<UTC>UTC=2024-08-01T21:59:42.000000</UTC>
+<X unit="m">-5539309.948842</X>
+<Y unit="m">-697403.926822</Y>
+<Z unit="m">4510135.451876</Z>
+<VX unit="m/s">-4797.750487</VX>
+<VY unit="m/s">1254.166536</VY>
+<VZ unit="m/s">-5683.340209</VZ>
+</OSV>
+</List_of_OSVs>
+</Data_Block>

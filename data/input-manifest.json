@@ -1,0 +1,109 @@
+{
+  "scope": "Previously uncommitted input data only; published navigation retained unchanged",
+  "new_input_files": [
+    {
+      "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20241017T104044_V20241015T235942_20241016T235941.tgz",
+      "kind": "Sentinel-3A measured attitude archive",
+      "bytes": 1477151,
+      "sha256": "15586ee923fa99e9ca13b9c9d89fa76a3a9d7494204b73d4e40a86978d149e8e",
+      "origin": "S3A_OPER_AUX_PROQUA_POD__20241017T104044_V20241015T235942_20241016T235941.tgz",
+      "archive_members": [
+        {
+          "name": "S3A_OPER_AUX_PROQUA_POD__20241017T104044_V20241015T235942_20241016T235941.DBL",
+          "bytes": 6998775
+        },
+        {
+          "name": "S3A_OPER_AUX_PROQUA_POD__20241017T104044_V20241015T235942_20241016T235941.HDR",
+          "bytes": 1012
+        }
+      ]
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive",
+      "bytes": 27691370,
+      "sha256": "695fdf3951ff4f334298798bb410a50b9d1358d81a86a117babec9a732319ab9",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz",
+      "archive_members": [
+        {
+          "name": "S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.DBL",
+          "bytes": 105386279
+        },
+        {
+          "name": "S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.HDR",
+          "bytes": 1335
+        }
+      ]
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive",
+      "bytes": 27676836,
+      "sha256": "1bd98e6a85658077ab807ea6be8ae54d3a1ac2457c5f70207400ef7bdaef3ba0",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz",
+      "archive_members": [
+        {
+          "name": "S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.DBL",
+          "bytes": 105510303
+        },
+        {
+          "name": "S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.HDR",
+          "bytes": 1335
+        }
+      ]
+    },
+    {
+      "path": "docs/reports/august-2024-holdout/inputs/seed.EOF",
+      "kind": "User-supplied ITRF orbit state fixture",
+      "bytes": 327,
+      "sha256": "2a63d516e190cd68d5066c7bacdcd74fa20a815f88f21378e7689cb3a19e4f31",
+      "origin": "docs/reports/august-2024-holdout/inputs/seed.EOF"
+    },
+    {
+      "path": "docs/reports/august-2024-holdout/inputs/truth.csv",
+      "kind": "User-supplied ITRF orbit state fixture",
+      "bytes": 259,
+      "sha256": "1f61cc2f7de120cd48ce376d04fb55b5b8a77df8b4caa0974454c69737f84fa1",
+      "origin": "docs/reports/august-2024-holdout/inputs/truth.csv"
+    },
+    {
+      "path": "docs/reports/one-day-multi-epoch-audit/seeds.csv",
+      "kind": "Daily ITRF seed/reference fixture",
+      "bytes": 467,
+      "sha256": "487fd70ed3de7dacbb28f105f944d211b4e8850b5cd1ec6a2d52a24169836489",
+      "origin": "docs/reports/one-day-multi-epoch-audit/seeds.csv"
+    },
+    {
+      "path": "docs/reports/one-day-multi-epoch-audit/truth.csv",
+      "kind": "Daily ITRF seed/reference fixture",
+      "bytes": 470,
+      "sha256": "31bfa82dde8502d56ade98324589f0c687810c8471fa58a514c3f9d455239ac8",
+      "origin": "docs/reports/one-day-multi-epoch-audit/truth.csv"
+    },
+    {
+      "path": "src/test/resources/numerics/j2-dop853-reference.csv",
+      "kind": "Synthetic independent Cartesian-J2 numerical reference fixture",
+      "bytes": 916,
+      "sha256": "a5e5a975656db2d560e23130b696133655c906c6ba4d26e35ce5c2689b896d34",
+      "origin": "src/test/resources/numerics/j2-dop853-reference.csv"
+    }
+  ],
+  "duplicate_copies_not_stored": [
+    {
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz",
+      "same_as": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz",
+      "sha256": "695fdf3951ff4f334298798bb410a50b9d1358d81a86a117babec9a732319ab9"
+    },
+    {
+      "origin": "docs/reports/november-2024-gnss-readiness/eop-fixed-benchmark/seeds.csv",
+      "same_as": "docs/reports/one-day-multi-epoch-audit/seeds.csv",
+      "sha256": "487fd70ed3de7dacbb28f105f944d211b4e8850b5cd1ec6a2d52a24169836489"
+    },
+    {
+      "origin": "docs/reports/november-2024-gnss-readiness/eop-fixed-benchmark/truth.csv",
+      "same_as": "docs/reports/one-day-multi-epoch-audit/truth.csv",
+      "sha256": "31bfa82dde8502d56ade98324589f0c687810c8471fa58a514c3f9d455239ac8"
+    }
+  ],
+  "unavailable": "Original August\u2013October two-month POEORB upload is not accessible in this workspace; only report results are available."
+}

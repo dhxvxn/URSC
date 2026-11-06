@@ -250,3 +250,7 @@ The [navigation dataset and compatibility guide](data/gnss/navigation/README.md)
 thirty-four original RINEX4.02 daily files (September1–22 and September24–October5,2024), checksums and coverage.
 The GPS navigation reader now supports GPS LNAV in RINEX3.x and RINEX4.00–4.02
 (including gzip), used directly by the `spp --nav` input.
+
+Previously uploaded observations, attitude and orbit-state fixtures are now archived
+with checksums. See the [input data inventory](data/README.md) and
+[machine-readable manifest](data/input-manifest.json).

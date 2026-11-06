@@ -19,3 +19,9 @@ ephemeris*.csv
 
 # Session scratch (local experiment harnesses, extracted uploads); never committed
 scratchpad/
+
+# Curated orbit-state and independent numerical input fixtures
+!docs/reports/august-2024-holdout/inputs/truth.csv
+!docs/reports/one-day-multi-epoch-audit/seeds.csv
+!docs/reports/one-day-multi-epoch-audit/truth.csv
+!src/test/resources/numerics/j2-dop853-reference.csv
