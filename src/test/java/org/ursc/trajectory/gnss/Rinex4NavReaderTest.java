@@ -30,8 +30,8 @@ class Rinex4NavReaderTest {
    assertThrows(IOException.class,()->read(text));
  }
  @Test void uploadedFilesHaveExpectedMessageCountsAndFiniteOrbits()throws Exception{
-  int[] expected={422,417,417,355,410,426,429,430,422,429,421,426,429,422,420,442,423,426,429,420,423,420,423,429,422,426,423,424,419,422};
-  int[] days={245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,262,263,264,265,266,268,269,270,271,272,273,274,275,276,277};
+  int[] expected={422,417,417,355,410,426,429,430,422,429,421,426,429,422,420,442,423,426,429,420,423,420,423,429,422,426,423,424,419,422,419,425};
+  int[] days={245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,262,263,264,265,266,268,269,270,271,272,273,274,275,276,277,278,279};
   Path root=Paths.get("data/gnss/navigation/2024");
   for(int i=0;i<expected.length;i++){
    var file=root.resolve("BRD400DLR_S_2024"+days[i]+"0000_01D_MN.rnx.gz");
