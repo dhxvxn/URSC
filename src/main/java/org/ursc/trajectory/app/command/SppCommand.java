@@ -24,7 +24,7 @@ import org.ursc.trajectory.time.TimeScalesFactory;
 
 /**
  * Single Point Positioning from a GNSS observation file and a GPS broadcast
- * navigation file: computes a per-epoch receiver position and clock, optionally
+ * navigation file (RINEX 3.x or GPS LNAV from RINEX 4.00–4.02): computes a per-epoch receiver position and clock, optionally
  * scores against a POEORB precise-orbit truth file, and writes a per-epoch CSV.
  *
  * <pre>

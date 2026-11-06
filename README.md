@@ -242,3 +242,11 @@ Natural next modules, all building on the existing interfaces:
 
 *Built as a reference-quality, extensible foundation. Contributions extend it one
 `ForceModel`, `Atmosphere`, `ODEIntegrator`, or `Propagator` at a time.*
+
+
+## Uploaded navigation data and RINEX 4 support
+
+The [navigation dataset and compatibility guide](data/gnss/navigation/README.md) includes
+ten original RINEX4.02 daily files (September1–10,2024), checksums and coverage.
+The GPS navigation reader now supports GPS LNAV in RINEX3.x and RINEX4.00–4.02
+(including gzip), used directly by the `spp --nav` input.
