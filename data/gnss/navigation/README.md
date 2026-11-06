@@ -6,7 +6,7 @@ GPS day, RINEX version, and independently counted GPS LNAV messages.
 
 ## Coverage
 
-September 1–10, 2024: day-of-year 245–254, ten daily files (~15MB compressed).
+September 1–15, 2024: day-of-year 245–259, fifteen daily files.
 
 | Date | DOY | GPS LNAV messages | GPS PRNs |
 |---|---:|---:|---:|
@@ -20,9 +20,14 @@ September 1–10, 2024: day-of-year 245–254, ten daily files (~15MB compressed
 | September 8 | 252 | 430 | 32 |
 | September 9 | 253 | 422 | 32 |
 | September 10 | 254 | 429 | 32 |
+| September 11 | 255 | 421 | 32 |
+| September 12 | 256 | 426 | 32 |
+| September 13 | 257 | 429 | 32 |
+| September 14 | 258 | 422 | 32 |
+| September 15 | 259 | 420 | 32 |
 
-For the requested August1–November1 range, August1–31 and September11–November1
-remain missing (83days). These September navigation files do not match the November
+For the requested August1–November1 range, August1–31 and September16–November1
+remain missing (78days). These September navigation files do not match the November
 GNSS observation uploads. Positioning still requires observation/navigation date overlap.
 
 ## Supported inputs
@@ -50,7 +55,7 @@ mvn -B -ntp package
 
 `Rinex4NavReaderTest` checks RINEX3/4 equivalence of computed orbit/clock for a shared
 GPS payload; interleaved unsupported records; malformed and unsupported input; and
-all ten uploaded gzip files against the manifest's message counts and32PRNs per file.
+all fifteen uploaded gzip files against the manifest's message counts and32PRNs per file.
 Orbit norms and clocks are checked for finite, plausible values, not compared with
 an independent precise orbit reference. These tests do not establish SPP or forecast accuracy.
 

@@ -30,9 +30,9 @@ class Rinex4NavReaderTest {
    assertThrows(IOException.class,()->read(text));
  }
  @Test void uploadedFilesHaveExpectedMessageCountsAndFiniteOrbits()throws Exception{
-  int[] expected={422,417,417,355,410,426,429,430,422,429};
+  int[] expected={422,417,417,355,410,426,429,430,422,429,421,426,429,422,420};
   Path root=Paths.get("data/gnss/navigation/2024");
-  for(int i=0;i<10;i++){
+  for(int i=0;i<expected.length;i++){
    var file=root.resolve("BRD400DLR_S_2024"+(245+i)+"0000_01D_MN.rnx.gz");
    var data=RinexNavReader.read(file);assertEquals(expected[i],data.messageCount(),file.toString());assertEquals(32,data.prns().size());
    var t=new org.ursc.trajectory.time.AbsoluteDate(2024,9,1+i,12,0,0,org.ursc.trajectory.time.TimeScalesFactory.getGPS());
