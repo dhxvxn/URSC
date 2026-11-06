@@ -200,6 +200,56 @@
       "version": "4.02",
       "gps_lnav_messages": 420,
       "gps_prns": 32
+    },
+    {
+      "file": "BRD400DLR_S_20242680000_01D_MN.rnx.gz",
+      "date_gps": "2024-09-24",
+      "day_of_year": 268,
+      "bytes": 1574791,
+      "sha256": "ca3647a2ebc152e36ca3cd34fc73ebfa526ba09afb416023ac5e924c9aa3e576",
+      "version": "4.02",
+      "gps_lnav_messages": 423,
+      "gps_prns": 32
+    },
+    {
+      "file": "BRD400DLR_S_20242690000_01D_MN.rnx.gz",
+      "date_gps": "2024-09-25",
+      "day_of_year": 269,
+      "bytes": 1574361,
+      "sha256": "6cc9bbe6a6c484865df12fd4a7b71bd6d07dd745cb32c7d56c00667bbc169ff6",
+      "version": "4.02",
+      "gps_lnav_messages": 420,
+      "gps_prns": 32
+    },
+    {
+      "file": "BRD400DLR_S_20242700000_01D_MN.rnx.gz",
+      "date_gps": "2024-09-26",
+      "day_of_year": 270,
+      "bytes": 1583995,
+      "sha256": "3b2b3b6498704148bb1c95b3ced36d5e20df5aec4ef00907b846314e17a847c3",
+      "version": "4.02",
+      "gps_lnav_messages": 423,
+      "gps_prns": 32
+    },
+    {
+      "file": "BRD400DLR_S_20242710000_01D_MN.rnx.gz",
+      "date_gps": "2024-09-27",
+      "day_of_year": 271,
+      "bytes": 1609623,
+      "sha256": "b0edd8f5b8fa2b083bea3ac6ad20aa8068ef4945dbc98dbeee5e08a4b0349edd",
+      "version": "4.02",
+      "gps_lnav_messages": 429,
+      "gps_prns": 32
+    },
+    {
+      "file": "BRD400DLR_S_20242720000_01D_MN.rnx.gz",
+      "date_gps": "2024-09-28",
+      "day_of_year": 272,
+      "bytes": 1630415,
+      "sha256": "71a223e2743e42ca4d7ab1d3963fcb05f56f19b411c44ad0f206692e49f99b5a",
+      "version": "4.02",
+      "gps_lnav_messages": 422,
+      "gps_prns": 32
     }
   ]
 }
