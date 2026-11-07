@@ -1,11 +1,20 @@
 # Sentinel-3A GNSS observation coverage
 
-18unique daily archives: GPS October15–30 and November1–2,2024.
-October31 remains missing between those ranges. For the selected September3–November2
-window, missing observation dates are September3–October14 and October31 (43days).
+27unique daily archives: GPS October5–6, October8–30, and November1–2,2024.
+For the selected September3–November2 window, missing observations are
+September3–October4, October7 and October31 (34days).
 
 | GPS day | File |
 |---|---|
+| 2024-10-05 | S3A_OPER_AUX_GNSSRD_POD__20241011T071050_V20241004T235942_20241005T235941.tgz |
+| 2024-10-06 | S3A_OPER_AUX_GNSSRD_POD__20241012T071051_V20241005T235942_20241006T235941.tgz |
+| 2024-10-08 | S3A_OPER_AUX_GNSSRD_POD__20241014T071059_V20241007T235942_20241008T235941.tgz |
+| 2024-10-09 | S3A_OPER_AUX_GNSSRD_POD__20241015T071046_V20241008T235942_20241009T235941.tgz |
+| 2024-10-10 | S3A_OPER_AUX_GNSSRD_POD__20241016T121052_V20241009T235942_20241010T235941.tgz |
+| 2024-10-11 | S3A_OPER_AUX_GNSSRD_POD__20241017T121050_V20241010T235942_20241011T235941.tgz |
+| 2024-10-12 | S3A_OPER_AUX_GNSSRD_POD__20241018T121049_V20241011T235942_20241012T235941.tgz |
+| 2024-10-13 | S3A_OPER_AUX_GNSSRD_POD__20241019T121049_V20241012T235942_20241013T235941.tgz |
+| 2024-10-14 | S3A_OPER_AUX_GNSSRD_POD__20241020T121052_V20241013T235942_20241014T235941.tgz |
 | 2024-10-15 | S3A_OPER_AUX_GNSSRD_POD__20241021T121052_V20241014T235942_20241015T235941.tgz |
 | 2024-10-16 | S3A_OPER_AUX_GNSSRD_POD__20241022T121051_V20241015T235942_20241016T235941.tgz |
 | 2024-10-17 | S3A_OPER_AUX_GNSSRD_POD__20241023T121053_V20241016T235942_20241017T235941.tgz |
@@ -25,7 +34,10 @@ window, missing observation dates are September3–October14 and October31 (43da
 | 2024-11-01 | S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz |
 | 2024-11-02 | S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz |
 
-validation.json records structural checks on the15new uploads: each has86400normal
-observation epochs and a RINEX3.03 header. SHA-256 hashes are in data/input-manifest.json.
-This is data validation, not SPP or forecast accuracy. Matching navigation is still
-required for these October/November observations. GPS−UTC=18s for these dates.
+validation.json records structural checks on24new unique uploads: each has86400normal
+observation epochs and a RINEX3.03 header. Checksums are in data/input-manifest.json.
+The repeated October16 upload was byte-identical and was not stored twice.
+This validates data structure, not positioning or forecast accuracy. GPS−UTC=18s.
+October5 is an observation/navigation overlap with the current navigation collection;
+other October dates require additional navigation. The architecture reference remains
+at docs/MERGED_ARCHITECTURE.md; no algorithm refactor was made.
