@@ -196,6 +196,41 @@
       "first_gps_fields": "2024 10 3 0 0 0.0000000",
       "last_gps_fields": "2024 10 3 23 59 59.0000000",
       "sha256": "abafdd110fda8816194ac0f5377def9c5a325524d8da43175dcc01dd97c64c30"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241003T071054_V20240926T235942_20240927T235941.tgz",
+      "epochs": 86400,
+      "first_gps_fields": "2024 9 27 0 0 0.0000000",
+      "last_gps_fields": "2024 9 27 23 59 59.0000000",
+      "sha256": "cdd2298c045a16cbdd0292488d09f9559b14a88638bfaf30130f5eff772c8e04"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241008T071049_V20241001T235942_20241002T235941.tgz",
+      "epochs": 86400,
+      "first_gps_fields": "2024 10 2 0 0 0.0000000",
+      "last_gps_fields": "2024 10 2 23 59 59.0000000",
+      "sha256": "5129ee9cde632d1e94d532c4c65d826d44f37e6362e26f67acc45f6e252b7037"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241004T071051_V20240927T235942_20240928T235941.tgz",
+      "epochs": 86400,
+      "first_gps_fields": "2024 9 28 0 0 0.0000000",
+      "last_gps_fields": "2024 9 28 23 59 59.0000000",
+      "sha256": "7b43208b5d76fa4b9223b1dc46e39989b9eba8ce7ee0651ee7074af53a0c9b02"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241001T071053_V20240924T235942_20240925T235941.tgz",
+      "epochs": 86400,
+      "first_gps_fields": "2024 9 25 0 0 0.0000000",
+      "last_gps_fields": "2024 9 25 23 59 59.0000000",
+      "sha256": "0e4587508ffa9769d04d7f7f38224e87ff6a9e31f24e1661b786298f1aba0382"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241005T071057_V20240928T235942_20240929T235941.tgz",
+      "epochs": 86400,
+      "first_gps_fields": "2024 9 29 0 0 0.0000000",
+      "last_gps_fields": "2024 9 29 23 59 59.0000000",
+      "sha256": "b927cb148b0bec8d9965f4ca955603dbef2ac4ffa40aa724a3c8123cb2555630"
     }
   ]
 }

@@ -1,12 +1,17 @@
 # Sentinel-3A GNSS observation coverage
 
-31unique daily archives: GPS September30, October3–30 and November1–2,2024.
-For September3–November2, missing observations are September3–29,October1–2,
-and October31 (30days).
+36unique daily archives: GPS September25,September27–30,October2–30,November1–2,2024.
+For September3–November2, missing observations are September3–24,September26,
+October1 and October31 (25days).
 
 | GPS day | File |
 |---|---|
+| 2024-09-25 | S3A_OPER_AUX_GNSSRD_POD__20241001T071053_V20240924T235942_20240925T235941.tgz |
+| 2024-09-27 | S3A_OPER_AUX_GNSSRD_POD__20241003T071054_V20240926T235942_20240927T235941.tgz |
+| 2024-09-28 | S3A_OPER_AUX_GNSSRD_POD__20241004T071051_V20240927T235942_20240928T235941.tgz |
+| 2024-09-29 | S3A_OPER_AUX_GNSSRD_POD__20241005T071057_V20240928T235942_20240929T235941.tgz |
 | 2024-09-30 | S3A_OPER_AUX_GNSSRD_POD__20241006T071049_V20240929T235942_20240930T235941.tgz |
+| 2024-10-02 | S3A_OPER_AUX_GNSSRD_POD__20241008T071049_V20241001T235942_20241002T235941.tgz |
 | 2024-10-03 | S3A_OPER_AUX_GNSSRD_POD__20241009T071106_V20241002T235942_20241003T235941.tgz |
 | 2024-10-04 | S3A_OPER_AUX_GNSSRD_POD__20241010T071047_V20241003T235942_20241004T235941.tgz |
 | 2024-10-05 | S3A_OPER_AUX_GNSSRD_POD__20241011T071050_V20241004T235942_20241005T235941.tgz |
@@ -38,9 +43,9 @@ and October31 (30days).
 | 2024-11-01 | S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz |
 | 2024-11-02 | S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz |
 
-validation.json records structural checks on28new unique uploads: each has86400normal
-observation epochs and a RINEX3.03 header. Checksums are in data/input-manifest.json.
-Duplicate October10/16 uploads were byte-identical and not stored twice.
-These checks establish archive and observation structure, not SPP/forecast accuracy.
-GPS−UTC=18s. Matching navigation coverage is required before SPP/OD.
-The agreed diagram is in docs/MERGED_ARCHITECTURE.md; algorithm refactoring is deferred.
+validation.json records structural checks on33new unique uploads: each has86400normal
+observation epochs and a RINEX3.03 header. SHA-256 hashes are in data/input-manifest.json.
+Repeated October10/16 files were byte-identical and omitted. GPS−UTC=18s in2024.
+These are input checks, not positioning/forecast accuracy results.
+October2 now has S3A observations, matching navigation and full-day POEORB coverage.
+The agreed diagram is docs/MERGED_ARCHITECTURE.md; algorithm refactoring is deferred.
