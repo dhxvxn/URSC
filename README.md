@@ -247,7 +247,7 @@ Natural next modules, all building on the existing interfaces:
 ## Uploaded navigation data and RINEX 4 support
 
 The [navigation dataset and compatibility guide](data/gnss/navigation/README.md) includes
-56original RINEX4.02 daily files (September1–October26,2024), checksums and coverage.
+63original RINEX4.02 daily files (September1–November2,2024), checksums and coverage.
 The GPS navigation reader now supports GPS LNAV in RINEX3.x and RINEX4.00–4.02
 (including gzip), used directly by the `spp --nav` input.
 

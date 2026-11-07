@@ -6,7 +6,8 @@ GPS day, RINEX version, and independently counted GPS LNAV messages.
 
 ## Coverage
 
-56consecutive daily navigation files:September1–October26,2024. No gaps remain within that span.
+63consecutive daily navigation files:September1–November2,2024 (DOY245–307).
+Navigation coverage is complete for the selected September3–November2 window.
 
 | Date | DOY | GPS LNAV messages | GPS PRNs |
 |---|---:|---:|---:|
@@ -66,10 +67,18 @@ GPS day, RINEX version, and independently counted GPS LNAV messages.
 | 2024-10-24 | 298 | 414 | 31 |
 | 2024-10-25 | 299 | 412 | 31 |
 | 2024-10-26 | 300 | 411 | 31 |
+| 2024-10-27 | 301 | 407 | 31 |
+| 2024-10-28 | 302 | 410 | 31 |
+| 2024-10-29 | 303 | 410 | 31 |
+| 2024-10-30 | 304 | 412 | 31 |
+| 2024-10-31 | 305 | 406 | 31 |
+| 2024-11-01 | 306 | 415 | 31 |
+| 2024-11-02 | 307 | 422 | 31 |
 
-Selected window September3–November2:7navigation days remain missing,
-October27–31 (DOY301–305) and November1–2 (306–307). Other input types have
-separate coverage; complete navigation does not imply complete observations/reference.
+No navigation days are missing inside the selected window. The earlier August1–November1
+request still lacks August navigation. GNSS observations remain missing for GPS
+September3 and October31; POEORB and optional attitude coverage remain incomplete.
+Navigation completeness alone does not establish positioning or forecast accuracy.
 
 ## Supported inputs
 
@@ -96,7 +105,7 @@ mvn -B -ntp package
 
 `Rinex4NavReaderTest` checks RINEX3/4 equivalence of computed orbit/clock for a shared
 GPS payload; interleaved unsupported records; malformed and unsupported input; and
-all56uploaded gzip files against the manifest's message and satellite counts (31–32GPS identifiers per file).
+all63uploaded gzip files against the manifest's message and satellite counts (31–32GPS identifiers per file).
 Orbit norms and clocks are checked for finite, plausible values, not compared with
 an independent precise orbit reference. These tests do not establish SPP or forecast accuracy.
 
