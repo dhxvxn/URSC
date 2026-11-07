@@ -7,7 +7,7 @@ and duplicate aliases. Navigation has its own detailed manifest under
 
 | Input | Location | Coverage |
 |---|---|---|
-| GPS broadcast navigation | `gnss/navigation/2024/` | 34days: September1–22 and September24–October5,2024 |
+| GPS broadcast navigation | `gnss/navigation/2024/` | 35consecutive days: September1–October5,2024 |
 | Sentinel-3A GNSS observations | `gnss/observations/2024/` | GPS September4–October30 and November1–2,2024;59unique archives |
 | Sentinel-3B GNSS observations | `gnss/observations/2024/` | October15–16,2024; one GNSSRD archive |
 | Sentinel-3A measured attitude | `attitude/2024/` | daily September17–October2 (15 files) and October15–16,2024; 16 PROQUA archives |
@@ -34,7 +34,7 @@ are UTC, explaining midnight-adjacent filename boundaries. Observation archives 
 RINEX3.03; navigation archives are RINEX4.02 (GPS LNAV supported by the reader).
 Sentinel POEORB and supplied orbit-state fixtures are Earth-fixed ITRF states.
 
-November navigation is not included yet. September4–22,24–30 and October1–5 now have observation/navigation overlap. A November SPP/OD run requires matching November navigation.
+November navigation is not included yet. September4–October5 now have observation/navigation overlap. A November SPP/OD run requires matching November navigation.
 POEORB/reference states are for evaluation and must not be used to influence a
 forecast after its cutoff. These products are retrospective; publication-time
 availability must be established separately for operational replay.

@@ -222,6 +222,16 @@
       "gps_prns": 32
     },
     {
+      "file": "BRD400DLR_S_20242670000_01D_MN.rnx.gz",
+      "date_gps": "2024-09-23",
+      "day_of_year": 267,
+      "bytes": 1572082,
+      "sha256": "59e57d0dbb4496dafd0a0769d1bb2e729418c0be72319f0289f6c4e0f090caaa",
+      "version": "4.02",
+      "gps_lnav_messages": 424,
+      "gps_prns": 32
+    },
+    {
       "file": "BRD400DLR_S_20242680000_01D_MN.rnx.gz",
       "date_gps": "2024-09-24",
       "day_of_year": 268,
