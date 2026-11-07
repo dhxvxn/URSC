@@ -8,7 +8,7 @@ and duplicate aliases. Navigation has its own detailed manifest under
 | Input | Location | Coverage |
 |---|---|---|
 | GPS broadcast navigation | `gnss/navigation/2024/` | 34days: September1–22 and September24–October5,2024 |
-| Sentinel-3A GNSS observations | `gnss/observations/2024/` | October15–16 and November1–2,2024; three unique GNSSRD archives |
+| Sentinel-3A GNSS observations | `gnss/observations/2024/` | GPS October15–30 and November1–2,2024; 18 unique GNSSRD archives |
 | Sentinel-3B GNSS observations | `gnss/observations/2024/` | October15–16,2024; one GNSSRD archive |
 | Sentinel-3A measured attitude | `attitude/2024/` | daily September17–October2 (15 files) and October15–16,2024; 16 PROQUA archives |
 | Sentinel-3A precise orbit (POEORB) | `orbits/2024/` | October1–2,2024 (Oct7–8 and Oct15–16 remain under the report inputs) |
@@ -59,3 +59,6 @@ for item in json.loads(Path('data/input-manifest.json').read_text())['new_input_
 print('All archived input hashes match.')
 PY
 ```
+
+See [the GNSS observation inventory](gnss/observations/README.md) for exact dates.
+See [the merged architecture reference](../docs/MERGED_ARCHITECTURE.md) for the agreed structure.

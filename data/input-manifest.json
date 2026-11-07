@@ -233,6 +233,111 @@
       "bytes": 916,
       "sha256": "a5e5a975656db2d560e23130b696133655c906c6ba4d26e35ce5c2689b896d34",
       "origin": "src/test/resources/numerics/j2-dop853-reference.csv"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241027T121048_V20241020T235942_20241021T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27469807,
+      "sha256": "72db682be8d1fba44c5517d8d28f34ae890b1d28840484b10c5cb2d70ae2d9b8",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241027T121048_V20241020T235942_20241021T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241028T121051_V20241021T235942_20241022T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27534467,
+      "sha256": "c1019e55e97f920b2a10fa41ce614f4f89998c0adf9b54e2f997768916477b43",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241028T121051_V20241021T235942_20241022T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241102T121118_V20241026T235942_20241027T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27624598,
+      "sha256": "8c76724c3d939ed6f4909a718f5099d0d77878a35af67481417cbaefa50358d9",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241102T121118_V20241026T235942_20241027T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241026T121104_V20241019T235942_20241020T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27553951,
+      "sha256": "b4accfe42d987c71e25e3ea879921cc630116562054aaace90b98fdba3d4e913",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241026T121104_V20241019T235942_20241020T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241021T121052_V20241014T235942_20241015T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27569011,
+      "sha256": "d076120afe31be8db80f121daf5b068fb12cabfaa48c3cdc0f39c5b3baeb4f99",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241021T121052_V20241014T235942_20241015T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241024T121052_V20241017T235942_20241018T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27444578,
+      "sha256": "d2e40168ea217773fe15241fc07edfe3e299caaf0b0f1c493877d330e1c99973",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241024T121052_V20241017T235942_20241018T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241103T121057_V20241027T235942_20241028T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27680515,
+      "sha256": "6462dc4b3bc0203460f27f14943766a2b05f01d1d6a6f38c5951cb4d2d285f83",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241103T121057_V20241027T235942_20241028T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241030T121052_V20241023T235942_20241024T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27631211,
+      "sha256": "aec5a44810c2764e7d2b4c390f48c9849aacfcf08833016b1e32e549871e0a52",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241030T121052_V20241023T235942_20241024T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241031T121116_V20241024T235942_20241025T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27585539,
+      "sha256": "d71034216518e90fc36e6780b9c8f49a689805197d18389f2d7a125d0308cffe",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241031T121116_V20241024T235942_20241025T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241023T121053_V20241016T235942_20241017T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27429691,
+      "sha256": "7c5c3121cf5ea870d13b10b55e9701a7ca4a9c31ea31fd2f402315f2ac930eb3",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241023T121053_V20241016T235942_20241017T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241025T121053_V20241018T235942_20241019T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27535881,
+      "sha256": "ce20363807e030de994225b08b55d569e2d64c1a52c542374850027bf0a60eeb",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241025T121053_V20241018T235942_20241019T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241101T121059_V20241025T235942_20241026T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27656613,
+      "sha256": "ecb5bfaed9dfb2a6a1d52d18f58c49ae3675abc8ed661fa0a1dd7246bcb9fd1f",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241101T121059_V20241025T235942_20241026T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241105T121050_V20241029T235942_20241030T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27688808,
+      "sha256": "4156f0f08a106f645fc54968fd2edb3dc47f0b941a0f69d1088d57a81452196a",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241105T121050_V20241029T235942_20241030T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241104T121057_V20241028T235942_20241029T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27679283,
+      "sha256": "94429aa8d59c4c1e649f2c1a14b6dfdb552385b0c07ba07f014f7bfa51d3f8a6",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241104T121057_V20241028T235942_20241029T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241029T121051_V20241022T235942_20241023T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27612364,
+      "sha256": "74871f16cda4ac460f549a41a0094dd531e5ef8b9c244e7ade3075a862e8d80d",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241029T121051_V20241022T235942_20241023T235941.tgz"
     }
   ],
   "duplicate_copies_not_stored": [
@@ -252,5 +357,5 @@
       "sha256": "31bfa82dde8502d56ade98324589f0c687810c8471fa58a514c3f9d455239ac8"
     }
   ],
-  "unavailable": "Original August\u2013October two-month POEORB upload is not accessible in this workspace; only report results are available."
+  "unavailable": "Full original August\u2013October POEORB file set is not present; 62 unique daily seed epochs are archived in data/seed-states/."
 }
