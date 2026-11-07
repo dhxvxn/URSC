@@ -6,7 +6,7 @@ GPS day, RINEX version, and independently counted GPS LNAV messages.
 
 ## Coverage
 
-September 1–October 5,2024:35consecutive daily files. No September gaps remain.
+54daily navigation files:September1–October20,October22–23 and October25–26,2024.
 
 | Date | DOY | GPS LNAV messages | GPS PRNs |
 |---|---:|---:|---:|
@@ -45,10 +45,30 @@ September 1–October 5,2024:35consecutive daily files. No September gaps remain
 | 2024-10-03 | 277 | 422 | 32 |
 | 2024-10-04 | 278 | 419 | 32 |
 | 2024-10-05 | 279 | 425 | 32 |
+| 2024-10-06 | 280 | 425 | 32 |
+| 2024-10-07 | 281 | 420 | 32 |
+| 2024-10-08 | 282 | 405 | 31 |
+| 2024-10-09 | 283 | 407 | 31 |
+| 2024-10-10 | 284 | 415 | 31 |
+| 2024-10-11 | 285 | 406 | 31 |
+| 2024-10-12 | 286 | 408 | 31 |
+| 2024-10-13 | 287 | 409 | 31 |
+| 2024-10-14 | 288 | 407 | 31 |
+| 2024-10-15 | 289 | 410 | 31 |
+| 2024-10-16 | 290 | 412 | 31 |
+| 2024-10-17 | 291 | 417 | 31 |
+| 2024-10-18 | 292 | 408 | 31 |
+| 2024-10-19 | 293 | 409 | 31 |
+| 2024-10-20 | 294 | 406 | 31 |
+| 2024-10-22 | 296 | 410 | 31 |
+| 2024-10-23 | 297 | 411 | 31 |
+| 2024-10-25 | 299 | 412 | 31 |
+| 2024-10-26 | 300 | 411 | 31 |
 
-For August1–November1 inclusive, missing navigation dates are August1–31 and
-October6–November1 (58days). For September3–November2, October6–November2
-remain missing (28days). Observation and reference coverage are separate.
+Selected window September3–November2:9navigation days missing, October21 (DOY295),
+October24 (298), October27–31 (301–305), November1–2 (306–307). Within October6–26,
+only October21 and24 remain missing. Original repeated October16/19 uploads were
+byte-identical and omitted. Observation and POEORB coverage are separate.
 
 ## Supported inputs
 
@@ -75,7 +95,7 @@ mvn -B -ntp package
 
 `Rinex4NavReaderTest` checks RINEX3/4 equivalence of computed orbit/clock for a shared
 GPS payload; interleaved unsupported records; malformed and unsupported input; and
-all35uploaded gzip files against the manifest's message counts and32PRNs per file.
+all54uploaded gzip files against the manifest's message and satellite counts (31–32GPS identifiers per file).
 Orbit norms and clocks are checked for finite, plausible values, not compared with
 an independent precise orbit reference. These tests do not establish SPP or forecast accuracy.
 
