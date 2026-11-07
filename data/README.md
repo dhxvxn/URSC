@@ -34,8 +34,9 @@ are UTC, explaining midnight-adjacent filename boundaries. Observation archives 
 RINEX3.03; navigation archives are RINEX4.02 (GPS LNAV supported by the reader).
 Sentinel POEORB and supplied orbit-state fixtures are Earth-fixed ITRF states.
 
-November navigation is not included yet: these observation and navigation datasets
-do not overlap. A real November SPP/OD run requires matching November navigation.
+November navigation is not included yet. September25 and27–30 plus October2–5 now
+have observation/navigation overlap; October2 also has full-day POEORB reference
+coverage. A real November SPP/OD run still requires matching November navigation.
 POEORB/reference states are for evaluation and must not be used to influence a
 forecast after its cutoff. These products are retrospective; publication-time
 availability must be established separately for operational replay.
