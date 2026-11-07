@@ -254,3 +254,6 @@ The GPS navigation reader now supports GPS LNAV in RINEX3.x and RINEX4.00–4.02
 Previously uploaded observations, attitude and orbit-state fixtures are now archived
 with checksums. See the [input data inventory](data/README.md) and
 [machine-readable manifest](data/input-manifest.json).
+
+The [agreed estimation/prediction architecture](docs/MERGED_ARCHITECTURE.md) preserves
+the merged batch-OD, force-model and propagation engine for future implementation.

@@ -85,3 +85,9 @@ stored as classpath resources or generated `*Data.java`, never hand-typed:
 - **SI units, GCRF inertial frame** for all force-model accelerations.
 - **Data is generated, not transcribed** — coefficient tables come from a parser
   run over the authoritative source, eliminating transcription error.
+
+## Agreed merged engine diagram
+
+See [the user-approved architecture](MERGED_ARCHITECTURE.md): batch OD, physical
+forces and numerical propagation form one conceptual estimation/prediction engine.
+The diagram is preserved for a later algorithm refactor.
