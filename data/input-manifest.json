@@ -401,6 +401,34 @@
       "bytes": 27406510,
       "sha256": "9f9bb559e1d44161599c3cbeef43436f97a9b06c639062e7248fd71a082a0bb7",
       "origin": "S3A_OPER_AUX_GNSSRD_POD__20241016T121052_V20241009T235942_20241010T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241006T071049_V20240929T235942_20240930T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27466571,
+      "sha256": "1faec4698749fb89a72d2abed128394498d8e4bbcc5ad5c7ce38e6e23cd27ca6",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241006T071049_V20240929T235942_20240930T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241010T071047_V20241003T235942_20241004T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27237796,
+      "sha256": "710535953cb8702e11103bd0c22cb0f0e4f28981fc97768334e3322f0a5b85e6",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241010T071047_V20241003T235942_20241004T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241013T071050_V20241006T235942_20241007T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27359158,
+      "sha256": "365f4edaa9ff44b6534334ea207fb52614a87f51252ad617ca78d903f06e9f3b",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241013T071050_V20241006T235942_20241007T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241009T071106_V20241002T235942_20241003T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27376433,
+      "sha256": "abafdd110fda8816194ac0f5377def9c5a325524d8da43175dcc01dd97c64c30",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241009T071106_V20241002T235942_20241003T235941.tgz"
     }
   ],
   "duplicate_copies_not_stored": [
@@ -423,6 +451,11 @@
       "origin": "Repeated October16 GNSSRD upload",
       "same_as": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241022T121051_V20241015T235942_20241016T235941.tgz",
       "sha256": "738c4ce279c04760221681627eee71005d67b660b9eda915bd16d788dcf1fb8b"
+    },
+    {
+      "origin": "Repeated October10 GNSSRD upload",
+      "same_as": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241016T121052_V20241009T235942_20241010T235941.tgz",
+      "sha256": "9f9bb559e1d44161599c3cbeef43436f97a9b06c639062e7248fd71a082a0bb7"
     }
   ],
   "unavailable": "Full original August\u2013October POEORB file set is not present; 62 unique daily seed epochs are archived in data/seed-states/."

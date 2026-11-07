@@ -1,13 +1,17 @@
 # Sentinel-3A GNSS observation coverage
 
-27unique daily archives: GPS October5–6, October8–30, and November1–2,2024.
-For the selected September3–November2 window, missing observations are
-September3–October4, October7 and October31 (34days).
+31unique daily archives: GPS September30, October3–30 and November1–2,2024.
+For September3–November2, missing observations are September3–29,October1–2,
+and October31 (30days).
 
 | GPS day | File |
 |---|---|
+| 2024-09-30 | S3A_OPER_AUX_GNSSRD_POD__20241006T071049_V20240929T235942_20240930T235941.tgz |
+| 2024-10-03 | S3A_OPER_AUX_GNSSRD_POD__20241009T071106_V20241002T235942_20241003T235941.tgz |
+| 2024-10-04 | S3A_OPER_AUX_GNSSRD_POD__20241010T071047_V20241003T235942_20241004T235941.tgz |
 | 2024-10-05 | S3A_OPER_AUX_GNSSRD_POD__20241011T071050_V20241004T235942_20241005T235941.tgz |
 | 2024-10-06 | S3A_OPER_AUX_GNSSRD_POD__20241012T071051_V20241005T235942_20241006T235941.tgz |
+| 2024-10-07 | S3A_OPER_AUX_GNSSRD_POD__20241013T071050_V20241006T235942_20241007T235941.tgz |
 | 2024-10-08 | S3A_OPER_AUX_GNSSRD_POD__20241014T071059_V20241007T235942_20241008T235941.tgz |
 | 2024-10-09 | S3A_OPER_AUX_GNSSRD_POD__20241015T071046_V20241008T235942_20241009T235941.tgz |
 | 2024-10-10 | S3A_OPER_AUX_GNSSRD_POD__20241016T121052_V20241009T235942_20241010T235941.tgz |
@@ -34,10 +38,9 @@ September3–October4, October7 and October31 (34days).
 | 2024-11-01 | S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz |
 | 2024-11-02 | S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz |
 
-validation.json records structural checks on24new unique uploads: each has86400normal
+validation.json records structural checks on28new unique uploads: each has86400normal
 observation epochs and a RINEX3.03 header. Checksums are in data/input-manifest.json.
-The repeated October16 upload was byte-identical and was not stored twice.
-This validates data structure, not positioning or forecast accuracy. GPS−UTC=18s.
-October5 is an observation/navigation overlap with the current navigation collection;
-other October dates require additional navigation. The architecture reference remains
-at docs/MERGED_ARCHITECTURE.md; no algorithm refactor was made.
+Duplicate October10/16 uploads were byte-identical and not stored twice.
+These checks establish archive and observation structure, not SPP/forecast accuracy.
+GPS−UTC=18s. Matching navigation coverage is required before SPP/OD.
+The agreed diagram is in docs/MERGED_ARCHITECTURE.md; algorithm refactoring is deferred.

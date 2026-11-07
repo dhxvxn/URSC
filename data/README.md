@@ -8,7 +8,7 @@ and duplicate aliases. Navigation has its own detailed manifest under
 | Input | Location | Coverage |
 |---|---|---|
 | GPS broadcast navigation | `gnss/navigation/2024/` | 34days: September1–22 and September24–October5,2024 |
-| Sentinel-3A GNSS observations | `gnss/observations/2024/` | GPS October5–6, October8–30 and November1–2,2024; 27 unique GNSSRD archives |
+| Sentinel-3A GNSS observations | `gnss/observations/2024/` | GPS September30, October3–30 and November1–2,2024; 31 unique GNSSRD archives |
 | Sentinel-3B GNSS observations | `gnss/observations/2024/` | October15–16,2024; one GNSSRD archive |
 | Sentinel-3A measured attitude | `attitude/2024/` | daily September17–October2 (15 files) and October15–16,2024; 16 PROQUA archives |
 | Sentinel-3A precise orbit (POEORB) | `orbits/2024/` | October1–2,2024 (Oct7–8 and Oct15–16 remain under the report inputs) |
