@@ -6,7 +6,7 @@ GPS day, RINEX version, and independently counted GPS LNAV messages.
 
 ## Coverage
 
-54daily navigation files:September1–October20,October22–23 and October25–26,2024.
+56consecutive daily navigation files:September1–October26,2024. No gaps remain within that span.
 
 | Date | DOY | GPS LNAV messages | GPS PRNs |
 |---|---:|---:|---:|
@@ -60,15 +60,16 @@ GPS day, RINEX version, and independently counted GPS LNAV messages.
 | 2024-10-18 | 292 | 408 | 31 |
 | 2024-10-19 | 293 | 409 | 31 |
 | 2024-10-20 | 294 | 406 | 31 |
+| 2024-10-21 | 295 | 418 | 31 |
 | 2024-10-22 | 296 | 410 | 31 |
 | 2024-10-23 | 297 | 411 | 31 |
+| 2024-10-24 | 298 | 414 | 31 |
 | 2024-10-25 | 299 | 412 | 31 |
 | 2024-10-26 | 300 | 411 | 31 |
 
-Selected window September3–November2:9navigation days missing, October21 (DOY295),
-October24 (298), October27–31 (301–305), November1–2 (306–307). Within October6–26,
-only October21 and24 remain missing. Original repeated October16/19 uploads were
-byte-identical and omitted. Observation and POEORB coverage are separate.
+Selected window September3–November2:7navigation days remain missing,
+October27–31 (DOY301–305) and November1–2 (306–307). Other input types have
+separate coverage; complete navigation does not imply complete observations/reference.
 
 ## Supported inputs
 
@@ -95,7 +96,7 @@ mvn -B -ntp package
 
 `Rinex4NavReaderTest` checks RINEX3/4 equivalence of computed orbit/clock for a shared
 GPS payload; interleaved unsupported records; malformed and unsupported input; and
-all54uploaded gzip files against the manifest's message and satellite counts (31–32GPS identifiers per file).
+all56uploaded gzip files against the manifest's message and satellite counts (31–32GPS identifiers per file).
 Orbit norms and clocks are checked for finite, plausible values, not compared with
 an independent precise orbit reference. These tests do not establish SPP or forecast accuracy.
 
