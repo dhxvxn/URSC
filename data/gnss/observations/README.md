@@ -1,10 +1,11 @@
 # Sentinel-3A GNSS observation coverage
 
-60consecutive GPS observation days:September4–November2,2024.
-For the selected September3–November2 window, only September3 is missing.
+61consecutive GPS observation days:September3–November2,2024.
+The selected observation window is complete.
 
 | GPS day | File |
 |---|---|
+| 2024-09-03 | S3A_OPER_AUX_GNSSRD_POD__20240909T071039_V20240902T235942_20240903T235941.tgz |
 | 2024-09-04 | S3A_OPER_AUX_GNSSRD_POD__20240910T071051_V20240903T235942_20240904T235941.tgz |
 | 2024-09-05 | S3A_OPER_AUX_GNSSRD_POD__20240911T071044_V20240904T235942_20240905T235941.tgz |
 | 2024-09-06 | S3A_OPER_AUX_GNSSRD_POD__20240912T071051_V20240905T235942_20240906T235941.tgz |
@@ -66,7 +67,7 @@ For the selected September3–November2 window, only September3 is missing.
 | 2024-11-01 | S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz |
 | 2024-11-02 | S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz |
 
-validation.json records structural checks on57new archives;3older S3Aarchives
+validation.json records structural checks on58new archives;3older S3Aarchives
 were audited earlier. Each newly checked file has86400normal observation epochs
 and a RINEX3.03 header. Source hashes are in data/input-manifest.json.
 Duplicate uploads were omitted. GPS−UTC=18s in2024. This is input validation,

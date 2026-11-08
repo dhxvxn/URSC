@@ -399,6 +399,13 @@
       "first_gps_fields": "2024 10 31 0 0 0.0000000",
       "last_gps_fields": "2024 10 31 23 59 59.0000000",
       "sha256": "c89ce606243014b21ae413a2783eb2e3cb4b4ce1375ec9c74e6d0800eb2f7004"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240909T071039_V20240902T235942_20240903T235941.tgz",
+      "epochs": 86400,
+      "first_gps_fields": "2024 9 3 0 0 0.0000000",
+      "last_gps_fields": "2024 9 3 23 59 59.0000000",
+      "sha256": "48461c0b0f8bfee1a216c6d5e3de94d5a868a133b2295853504a5ea6e848f67c"
     }
   ]
 }

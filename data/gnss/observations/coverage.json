@@ -2,9 +2,7 @@
   "window_start_gps": "2024-09-03",
   "window_end_gps": "2024-11-02",
   "expected_days": 61,
-  "available_days": 60,
-  "missing_observation_days": [
-    "2024-09-03"
-  ],
+  "available_days": 61,
+  "missing_observation_days": [],
   "scope": "GNSS observation coverage only; not navigation/reference completeness"
 }
