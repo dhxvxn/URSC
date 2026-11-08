@@ -1,0 +1,5 @@
+Forecast cutoff: 2024-09-17T05:59:42.000 UTC; weather: solar persistence + nominal geomagnetic scenario; trailing past-only averages (up to 81 days)
+SPP solved 73/73
+OD: converged=false iterations=12 postfit=2.210503 m
+Exception in thread "main" java.lang.IllegalStateException: Batch initialization did not converge; no forecast issued
+	at org.ursc.trajectory.app.command.DailyForecast.main(DailyForecast.java:55)

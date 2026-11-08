@@ -1,0 +1,4 @@
+Forecast cutoff: 2024-09-29T05:59:42.000 UTC; weather: solar persistence + nominal geomagnetic scenario; trailing past-only averages (up to 81 days)
+SPP solved 73/73
+OD: converged=true iterations=8 postfit=1.970909 m
+Completed in 162.508 s; truth never opened

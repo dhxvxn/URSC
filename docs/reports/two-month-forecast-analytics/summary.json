@@ -1,0 +1,29 @@
+{
+  "daily_cases": 61,
+  "status_counts": {
+    "ISSUED": 53,
+    "OD_NOT_CONVERGED": 8
+  },
+  "horizons": [
+    {
+      "horizon_days": 1,
+      "scored": 53,
+      "median_m": 92.072251451,
+      "rms_m": 1999.3693667224668,
+      "p95_m": 4767.213582466998,
+      "worst_m": 9257.568841873,
+      "target_m": 10,
+      "target_passes": 5
+    },
+    {
+      "horizon_days": 7,
+      "scored": 48,
+      "median_m": 7339.787449085,
+      "rms_m": 20264.107187361908,
+      "p95_m": 39285.18249338135,
+      "worst_m": 64174.68831251,
+      "target_m": 1000,
+      "target_passes": 1
+    }
+  ]
+}

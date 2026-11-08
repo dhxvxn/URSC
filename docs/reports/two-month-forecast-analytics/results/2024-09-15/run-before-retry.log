@@ -1,0 +1,13 @@
+Forecast cutoff: 2024-09-15T05:59:42.000 UTC; weather: solar persistence + nominal geomagnetic scenario; trailing past-only averages (up to 81 days)
+SPP solved 73/73
+Exception in thread "main" java.lang.NoClassDefFoundError: org/ursc/trajectory/propagation/numerical/NumericalPropagator$1
+	at org.ursc.trajectory.propagation.numerical.NumericalPropagator.convertOutput(NumericalPropagator.java:284)
+	at org.ursc.trajectory.propagation.numerical.NumericalPropagator.propagate(NumericalPropagator.java:184)
+	at org.ursc.trajectory.estimation.BatchLeastSquares.computed(BatchLeastSquares.java:177)
+	at org.ursc.trajectory.estimation.BatchLeastSquares.estimate(BatchLeastSquares.java:76)
+	at org.ursc.trajectory.app.command.DailyForecast.main(DailyForecast.java:52)
+Caused by: java.lang.ClassNotFoundException: org.ursc.trajectory.propagation.numerical.NumericalPropagator$1
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	... 5 more

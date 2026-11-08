@@ -1,0 +1,592 @@
+{
+  "classification": "historical measurement-cutoff replay; product publication vintages unverified",
+  "initialization": "six-hour GNSS SPP and covariance-weighted batch OD, fixed Cd",
+  "cutoff": "06:00 GPS = 05:59:42 UTC on each day",
+  "fit_hours": 6,
+  "sample_step_s": 300,
+  "range_sigma_m": 5,
+  "forecast_horizons_days": [
+    1,
+    7
+  ],
+  "cd": 2.2,
+  "cr": 1.3,
+  "mass_kg": 1130,
+  "drag_area_m2": 8,
+  "srp_area_m2": 8,
+  "gravity_degree_order": 70,
+  "atmosphere": "NRLMSISE-00",
+  "weather": "causal trailing solar average, persistent solar flux, nominal future Ap5",
+  "EOP": "latest completed-day row persisted",
+  "future_attitude": "fixed effective areas; no measured future attitude",
+  "numerics": "DP54 abs1e-10 rel1e-13 max30s",
+  "future_truth_used_for_forecasting": false,
+  "uncertainty": "not evaluated in this endpoint benchmark",
+  "inputs": [
+    {
+      "date": "2024-09-03",
+      "observation": "/workspace/attachments/567fbf32-04a0-4db9-a9ad-506ec558ae57/S3A_OPER_AUX_GNSSRD_POD__20240909T071039_V20240902T235942_20240903T235941.tgz",
+      "observation_sha256": "48461c0b0f8bfee1a216c6d5e3de94d5a868a133b2295853504a5ea6e848f67c",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242470000_01D_MN.rnx.gz",
+      "navigation_sha256": "c0abc8a7c3ed2163226d8b6a1644cb68583c97e0c1ad4e3a390d0a03caffceb8"
+    },
+    {
+      "date": "2024-09-04",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240910T071051_V20240903T235942_20240904T235941.tgz",
+      "observation_sha256": "64e4e8ad1d925aef3292feb148301ee7b65ae83bda0f67f34e688522d0fba6ba",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242480000_01D_MN.rnx.gz",
+      "navigation_sha256": "20f63ac5f2ab41f49415599dc444693b1ce4c22370410d8df7d46ed6a23a4b33"
+    },
+    {
+      "date": "2024-09-05",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240911T071044_V20240904T235942_20240905T235941.tgz",
+      "observation_sha256": "c11af710b849c15b702d432d37b51d167991b05eed072d2d2e44d47841cc4a03",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242490000_01D_MN.rnx.gz",
+      "navigation_sha256": "27c6239ebc04f86e6ccf03540bb5c431ef529fffefcf80b76089bd8c8f7c5074"
+    },
+    {
+      "date": "2024-09-06",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240912T071051_V20240905T235942_20240906T235941.tgz",
+      "observation_sha256": "8b263646b3d84611364ebf84ff1b97770020425f042974bcac2b0c103bf2aae9",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242500000_01D_MN.rnx.gz",
+      "navigation_sha256": "8746a44de03b197c59ca751a99f5624de7de878abe2c47c5a09588c9ccf3922c"
+    },
+    {
+      "date": "2024-09-07",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240913T071042_V20240906T235942_20240907T235941.tgz",
+      "observation_sha256": "8bef2a5f6770b5eee1be93b6e5c0e9437c5339e77e4140fe67bafd134fe55464",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242510000_01D_MN.rnx.gz",
+      "navigation_sha256": "fa0c6d042a87abbc4946cc3838ea33d6a5cda0ae52f30d8b25371bdb17facb25"
+    },
+    {
+      "date": "2024-09-08",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240914T071043_V20240907T235942_20240908T235941.tgz",
+      "observation_sha256": "cd8e486d3e4f562e7cb8a1ddbc8769f487308e866d7ab9c879a328a3d4055aa7",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242520000_01D_MN.rnx.gz",
+      "navigation_sha256": "25eb736248c9009dc1f9e5e45f901cb7e8954e5a189f027c6029b776764170dd"
+    },
+    {
+      "date": "2024-09-09",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240915T071042_V20240908T235942_20240909T235941.tgz",
+      "observation_sha256": "51d547902792809a555618f683274d0d28ebfa0377dc97bae70362ea1bde0c42",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242530000_01D_MN.rnx.gz",
+      "navigation_sha256": "9ce470249605b031c8c18441a196d3332a088f5202030d5b6cc6ddabb39aa026"
+    },
+    {
+      "date": "2024-09-10",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240916T071042_V20240909T235942_20240910T235941.tgz",
+      "observation_sha256": "09dbe9f4743a84ecc4c296facc215e9af959a6a773d8beb658b6bd051976053b",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242540000_01D_MN.rnx.gz",
+      "navigation_sha256": "e8190da511d35d260dcbd0efbb9c48e9403637448a38b8a20162cac0ab2b5df5"
+    },
+    {
+      "date": "2024-09-11",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240917T071056_V20240910T235942_20240911T235941.tgz",
+      "observation_sha256": "ede165c60e5454bbc0951de71b84fb7393b29eefea418708cee1aebdda55d6a2",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242550000_01D_MN.rnx.gz",
+      "navigation_sha256": "b18906ec3f0e84741da472cc11d10ce181ca732f0112ac603db06fecb3f1d54b"
+    },
+    {
+      "date": "2024-09-12",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240918T071043_V20240911T235942_20240912T235941.tgz",
+      "observation_sha256": "5d48e751b5bf3965c49a681ceabfc0db7da554782a24ffa623ee43f2dff76d7f",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242560000_01D_MN.rnx.gz",
+      "navigation_sha256": "9d655ee513316613141dac1244f612b5b930a75c695d47914662c528dc89059a"
+    },
+    {
+      "date": "2024-09-13",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240919T071041_V20240912T235942_20240913T235941.tgz",
+      "observation_sha256": "aca87e70653bc9bc4010370bba1bdb3184ac34b70b03e8f1d386eee6720b32cc",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242570000_01D_MN.rnx.gz",
+      "navigation_sha256": "3063c2c5fa8d4c9d806a1ce10121cc2ecf27e77074807bf8cfdea46854080059"
+    },
+    {
+      "date": "2024-09-14",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240920T071043_V20240913T235942_20240914T235941.tgz",
+      "observation_sha256": "af47be27aae6acc819c6d9bccecdf493efebdac57a77ddb1284fd4faad14f33b",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242580000_01D_MN.rnx.gz",
+      "navigation_sha256": "b0cf18fc4453e428c4b4a026c61fafe02ffa56b16a7c3b80dbf4b056301e60a3"
+    },
+    {
+      "date": "2024-09-15",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240921T071042_V20240914T235942_20240915T235941.tgz",
+      "observation_sha256": "eb441e538b9f5f3c08c9e6d33c86c938c710229c1aed1756845214d22dab57c9",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242590000_01D_MN.rnx.gz",
+      "navigation_sha256": "fa53ddd952d42535b3688618f198fd61495252d43331bac7fe623bce82b7f231"
+    },
+    {
+      "date": "2024-09-16",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240922T071045_V20240915T235942_20240916T235941.tgz",
+      "observation_sha256": "e67906fd9379cf785b6b07cadc0243cfb68423ed8af142b381f92f799adaf98b",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242600000_01D_MN.rnx.gz",
+      "navigation_sha256": "06cbf40bd4824a5b668b8cdfb7df5fecd7ee6389d7cd14bd6b648a6179e58cda"
+    },
+    {
+      "date": "2024-09-17",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240923T071040_V20240916T235942_20240917T235941.tgz",
+      "observation_sha256": "4c5d20856bb78eee6b32678ced1e8fbf7f34ae390e09732a1b21d811a87b5868",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242610000_01D_MN.rnx.gz",
+      "navigation_sha256": "e833cc0d752a890b790732ca5893c4579bba544ea14220d0ca7e2b4eeee6ba3a"
+    },
+    {
+      "date": "2024-09-18",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240924T071039_V20240917T235942_20240918T235941.tgz",
+      "observation_sha256": "239326d491331fcf887a07a5ebdd3684216f3494c5f010945941c824e1920434",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242620000_01D_MN.rnx.gz",
+      "navigation_sha256": "f987a24fb1dc32fce3cc119000b644009bd7e8abd8d27e7579d1df2426e0c39a"
+    },
+    {
+      "date": "2024-09-19",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240925T071042_V20240918T235942_20240919T235941.tgz",
+      "observation_sha256": "e6014c347de6f30250630ac39d4deef7a313d01f00681b303d6a55a33328aa8d",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242630000_01D_MN.rnx.gz",
+      "navigation_sha256": "79ca4836cf99a1124b9faf083f814ec1fd73d70c2423f2727ff417e12ffe9d7a"
+    },
+    {
+      "date": "2024-09-20",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240926T071038_V20240919T235942_20240920T235941.tgz",
+      "observation_sha256": "1b2810b98b07400a79bdaa790aceacc893ff16b071ca98de1b023a6d35006012",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242640000_01D_MN.rnx.gz",
+      "navigation_sha256": "6aae19ea204ff8fb3e47e29c8abda204a6d0ad5ee2db3516ecd1c40fd284a7e4"
+    },
+    {
+      "date": "2024-09-21",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240927T071039_V20240920T235942_20240921T235941.tgz",
+      "observation_sha256": "7b7ec18e5921486d2fe3080883c5da5730d0bf727d7b0625b71b9224bdad8c7b",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242650000_01D_MN.rnx.gz",
+      "navigation_sha256": "4903321a11462838f336ba186109035b7cb05b190e9b2e1d01831b947dc0097c"
+    },
+    {
+      "date": "2024-09-22",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240928T071059_V20240921T235942_20240922T235941.tgz",
+      "observation_sha256": "18579300f5db87b65c80ce67826a2503f8205611f5b7e6dfea89d1e7eb1583ee",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242660000_01D_MN.rnx.gz",
+      "navigation_sha256": "a1e453cf64b6c3d10e09eb48a0b1f848edbea2716a34f58679b147f401df076f"
+    },
+    {
+      "date": "2024-09-23",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240929T071047_V20240922T235942_20240923T235941.tgz",
+      "observation_sha256": "3e5251808d2ec606182900c19a9ef69537c01220f5e1bc634f8bb6d3f665d507",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242670000_01D_MN.rnx.gz",
+      "navigation_sha256": "59e57d0dbb4496dafd0a0769d1bb2e729418c0be72319f0289f6c4e0f090caaa"
+    },
+    {
+      "date": "2024-09-24",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20240930T071046_V20240923T235942_20240924T235941.tgz",
+      "observation_sha256": "bac31a0078d55c454dbc3bc8226895806462f4f07f50d558893d36edc7555359",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242680000_01D_MN.rnx.gz",
+      "navigation_sha256": "ca3647a2ebc152e36ca3cd34fc73ebfa526ba09afb416023ac5e924c9aa3e576"
+    },
+    {
+      "date": "2024-09-25",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241001T071053_V20240924T235942_20240925T235941.tgz",
+      "observation_sha256": "0e4587508ffa9769d04d7f7f38224e87ff6a9e31f24e1661b786298f1aba0382",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242690000_01D_MN.rnx.gz",
+      "navigation_sha256": "6cc9bbe6a6c484865df12fd4a7b71bd6d07dd745cb32c7d56c00667bbc169ff6"
+    },
+    {
+      "date": "2024-09-26",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241002T071041_V20240925T235942_20240926T235941.tgz",
+      "observation_sha256": "8cb32264ca66edda26dd13c503f87b8f11f439fb7588cf7939f7f70d050ec15f",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242700000_01D_MN.rnx.gz",
+      "navigation_sha256": "3b2b3b6498704148bb1c95b3ced36d5e20df5aec4ef00907b846314e17a847c3"
+    },
+    {
+      "date": "2024-09-27",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241003T071054_V20240926T235942_20240927T235941.tgz",
+      "observation_sha256": "cdd2298c045a16cbdd0292488d09f9559b14a88638bfaf30130f5eff772c8e04",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242710000_01D_MN.rnx.gz",
+      "navigation_sha256": "b0edd8f5b8fa2b083bea3ac6ad20aa8068ef4945dbc98dbeee5e08a4b0349edd"
+    },
+    {
+      "date": "2024-09-28",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241004T071051_V20240927T235942_20240928T235941.tgz",
+      "observation_sha256": "7b43208b5d76fa4b9223b1dc46e39989b9eba8ce7ee0651ee7074af53a0c9b02",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242720000_01D_MN.rnx.gz",
+      "navigation_sha256": "71a223e2743e42ca4d7ab1d3963fcb05f56f19b411c44ad0f206692e49f99b5a"
+    },
+    {
+      "date": "2024-09-29",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241005T071057_V20240928T235942_20240929T235941.tgz",
+      "observation_sha256": "b927cb148b0bec8d9965f4ca955603dbef2ac4ffa40aa724a3c8123cb2555630",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242730000_01D_MN.rnx.gz",
+      "navigation_sha256": "f71f345cae1e61927d28da9946bf97631ed4f73d7e268941f5dc72daef3f4a3e"
+    },
+    {
+      "date": "2024-09-30",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241006T071049_V20240929T235942_20240930T235941.tgz",
+      "observation_sha256": "1faec4698749fb89a72d2abed128394498d8e4bbcc5ad5c7ce38e6e23cd27ca6",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242740000_01D_MN.rnx.gz",
+      "navigation_sha256": "3b0a3c8427da67890d9561b080b2c2d8c16642c7858aca2c8e40b41b9557cd1e"
+    },
+    {
+      "date": "2024-10-01",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241007T071056_V20240930T235942_20241001T235941.tgz",
+      "observation_sha256": "8392c86b82925c552baad3248a56e490e7acc8a6392854fc3d5fba7605bcaedc",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242750000_01D_MN.rnx.gz",
+      "navigation_sha256": "5a3d794c5b5adb45ab1b8d52d99927024b645ba911261658178ce2ed7da3622a"
+    },
+    {
+      "date": "2024-10-02",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241008T071049_V20241001T235942_20241002T235941.tgz",
+      "observation_sha256": "5129ee9cde632d1e94d532c4c65d826d44f37e6362e26f67acc45f6e252b7037",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242760000_01D_MN.rnx.gz",
+      "navigation_sha256": "efebbfd7d266909fdcd58ff0d588bbc5afbabbdc58c8fb5ddec9fca164fa1208"
+    },
+    {
+      "date": "2024-10-03",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241009T071106_V20241002T235942_20241003T235941.tgz",
+      "observation_sha256": "abafdd110fda8816194ac0f5377def9c5a325524d8da43175dcc01dd97c64c30",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242770000_01D_MN.rnx.gz",
+      "navigation_sha256": "ec23ca059ccefaf5f3b6f82ff67820d63e6aea4110aa03984679a14927b370f3"
+    },
+    {
+      "date": "2024-10-04",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241010T071047_V20241003T235942_20241004T235941.tgz",
+      "observation_sha256": "710535953cb8702e11103bd0c22cb0f0e4f28981fc97768334e3322f0a5b85e6",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242780000_01D_MN.rnx.gz",
+      "navigation_sha256": "67699daf49f85dc7ea79f927c47efbab8a46c2d40b8b79169b76d5d80193c7c5"
+    },
+    {
+      "date": "2024-10-05",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241011T071050_V20241004T235942_20241005T235941.tgz",
+      "observation_sha256": "d3de2fb835e77fc39788b1813903f5259d2cefa032dd17d3ac9062630d152252",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242790000_01D_MN.rnx.gz",
+      "navigation_sha256": "3994cd1734d82b666cfc8df4ef3d438d7f37f58fcc11be2c76d1406503fd8530"
+    },
+    {
+      "date": "2024-10-06",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241012T071051_V20241005T235942_20241006T235941.tgz",
+      "observation_sha256": "de9d4100bc757785cc8a0f4f5ae19a1fb50c3d438ca59a0dca980e14e15e78c1",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242800000_01D_MN.rnx.gz",
+      "navigation_sha256": "67981828be7e7486f8df946c57669312a9d093cafe08293bdd3045798efe346a"
+    },
+    {
+      "date": "2024-10-07",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241013T071050_V20241006T235942_20241007T235941.tgz",
+      "observation_sha256": "365f4edaa9ff44b6534334ea207fb52614a87f51252ad617ca78d903f06e9f3b",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242810000_01D_MN.rnx.gz",
+      "navigation_sha256": "db01d0a2fa7e35d035a5c231a3f8e3436f472ad5a0b5b283fce98c5d3331823c"
+    },
+    {
+      "date": "2024-10-08",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241014T071059_V20241007T235942_20241008T235941.tgz",
+      "observation_sha256": "cc375328f7ae81fbc6177ad130315b51540509c088161a2489b329ffb9514b74",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242820000_01D_MN.rnx.gz",
+      "navigation_sha256": "6d8f91d41aafb283cebdd540331d476676099f4a6ebad1dfc9ee236760834dff"
+    },
+    {
+      "date": "2024-10-09",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241015T071046_V20241008T235942_20241009T235941.tgz",
+      "observation_sha256": "006e49ceafd3c495364b26186979dda7d5483261a4ed5dad3a17c4e565ae49dd",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242830000_01D_MN.rnx.gz",
+      "navigation_sha256": "1ccc757fc8cebcb84daa49a4661a88ddc9140fd98d15c44d1e08d7614c882dd3"
+    },
+    {
+      "date": "2024-10-10",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241016T121052_V20241009T235942_20241010T235941.tgz",
+      "observation_sha256": "9f9bb559e1d44161599c3cbeef43436f97a9b06c639062e7248fd71a082a0bb7",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242840000_01D_MN.rnx.gz",
+      "navigation_sha256": "ca9245be284f8ba66e0f310365199bfadfa345df12a629e0a1c120050cd4ce57"
+    },
+    {
+      "date": "2024-10-11",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241017T121050_V20241010T235942_20241011T235941.tgz",
+      "observation_sha256": "cd54c195511714ba3bc7cd3f8f50457d3c068087b73941bcb6efc03a01e8e463",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242850000_01D_MN.rnx.gz",
+      "navigation_sha256": "b4828dee936249b6194510bebefdb5ea0918a559679d9fde6e181e4c067a3eb1"
+    },
+    {
+      "date": "2024-10-12",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241018T121049_V20241011T235942_20241012T235941.tgz",
+      "observation_sha256": "d44392318bfa6ac65a3b7d8bb52bed96d7d4335200f9ede82d766ee813350226",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242860000_01D_MN.rnx.gz",
+      "navigation_sha256": "1f0e7ec09793f75ad1e9ae2cedce21a43b05be16116e32c905617b8d29ed15c9"
+    },
+    {
+      "date": "2024-10-13",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241019T121049_V20241012T235942_20241013T235941.tgz",
+      "observation_sha256": "cbaed6dcfaa8fed2b8bb41cb992c59a6543c294ee3bf7fba1063a5870f001b87",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242870000_01D_MN.rnx.gz",
+      "navigation_sha256": "a66f4308d2bddce6d98007c43125465d260bf08bd55b14509a61b4a44f7dbc6f"
+    },
+    {
+      "date": "2024-10-14",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241020T121052_V20241013T235942_20241014T235941.tgz",
+      "observation_sha256": "03a15c6c23229356d05d1c8cabc6198f9786c3e9efe37544b30072329d1bc718",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242880000_01D_MN.rnx.gz",
+      "navigation_sha256": "95a6c087efb907fac412fdfd4e73c37aed1cff19d6ce37b50915077baf3e2b21"
+    },
+    {
+      "date": "2024-10-15",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241021T121052_V20241014T235942_20241015T235941.tgz",
+      "observation_sha256": "d076120afe31be8db80f121daf5b068fb12cabfaa48c3cdc0f39c5b3baeb4f99",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242890000_01D_MN.rnx.gz",
+      "navigation_sha256": "4483d712dfa0f03d9f6cdbcf939607f54e6159b22e974bf5006e1ea151ab63a0"
+    },
+    {
+      "date": "2024-10-16",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241022T121051_V20241015T235942_20241016T235941.tgz",
+      "observation_sha256": "738c4ce279c04760221681627eee71005d67b660b9eda915bd16d788dcf1fb8b",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242900000_01D_MN.rnx.gz",
+      "navigation_sha256": "e1f0a906c49b41dd02c2a558014a0ee5e308fb13ce8b01dd206ced2eb28c0b2f"
+    },
+    {
+      "date": "2024-10-17",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241023T121053_V20241016T235942_20241017T235941.tgz",
+      "observation_sha256": "7c5c3121cf5ea870d13b10b55e9701a7ca4a9c31ea31fd2f402315f2ac930eb3",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242910000_01D_MN.rnx.gz",
+      "navigation_sha256": "0a2b60043f26feb2ca535ffe6842399ed3673ba615926dd9874dee782638465f"
+    },
+    {
+      "date": "2024-10-18",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241024T121052_V20241017T235942_20241018T235941.tgz",
+      "observation_sha256": "d2e40168ea217773fe15241fc07edfe3e299caaf0b0f1c493877d330e1c99973",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242920000_01D_MN.rnx.gz",
+      "navigation_sha256": "07c3c7a62455656192c93a8a8c246e5106dbd33fae7c9e1e266e137afcf7d1ca"
+    },
+    {
+      "date": "2024-10-19",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241025T121053_V20241018T235942_20241019T235941.tgz",
+      "observation_sha256": "ce20363807e030de994225b08b55d569e2d64c1a52c542374850027bf0a60eeb",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242930000_01D_MN.rnx.gz",
+      "navigation_sha256": "3776d4854d8ee6d8fa5cb9434eccf0efa9ed9826afaf004bd174c3a67c4b3307"
+    },
+    {
+      "date": "2024-10-20",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241026T121104_V20241019T235942_20241020T235941.tgz",
+      "observation_sha256": "b4accfe42d987c71e25e3ea879921cc630116562054aaace90b98fdba3d4e913",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242940000_01D_MN.rnx.gz",
+      "navigation_sha256": "0d80cd5731567e57203ae90421193ea249765fa598113cad0fa5e8bdf81e04b3"
+    },
+    {
+      "date": "2024-10-21",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241027T121048_V20241020T235942_20241021T235941.tgz",
+      "observation_sha256": "72db682be8d1fba44c5517d8d28f34ae890b1d28840484b10c5cb2d70ae2d9b8",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242950000_01D_MN.rnx.gz",
+      "navigation_sha256": "707495b34462519f36e8117f048677207418df48c10742fd9341cec318698ec0"
+    },
+    {
+      "date": "2024-10-22",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241028T121051_V20241021T235942_20241022T235941.tgz",
+      "observation_sha256": "c1019e55e97f920b2a10fa41ce614f4f89998c0adf9b54e2f997768916477b43",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242960000_01D_MN.rnx.gz",
+      "navigation_sha256": "9df94fe023bc5d40d7de5d895f57a550f0b75d00a38632c4423198007278e2be"
+    },
+    {
+      "date": "2024-10-23",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241029T121051_V20241022T235942_20241023T235941.tgz",
+      "observation_sha256": "74871f16cda4ac460f549a41a0094dd531e5ef8b9c244e7ade3075a862e8d80d",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242970000_01D_MN.rnx.gz",
+      "navigation_sha256": "026ba0621240c292cdb6d21e9c676fb8fbe9288d685c8879924a9254e99de794"
+    },
+    {
+      "date": "2024-10-24",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241030T121052_V20241023T235942_20241024T235941.tgz",
+      "observation_sha256": "aec5a44810c2764e7d2b4c390f48c9849aacfcf08833016b1e32e549871e0a52",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242980000_01D_MN.rnx.gz",
+      "navigation_sha256": "e557ce787c4ff1f13b4fdf3109dbb188e010eabff26e333b13e01a30aa45e658"
+    },
+    {
+      "date": "2024-10-25",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241031T121116_V20241024T235942_20241025T235941.tgz",
+      "observation_sha256": "d71034216518e90fc36e6780b9c8f49a689805197d18389f2d7a125d0308cffe",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20242990000_01D_MN.rnx.gz",
+      "navigation_sha256": "961eae2dfb97f0ec69ed76e5f023d3c97eaf2d853f468d0b1375f4eef709431c"
+    },
+    {
+      "date": "2024-10-26",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241101T121059_V20241025T235942_20241026T235941.tgz",
+      "observation_sha256": "ecb5bfaed9dfb2a6a1d52d18f58c49ae3675abc8ed661fa0a1dd7246bcb9fd1f",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243000000_01D_MN.rnx.gz",
+      "navigation_sha256": "4943ecdce2292902afb3b2c763d188c32ecec194f1e3d53736a42ea84aff20e6"
+    },
+    {
+      "date": "2024-10-27",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241102T121118_V20241026T235942_20241027T235941.tgz",
+      "observation_sha256": "8c76724c3d939ed6f4909a718f5099d0d77878a35af67481417cbaefa50358d9",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243010000_01D_MN.rnx.gz",
+      "navigation_sha256": "1a6f2466dcc33d0de29f5c2d8abfb18a244f5de4cb55e9c56197d6b94f986408"
+    },
+    {
+      "date": "2024-10-28",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241103T121057_V20241027T235942_20241028T235941.tgz",
+      "observation_sha256": "6462dc4b3bc0203460f27f14943766a2b05f01d1d6a6f38c5951cb4d2d285f83",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243020000_01D_MN.rnx.gz",
+      "navigation_sha256": "7a5caec761c54fbc69e1f374c132d8715973f7a0697e88c3142eeccce37c5278"
+    },
+    {
+      "date": "2024-10-29",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241104T121057_V20241028T235942_20241029T235941.tgz",
+      "observation_sha256": "94429aa8d59c4c1e649f2c1a14b6dfdb552385b0c07ba07f014f7bfa51d3f8a6",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243030000_01D_MN.rnx.gz",
+      "navigation_sha256": "9f8c968a896ebace162db3e6ec4a9d91e4b99246bf921ab4ed4a95390fe8259f"
+    },
+    {
+      "date": "2024-10-30",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241105T121050_V20241029T235942_20241030T235941.tgz",
+      "observation_sha256": "4156f0f08a106f645fc54968fd2edb3dc47f0b941a0f69d1088d57a81452196a",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243040000_01D_MN.rnx.gz",
+      "navigation_sha256": "556b338a6b6221adfc67b682236e570d3a08b9907b400c035439e93727d3f1df"
+    },
+    {
+      "date": "2024-10-31",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241106T121105_V20241030T235942_20241031T235941.tgz",
+      "observation_sha256": "c89ce606243014b21ae413a2783eb2e3cb4b4ce1375ec9c74e6d0800eb2f7004",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243050000_01D_MN.rnx.gz",
+      "navigation_sha256": "3cb8238ca724201487e932300c5a09aa07f6fdba120d3467c7baace000ce015c"
+    },
+    {
+      "date": "2024-11-01",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz",
+      "observation_sha256": "695fdf3951ff4f334298798bb410a50b9d1358d81a86a117babec9a732319ab9",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243060000_01D_MN.rnx.gz",
+      "navigation_sha256": "86b69bfe7ff63696172c7da530ddf4edd42069e4961e51b21bb09b2f9cbe6126"
+    },
+    {
+      "date": "2024-11-02",
+      "observation": "/workspace/URSC-nav-publish/data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz",
+      "observation_sha256": "1bd98e6a85658077ab807ea6be8ae54d3a1ac2457c5f70207400ef7bdaef3ba0",
+      "navigation": "/workspace/URSC-nav-publish/data/gnss/navigation/2024/BRD400DLR_S_20243070000_01D_MN.rnx.gz",
+      "navigation_sha256": "be9e6365c84457c5660f9d9482561d4e5645b8481060e22c8aded34622c58d1e"
+    }
+  ],
+  "source_sha256": {
+    "src/main/java/org/ursc/trajectory/analysis/DecayPredictor.java": "4699e491bde9523b28afd09a5e13e7c97049f155d891533fe304f081fe911b25",
+    "src/main/java/org/ursc/trajectory/analysis/ModelComparison.java": "c6630191715acfa9e678fa50e4502205055170c33a763b654148ad5856de3e07",
+    "src/main/java/org/ursc/trajectory/app/Args.java": "64ccaf5484fb4ad08b83942684f233d30ed504f1ec2b4834d0b300f6873c6148",
+    "src/main/java/org/ursc/trajectory/app/Cli.java": "7a47f97bcb909c09ccc19790658220cd926297af6cdd0d491351b7aebeeaa8a6",
+    "src/main/java/org/ursc/trajectory/app/ProgressStepHandler.java": "9a05c0375d447a740127c3f365984b52d604508e5fbd87be160dd93e5f64664f",
+    "src/main/java/org/ursc/trajectory/app/PropagatorApp.java": "94b2d7bca7aea1f95a74cc0177872e1b59fd456c8ac7d1680bd68389e2e89638",
+    "src/main/java/org/ursc/trajectory/app/StateSeries.java": "98a11fea8a3b432c1654c9ce08908e7d29885b6bef447a3ebde0955977eff0c5",
+    "src/main/java/org/ursc/trajectory/attitude/AttitudeProvider.java": "2b878e2a01f306d41eebc299ebedb217d3c0483ae5f24eea282a1f862ab83c7b",
+    "src/main/java/org/ursc/trajectory/attitude/BodyFrame.java": "7fb2011a13eb4905634a6424b43e69d4232d0187b6c4855fe445dfd04162bf55",
+    "src/main/java/org/ursc/trajectory/attitude/NominalYawSteering.java": "7950a3cf0929aa555038c8bec713280f941ed23555ba0f16ec01b25b09342c28",
+    "src/main/java/org/ursc/trajectory/attitude/QuaternionFileAttitude.java": "13d58ab2cb3a0801a8ab8af0d4b9d17a50dbbcffba21e589ab0c5320c9bbf2a7",
+    "src/main/java/org/ursc/trajectory/bodies/CelestialBody.java": "d812c4504905b1815e449df6b6574fc730cd660628e896b3451f0a4ea19d76e2",
+    "src/main/java/org/ursc/trajectory/bodies/CelestialBodyFactory.java": "9b31409d659167252208e42a9178fcdee370af5254a8961e024d8403615f58f1",
+    "src/main/java/org/ursc/trajectory/bodies/De440Ephemeris.java": "7cb64ee8a4f558b7fb6c82b0673f299f4f42c1dc24f574f6db702b96760b0ceb",
+    "src/main/java/org/ursc/trajectory/bodies/EphemerisSource.java": "e7837ca6e434f04a2aaf41b89a3ac2b7e3e8875651ecd6e6520e6d3b858c7693",
+    "src/main/java/org/ursc/trajectory/bodies/GeodeticPoint.java": "b2ad8b79678fc8d69778021ab95ae39777d2d1e556d7ea04d8a935de3c584974",
+    "src/main/java/org/ursc/trajectory/bodies/OneAxisEllipsoid.java": "256e06682151f1cbad1f19c081bec0cda58fa1f6eafc7c34a94c202f4b622fef",
+    "src/main/java/org/ursc/trajectory/config/PropagationConfig.java": "de0947ec2700aa63a6cbb6f6409b1bd986af5e95515df77b15290ee806f87deb",
+    "src/main/java/org/ursc/trajectory/config/ScenarioLoader.java": "df8fd8320e0425961cd3e5d465897f372cd865da087ad1f6428067284a5f992c",
+    "src/main/java/org/ursc/trajectory/estimation/BatchLeastSquares.java": "5fd0dbbde9e7ef7cf27aa558f6f33f3b8985af0499f5f935c70b49af26e4203e",
+    "src/main/java/org/ursc/trajectory/estimation/PositionObservation.java": "94c2bce5acad31dfba71ba6afe5c1d002d08c7f423a120cb36cbc37e3e7ceb92",
+    "src/main/java/org/ursc/trajectory/estimation/OrbitUncertainty.java": "8dec5a789d451631ce18e09e3c132b04153ad1a64b36fe97f14e87583aa496d5",
+    "src/main/java/org/ursc/trajectory/forces/BoxWingGeometry.java": "6e86bf4e9037aec41ccb7dfcdd14c2ad18dd6d40a98b5a13936af9d13262c039",
+    "src/main/java/org/ursc/trajectory/forces/EmpiricalAcceleration.java": "17981562ef27fcc3bff0580a0f129f7a739e4ffa7aacacff1006dc21600800c0",
+    "src/main/java/org/ursc/trajectory/forces/ForceModel.java": "946dd09ed5019616ed6a6a4f32aa4f2753f1da54fea89daeab4e7639cc755693",
+    "src/main/java/org/ursc/trajectory/forces/NewtonianAttraction.java": "6c57f6d9d26a408ed819d5115983047089d050cc243e06cfdfcec46535845c78",
+    "src/main/java/org/ursc/trajectory/forces/Relativity.java": "5ecce46b9f1413c40e93101efb59ef946bac306d2499ada6cfc335abde1d7812",
+    "src/main/java/org/ursc/trajectory/forces/ThirdBodyAttraction.java": "7ed71c347c3c068d978a1014428101101db0d1010ecd09c93ef944a044cd425d",
+    "src/main/java/org/ursc/trajectory/frames/ConstantEop.java": "7ebaf87c576d05374fbfe5de64f0dac921e5740b10437486de30336d0d0240bd",
+    "src/main/java/org/ursc/trajectory/frames/EopProvider.java": "1a1a1a63fce3810a24ee923a9c04c4b8b333e1d031753b3e9f9c056e8a51d9c9",
+    "src/main/java/org/ursc/trajectory/frames/Finals2000AEopProvider.java": "96c774b5ced2df68b242ddd856187ce3dfe15e190910a7437ab22e5ba8740692",
+    "src/main/java/org/ursc/trajectory/frames/Frame.java": "a07cd8858c7b51ff14df682099a2d55d23f4ac42710f21508754eeca99130e16",
+    "src/main/java/org/ursc/trajectory/frames/FramesFactory.java": "5a3c7c2e64e2114470fe6507a374ca7d9448c23a466eb9a644357b49323ce9a5",
+    "src/main/java/org/ursc/trajectory/frames/Iau2006.java": "caa17789a327addf11e0fb98aabedb89f19c08512ae98b0787d4ae00544bb889",
+    "src/main/java/org/ursc/trajectory/frames/IersEopProvider.java": "1b572428084e2f5bf539225be3ba76a40f15f6eccfcb33965d99b3db22f1610e",
+    "src/main/java/org/ursc/trajectory/frames/Nutation2000BData.java": "6eac4c32b18357e8a04b41ca7c95a3c140ac83ec1338b8db2d732ee395aa65ff",
+    "src/main/java/org/ursc/trajectory/frames/Transform.java": "0f29f24b0e15daeb2db434748fdc9ab9e4376742e86519d94e36453ae24056f9",
+    "src/main/java/org/ursc/trajectory/io/CsvEphemerisWriter.java": "fbe8a567d3fb998195a87e01fccfea50029a71d539f1d72da5374a68ddeafbb4",
+    "src/main/java/org/ursc/trajectory/io/PoeOrbReader.java": "b8289914444cf1f587b2a26aa8dec8265a3b84fda4171257c6c09015fc1b13a9",
+    "src/main/java/org/ursc/trajectory/io/TLE.java": "329884436fa7a57831d4eb7083728067a6e32419d3db18a2d470f126b22b37bd",
+    "src/main/java/org/ursc/trajectory/io/TarGz.java": "4851d30b8c629295ae5acd24a4ecff5a776e170ba1b45b43d434bb66235fe2d1",
+    "src/main/java/org/ursc/trajectory/math/Constants.java": "ab31080330cd93dc962847cbbac3447f891c0792f0d1a777241a895e8530913f",
+    "src/main/java/org/ursc/trajectory/math/RotationMatrix.java": "078767f671106a42c662f9a76aa16a32a1dec2d7b670bc72311766e69f765e4c",
+    "src/main/java/org/ursc/trajectory/math/Vector3D.java": "631028e1ad638ac53cd551e0c698240b3042b3a82fcc84f78aac12c5dbd51b1e",
+    "src/main/java/org/ursc/trajectory/math/LinearSolver.java": "58788669dba33d8d6d59886e8a2a696d845652b043ea91aafe7ef02742d562fb",
+    "src/main/java/org/ursc/trajectory/ode/ClassicalRungeKutta.java": "b7eed69f19d6302a6f2ca33461ba65a750679cb81b660ac2ea121c0c7fe1e452",
+    "src/main/java/org/ursc/trajectory/ode/DormandPrince54Integrator.java": "2a7171e51e8038cfe6714af74a316b0ad450d17f3c34c9cd3c011ff9ce8cffa2",
+    "src/main/java/org/ursc/trajectory/ode/FirstOrderDifferentialEquations.java": "c75aaf99460d68240e471d897d6789120a225b6af8bf25345ad1966daa44b4f9",
+    "src/main/java/org/ursc/trajectory/ode/ODEIntegrator.java": "2c2d09750f200f8c578cd7c9ece38bdda8a00df4a18ae83495f660074a4329e6",
+    "src/main/java/org/ursc/trajectory/ode/StepInterpolator.java": "10e53e9e4b35e07aac57cd1f5e67666cd51e08435b3d408c8b73eff9997fbeba",
+    "src/main/java/org/ursc/trajectory/ode/StepResult.java": "b35523f4420a7a1319a81e89aaa1d4bcd7f680ba00aa2e6a7b69d5e0ad59d58b",
+    "src/main/java/org/ursc/trajectory/orbits/CartesianOrbit.java": "30f62b8f1f56d7a74ebceb103924a91cfe63c0c81926d7a908dc77be7842c915",
+    "src/main/java/org/ursc/trajectory/orbits/EquinoctialOrbit.java": "20ff86220a3d565391ba77e091f9a4966e559549b2e0c279bb948bc14c24a309",
+    "src/main/java/org/ursc/trajectory/orbits/KeplerianOrbit.java": "a29277af88bf0518cc665a35b1bf1c0f192c4b9bc5bf152aac497d147b8067ba",
+    "src/main/java/org/ursc/trajectory/orbits/Orbit.java": "5b84dac0168e8a4bcc6cc57077100c0d026dc7cf1f4a434942cb16b9df34c1e3",
+    "src/main/java/org/ursc/trajectory/orbits/OrbitType.java": "c7f5dc2be21b10045776242e86070c243cfeee77979cf0a464198a75a9761335",
+    "src/main/java/org/ursc/trajectory/orbits/PVCoordinates.java": "878856469eac7fa7a69ff500e3619e117b2e514d5a2025c2bd4ad1c508cd9582",
+    "src/main/java/org/ursc/trajectory/orbits/PositionAngle.java": "490090ce555f4056c858bfc2cf58dabbf1f8a4a0dd763234c670def77ae79995",
+    "src/main/java/org/ursc/trajectory/propagation/Propagator.java": "ea2d0b9691a664d937b440188822ab4c2883bc572902a2f0759f5471e9d23114",
+    "src/main/java/org/ursc/trajectory/propagation/SampledPropagator.java": "b7d58005662035e2b0827e4b0c8ef51036e93cd1ef3f6e8b72526bae3d45d179",
+    "src/main/java/org/ursc/trajectory/propagation/SpacecraftState.java": "92b8e31571e1f4e9d5e00b018529f46977ecd7d096af57d604c8e0e2fae2d3ac",
+    "src/main/java/org/ursc/trajectory/time/AbsoluteDate.java": "2a76ca666f9378332c91571f333d131b3e7699ac88e95f7e4c8b8008b9534c43",
+    "src/main/java/org/ursc/trajectory/time/DateUtils.java": "cd1bd622b778c5b44a7ef5a2d2f9b7a349b6e462e58e966e1e14b2aca5f708c9",
+    "src/main/java/org/ursc/trajectory/time/TimeScale.java": "dcc0dce3c51a57841faf0250d0a5fa36694d0b1b7cc1fcf9ed0a2a78c109caf2",
+    "src/main/java/org/ursc/trajectory/time/TimeScalesFactory.java": "55a0d5316e896ccaa8ed1caea7cfedca41540e049c2082c34c1f7f10089aa11d",
+    "src/main/java/org/ursc/trajectory/time/UTCScale.java": "dcf05c3993874a9bf97968a4bc226cca9d5597d674f239aef2c89d2c60cf80b8",
+    "src/main/java/org/ursc/trajectory/gnss/GpsConstants.java": "c4ac959adb1d1f415c5f2ef05b170e2d5363f4e3690b42a7196981df9cd9e6fa",
+    "src/main/java/org/ursc/trajectory/gnss/RinexNavReader.java": "683a4f59c8971bff7ce978606bd42fe0b5edce7b1958cb8de2edfa3206b5f643",
+    "src/main/java/org/ursc/trajectory/gnss/GpsBroadcastEphemeris.java": "85a4e9a15ddd1af12996a2677301e459862fdd5798449dd3f97a09de4bccdf8d",
+    "src/main/java/org/ursc/trajectory/gnss/RinexObsReader.java": "c8e5fdc014101bb5c003332e3b4a5a8e2662103eb8117b03884a6a658385a5bb",
+    "src/main/java/org/ursc/trajectory/gnss/SatelliteRange.java": "b6065090424c2e65d72ee0b7c1e3e809d39496cad46e4c02abafb7c35de69931",
+    "src/main/java/org/ursc/trajectory/gnss/SppSolution.java": "ed1798868372a19cd5bfa1acbae04b3c2689e72ae051371bc887cd02afc45ab5",
+    "src/main/java/org/ursc/trajectory/gnss/SppSolver.java": "5833bcea4e13884970f6da8d15613705ef6302d54b45a77e11295b57ca18db58",
+    "src/main/java/org/ursc/trajectory/gnss/SppEngine.java": "20f9c44b7d51c92de69a1160d1f8b6e513c794c3814a81d56153c4b0e6d2e6a4",
+    "src/main/java/org/ursc/trajectory/app/command/BacktestCommand.java": "ed3f9154e8041674955c125ee924e9633887bf0a271023190076a6eb6571dc69",
+    "src/main/java/org/ursc/trajectory/app/command/Command.java": "ecf7369a88c3754cc0909277507fb7be1c0551e4f32411950ebfb6fef1ca6b38",
+    "src/main/java/org/ursc/trajectory/app/command/CompareCommand.java": "1847033ba2a2578971355b1dea65c368f3f4cd5d59d17b200108362f5f53cecd",
+    "src/main/java/org/ursc/trajectory/app/command/DecayCommand.java": "825ec37844d65480c2585cfca474a5cfc058ac512751d7e2dd5435f0268e849f",
+    "src/main/java/org/ursc/trajectory/app/command/FitCommand.java": "c6cd68a572dabb9a0835a6b6a299ace23d1d254abfee85e8c5369b4c916b97d8",
+    "src/main/java/org/ursc/trajectory/app/command/ForecastCommand.java": "72588e3896f003477b0f9120639daca8e0136a9428352e83a0a726bc382bd47c",
+    "src/main/java/org/ursc/trajectory/app/command/OrbitFiles.java": "feefaec75efe2bf8e5306eaf90ffca7825aab4dcc17d066553f8b2ac9d8ad653",
+    "src/main/java/org/ursc/trajectory/app/command/PredictCommand.java": "9c4f2dcbf6f323bda3e742954f0dc44b06203eaecd474676743fa8c81fd6fdf9",
+    "src/main/java/org/ursc/trajectory/app/command/PropagateCommand.java": "9208f777d735b3751d9a6dadb1c6a68da2a541f88f7b8b2790b3c7cdcd4c8cfc",
+    "src/main/java/org/ursc/trajectory/app/command/TleCommand.java": "8a5d8d301d2827b08e58f7f99ff2e7ded4bf6f723e7d44ad097f7feacff6ab79",
+    "src/main/java/org/ursc/trajectory/app/command/ValidateCommand.java": "fc73609c340b5f029b9c80e2a8a532e34172f6262f625bb6d95183160845fa3c",
+    "src/main/java/org/ursc/trajectory/app/command/InitializeCommand.java": "9cb30dbed2cfa3df5882f554c9bec35c95a053cce7a326d72e8c20726df51781",
+    "src/main/java/org/ursc/trajectory/app/command/SppCommand.java": "d193b44366cb82a90d5b9a963cf4e246c2d219be6a4e732bb60706a9b9e5a5a7",
+    "src/main/java/org/ursc/trajectory/app/term/Ansi.java": "bc47b7f24f44997724ebc182dd8a0d2022fa0cdb6845c7b9985f630128042453",
+    "src/main/java/org/ursc/trajectory/app/term/AsciiChart.java": "d6eb5e2d128961a7251784924afe7d70c22c3af2d4e3635744b0fad036c38a2c",
+    "src/main/java/org/ursc/trajectory/app/term/Table.java": "69949a95bc6bb97112182c3cdf2458f51a86a60e581de12b5c87c7a5f33a8320",
+    "src/main/java/org/ursc/trajectory/forces/drag/Atmosphere.java": "52cfc0229064c4485555309ada6513c6c17e5000700ec4bf478de74a2c4f3553",
+    "src/main/java/org/ursc/trajectory/forces/drag/BoxWingDrag.java": "a251017e006334ca8cc3358fc135c48fbed78ff3c588579071bce1c99c1721c6",
+    "src/main/java/org/ursc/trajectory/forces/drag/CausalSpaceWeatherProvider.java": "a07aa9a47b39cf7e551c236ba4f546f7582a73f0e58fbf1c68916fbe99758ace",
+    "src/main/java/org/ursc/trajectory/forces/drag/ConstantSpaceWeather.java": "bec31d92ada7d7aefefe7eba7137fcccac2fec6e73cccf77d7c7f6eabcc84a6b",
+    "src/main/java/org/ursc/trajectory/forces/drag/CssiSpaceWeatherProvider.java": "4a27b6ce5bde76ee8bf820483907d4116df00a09c8040f9028419658e2441a9b",
+    "src/main/java/org/ursc/trajectory/forces/drag/CssiTxtSpaceWeatherProvider.java": "26bd62214111756077cd3fe2e33dccf2a8ab95004bf6cb1d88cf64f93851023f",
+    "src/main/java/org/ursc/trajectory/forces/drag/DragForce.java": "8486eecf9df3387ea6f6c023ff61dcc86fa228885e34801f4a861f3578fcec1d",
+    "src/main/java/org/ursc/trajectory/forces/drag/DragSensitive.java": "58d57e8c75cf6e893e9c6130311f6000ef802538ea75125dac049317755c37cd",
+    "src/main/java/org/ursc/trajectory/forces/drag/ExponentialAtmosphere.java": "c34b0734230560788750694ad65362e0b8615b5157f6846efc8268ca9f2261dd",
+    "src/main/java/org/ursc/trajectory/forces/drag/ForecastJb2008Inputs.java": "df0666d2acc04474e10093a1579c808024f751ba7d688d06bd08fb44f146b605",
+    "src/main/java/org/ursc/trajectory/forces/drag/ForecastSpaceWeatherProvider.java": "689fd20a685feb0eed110d39f7d3607c2d400f11398d46e7b9a7f0581563bbc9",
+    "src/main/java/org/ursc/trajectory/forces/drag/HarrisPriesterAtmosphere.java": "64282170358235d42e3fb01e434b1190ef73514400ac769f377d7065d48dd064",
+    "src/main/java/org/ursc/trajectory/forces/drag/IsotropicDrag.java": "f9434447ad66b18666eb0a08314d4b256eb8592c587a88aed241778be8ba1ad4",
+    "src/main/java/org/ursc/trajectory/forces/drag/JB2008Atmosphere.java": "be1b06f2cabea21c60a72ee46fd1631886ce0769a9d1db9946479408b1b0f29d",
+    "src/main/java/org/ursc/trajectory/forces/drag/Jb2008Inputs.java": "079f0f07837592b52da26cc2ae6adcf4e6d3aa4d7a872d06f1ea0ca7489d5cbb",
+    "src/main/java/org/ursc/trajectory/forces/drag/NRLMSISE00Atmosphere.java": "f4c5c8301d222a9984e134ba3d4e7f7f9982b603d9b08dfa84bfc8a126fd585e",
+    "src/main/java/org/ursc/trajectory/forces/drag/SolfsmyDtcProvider.java": "f2b65f8b4957e020fadd239ed3c534f4c8a1badfd5cddd271224f34142290944",
+    "src/main/java/org/ursc/trajectory/forces/drag/SpaceWeatherProvider.java": "4b1e82e25a7d34099d2ea610044ac0f7192094fecbf4bfbdc05ee1090350fca9",
+    "src/main/java/org/ursc/trajectory/forces/gravity/FundamentalArguments.java": "9d2adbde547a4f478004bbebf313e517aa3de009820eeea9ea69d41d473156d9",
+    "src/main/java/org/ursc/trajectory/forces/gravity/GravitationalGradient.java": "7f6184b1e89286d8f16309ac85a21705d6d9ffd411c40e4d22d78cea95778cd6",
+    "src/main/java/org/ursc/trajectory/forces/gravity/GravityField.java": "18bed038c0fe4269156be13cd524ebb0f73547d7a47788bba50dc5348690790a",
+    "src/main/java/org/ursc/trajectory/forces/gravity/GravityFieldFactory.java": "c77d71b5e4738b4aa1a8c93309e486ae733179f5e31a0160700ce6e9601b099f",
+    "src/main/java/org/ursc/trajectory/forces/gravity/OceanTides.java": "a813859d018aa767c3823f979499cde3db520fd125e3ccc304de4b258b1de778",
+    "src/main/java/org/ursc/trajectory/forces/gravity/SolidTides.java": "72a6319849faac998654f5ff332b0a93a55a4158504bf7bd78c7290d6844309b",
+    "src/main/java/org/ursc/trajectory/forces/gravity/SphericalHarmonicGravity.java": "e616e1b1f0da0e29e0e3da51b3a2ad211716b70ad3db98172ce38d932b3b02d7",
+    "src/main/java/org/ursc/trajectory/forces/radiation/BoxWingRadiation.java": "f96dffe2803c97d0d37a2093f38e4c1abf6efd93eba307e65acc9a09a6dde57a",
+    "src/main/java/org/ursc/trajectory/forces/radiation/EarthRadiationPressure.java": "a76234474fba31cc937e78fc18fecf9839741062147e465d50e13bd03f977f79",
+    "src/main/java/org/ursc/trajectory/forces/radiation/IsotropicRadiationSingleCoefficient.java": "9e4443a5da919dcee1035f53065a8f3f88435880d3107c76302153e9d5c42df8",
+    "src/main/java/org/ursc/trajectory/forces/radiation/RadiationSensitive.java": "b0755d5318d094854dc2c370cb344a13da2b84de0b565bf8d06c326b8e273194",
+    "src/main/java/org/ursc/trajectory/forces/radiation/SolarRadiationPressure.java": "fc670547b2044a99c6babf0a8d287c35abfb47f2192e8d93a1f99472f1a4097a",
+    "src/main/java/org/ursc/trajectory/forces/drag/jb2008/Jb2008.java": "cfe2a60d905a66b16bcb0629a6e229f37c5de9f878c3ccb318b2f5a4038ef64f",
+    "src/main/java/org/ursc/trajectory/forces/drag/msis/Nrlmsise00.java": "fddee2985f7c15764ae9807d0d87964c4f9d4a27230bb846f18d13ebafe14a9f",
+    "src/main/java/org/ursc/trajectory/forces/drag/msis/Nrlmsise00Data.java": "55dfcf12e6cb9353e9e281639ca683338018b1cc591786dd6565fd72ac9a3816",
+    "src/main/java/org/ursc/trajectory/propagation/analytical/KeplerianPropagator.java": "e3031b4822bf0e7135e542c22636cb0fb770a373eac191fa54b446f3bb595dfa",
+    "src/main/java/org/ursc/trajectory/propagation/events/AltitudeDetector.java": "aa76f8eb8cefde2f15ce4e2914b91be269951362fca8d90f6ae86c24ac56d966",
+    "src/main/java/org/ursc/trajectory/propagation/events/ApsideDetector.java": "69ad18d966cf26ec37545a52bbad0764e413103fd88847c51f18a7e2cbb2d8bc",
+    "src/main/java/org/ursc/trajectory/propagation/events/EclipseDetector.java": "01b6d72eed88bc5b83a3d50ff1dfa68a05afda8889b41b14d07c025ffef72405",
+    "src/main/java/org/ursc/trajectory/propagation/events/EventDetector.java": "91aca8e1de86c45a5150d6239353fa702d571749c37e5dcc38e633ed6bfd7607",
+    "src/main/java/org/ursc/trajectory/propagation/events/NodeDetector.java": "564c466aa3bf131c6a94dab96114095b3b0773c2a15994528999606b27624a9d",
+    "src/main/java/org/ursc/trajectory/propagation/numerical/NumericalPropagator.java": "9c7f646761f0d38b62dcbdebc70806a8cc0f25f1d5732689e92941d18a754c79",
+    "src/main/java/org/ursc/trajectory/propagation/sampling/EphemerisCollector.java": "a3ff1139ab7868d089230cfac00b03adb5ef2575d4aa61d4afe529464a905d6c",
+    "src/main/java/org/ursc/trajectory/propagation/sampling/StepHandler.java": "59fbf2c3032515df11e6aa809ed1858a8d0f2aa59adf369f77a57dd7c447089e",
+    "src/main/java/org/ursc/trajectory/propagation/semianalytical/DSSTPropagator.java": "ce1349c49ad9fb7308d1c5198e1650595104c58ffe361a641cc5cd2cb8e625b0"
+  },
+  "harness_sha256": "d9f44f7214b9b7c7a7db7a7e60023b866709e312199a2a50f1fd7f2c3cc00c90",
+  "SpaceWeather-All-v1.2.txt_sha256": "109e21d75726d6a4f039bbc62ccc28b948d39c7def34a44fd63e3d59960aef39",
+  "finals2000A.all_sha256": "9fbc14ae5e71de96cc1e6b43b54a547acc80c7a6ce910c0209ad6230ff3d30cd"
+}

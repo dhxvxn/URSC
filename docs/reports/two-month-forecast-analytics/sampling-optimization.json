@@ -1,0 +1,13 @@
+{
+  "change": "Timestamp-exact dense output for irregular observation schedules, replacing repeated seed integrations; no input rounding or force changes",
+  "before_scoring": true,
+  "tests_passed": 120,
+  "original_sha256": {
+    "src/main/java/org/ursc/trajectory/estimation/BatchLeastSquares.java": "5fd0dbbde9e7ef7cf27aa558f6f33f3b8985af0499f5f935c70b49af26e4203e",
+    "src/main/java/org/ursc/trajectory/propagation/numerical/NumericalPropagator.java": "9c7f646761f0d38b62dcbdebc70806a8cc0f25f1d5732689e92941d18a754c79"
+  },
+  "current_sha256": {
+    "src/main/java/org/ursc/trajectory/estimation/BatchLeastSquares.java": "b3da279c504be69859b5dbed7db67d8d63419367d21f4a2465a2f708ee5a72e2",
+    "src/main/java/org/ursc/trajectory/propagation/numerical/NumericalPropagator.java": "e5637dceb8fa7d19625a325e43f95df3b0c9eecd6c96d5fa5618ee16387ec54b"
+  }
+}

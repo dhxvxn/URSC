@@ -1,0 +1,14 @@
+{
+  "daily_cases": 61,
+  "observation_files": 61,
+  "navigation_files": 61,
+  "missing_paths": [],
+  "hash_mismatches": [],
+  "tests": {
+    "tests": 120,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "reference_files": 63
+}

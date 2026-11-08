@@ -1,0 +1,47 @@
+[
+  {
+    "date": "2024-09-15",
+    "status": "FORECAST_SAVED",
+    "seconds": 172.392
+  },
+  {
+    "date": "2024-11-02",
+    "status": "FORECAST_SAVED",
+    "seconds": 221.451
+  },
+  {
+    "date": "2024-11-01",
+    "status": "FORECAST_SAVED",
+    "seconds": 191.092
+  },
+  {
+    "date": "2024-10-31",
+    "status": "FORECAST_SAVED",
+    "seconds": 171.0
+  },
+  {
+    "date": "2024-10-30",
+    "status": "FORECAST_SAVED",
+    "seconds": 228.33
+  },
+  {
+    "date": "2024-10-29",
+    "status": "FORECAST_SAVED",
+    "seconds": 216.545
+  },
+  {
+    "date": "2024-10-28",
+    "status": "FORECAST_SAVED",
+    "seconds": 195.463
+  },
+  {
+    "date": "2024-10-27",
+    "status": "INITIALIZATION_OR_PROPAGATION_FAILED",
+    "seconds": 111.543
+  },
+  {
+    "date": "2024-10-26",
+    "status": "FORECAST_SAVED",
+    "seconds": 140.912
+  }
+]
