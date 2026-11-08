@@ -625,6 +625,13 @@
       "bytes": 27516204,
       "sha256": "e67906fd9379cf785b6b07cadc0243cfb68423ed8af142b381f92f799adaf98b",
       "origin": "S3A_OPER_AUX_GNSSRD_POD__20240922T071045_V20240915T235942_20240916T235941.tgz"
+    },
+    {
+      "path": "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241106T121105_V20241030T235942_20241031T235941.tgz",
+      "kind": "Sentinel-3A GPS RINEX3 observation archive (GNSSRD)",
+      "bytes": 27749021,
+      "sha256": "c89ce606243014b21ae413a2783eb2e3cb4b4ce1375ec9c74e6d0800eb2f7004",
+      "origin": "S3A_OPER_AUX_GNSSRD_POD__20241106T121105_V20241030T235942_20241031T235941.tgz"
     }
   ],
   "duplicate_copies_not_stored": [

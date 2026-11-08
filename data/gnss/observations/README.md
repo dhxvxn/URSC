@@ -1,8 +1,7 @@
 # Sentinel-3A GNSS observation coverage
 
-59unique daily archives cover GPS September4–October30 and November1–2,2024.
-Selected window:September3–November2 (61days). Missing observation days:September3
-and October31 only. Filename validity boundaries use UTC,18s behind GPS in2024.
+60consecutive GPS observation days:September4–November2,2024.
+For the selected September3–November2 window, only September3 is missing.
 
 | GPS day | File |
 |---|---|
@@ -63,14 +62,13 @@ and October31 only. Filename validity boundaries use UTC,18s behind GPS in2024.
 | 2024-10-28 | S3A_OPER_AUX_GNSSRD_POD__20241103T121057_V20241027T235942_20241028T235941.tgz |
 | 2024-10-29 | S3A_OPER_AUX_GNSSRD_POD__20241104T121057_V20241028T235942_20241029T235941.tgz |
 | 2024-10-30 | S3A_OPER_AUX_GNSSRD_POD__20241105T121050_V20241029T235942_20241030T235941.tgz |
+| 2024-10-31 | S3A_OPER_AUX_GNSSRD_POD__20241106T121105_V20241030T235942_20241031T235941.tgz |
 | 2024-11-01 | S3A_OPER_AUX_GNSSRD_POD__20241107T121111_V20241031T235942_20241101T235941.tgz |
 | 2024-11-02 | S3A_OPER_AUX_GNSSRD_POD__20241108T121052_V20241101T235942_20241102T235941.tgz |
 
-validation.json contains header/epoch-count checks for56new unique uploads; the3
-previously archived S3A files were audited earlier. Every newly checked archive has
-86400normal observation epochs and a RINEX3.03 header. SHA-256 hashes are in
-data/input-manifest.json. Duplicate uploads are omitted. These checks are not orbit
-accuracy measurements. Matching navigation and precise reference coverage are still
-incomplete: within this window29navigation days remain missing. See navigation/README.md.
-The merged architecture diagram is docs/MERGED_ARCHITECTURE.md; no algorithm refactor
-was made. October2 has observations, navigation, attitude and full-day POEORB coverage.
+validation.json records structural checks on57new archives;3older S3Aarchives
+were audited earlier. Each newly checked file has86400normal observation epochs
+and a RINEX3.03 header. Source hashes are in data/input-manifest.json.
+Duplicate uploads were omitted. GPS−UTC=18s in2024. This is input validation,
+not orbit accuracy. Navigation covers the full selected window; precise orbit
+reference and optional attitude data remain incomplete.
