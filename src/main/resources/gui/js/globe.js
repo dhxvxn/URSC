@@ -1,0 +1,168 @@
+import * as THREE from '../vendor/three.module.min.js';
+
+const RE = 6378.137; // km, globe unit
+// ECEF (x, y, z-north) -> three.js (y-up, right-handed)
+const v3 = (x, y, z) => new THREE.Vector3(x, z, -y);
+
+/** Offline 3D globe: Earth-fixed or inertial view, sunlit, country borders, orbit and marker. */
+export class Globe {
+  constructor(container) {
+    this.container = container;
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+    container.prepend(this.renderer.domElement);
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
+    this.az = 0.6; this.el = 0.35; this.dist = 4.2;
+    this.earth = new THREE.Group();
+    this.scene.add(this.earth);
+    this.earth.add(new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64),
+      new THREE.MeshPhongMaterial({ color: 0x1d4a78, emissive: 0x06101c, shininess: 12, specular: 0x223344 })));
+    this.earth.add(this.graticule());
+    this.sun = new THREE.DirectionalLight(0xffffff, 1.6);
+    this.scene.add(this.sun, new THREE.AmbientLight(0x8899aa, 0.22));
+    this.pathAll = null; this.pathPast = null; this.ref = null;
+    this.marker = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffcc33 }));
+    this.scene.add(this.marker);
+    this.view = 'ecef';
+    this.controls();
+    new ResizeObserver(() => this.resize()).observe(container);
+    this.resize();
+    this.pending = false;
+    this.render();
+  }
+
+  graticule() {
+    const pts = [];
+    const ring = (f) => { for (let i = 0; i < 180; i++) { pts.push(f(i / 180 * 2 * Math.PI), f((i + 1) / 180 * 2 * Math.PI)); } };
+    for (let lat = -60; lat <= 60; lat += 30) {
+      const p = lat * Math.PI / 180;
+      ring((a) => v3(Math.cos(p) * Math.cos(a), Math.cos(p) * Math.sin(a), Math.sin(p)).multiplyScalar(1.001));
+    }
+    for (let lon = 0; lon < 180; lon += 30) {
+      const l = lon * Math.PI / 180;
+      ring((a) => v3(Math.cos(a) * Math.cos(l), Math.cos(a) * Math.sin(l), Math.sin(a)).multiplyScalar(1.001));
+    }
+    return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineBasicMaterial({ color: 0x2f5b86, transparent: true, opacity: 0.45 }));
+  }
+
+  /** Render on demand (next animation frame), never in a continuous loop. */
+  render() {
+    if (this.pending) return;
+    this.pending = true;
+    requestAnimationFrame(() => { this.pending = false; this.renderer.render(this.scene, this.camera); });
+  }
+
+  setBorders(lines) {
+    const pos = [];
+    const d = Math.PI / 180;
+    for (const l of lines) {
+      for (let i = 0; i + 3 < l.length; i += 2) {
+        for (const [lo, la] of [[l[i], l[i + 1]], [l[i + 2], l[i + 3]]]) {
+          const c = Math.cos(la * d);
+          const p = v3(c * Math.cos(lo * d), c * Math.sin(lo * d), Math.sin(la * d)).multiplyScalar(1.0015);
+          pos.push(p.x, p.y, p.z);
+        }
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    this.earth.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xa9cbee, transparent: true, opacity: 0.75 })));
+    this.render();
+  }
+
+  /** traj: payload from /api/runs/{id}/trajectory; ref: optional reference orbit (POEORB) in the same layout. */
+  setTrajectory(traj, ref) {
+    this.traj = traj;
+    this.refTraj = ref || null;
+    this.rebuild();
+  }
+
+  setView(v) { this.view = v; this.rebuild(); }
+
+  points(t, upto) {
+    const out = [];
+    const n = upto ?? t.t.length;
+    for (let i = 0; i < n; i++) {
+      let x = t.itrf[3 * i], y = t.itrf[3 * i + 1];
+      const z = t.itrf[3 * i + 2];
+      if (this.view === 'inertial') { const a = t.era[i], c = Math.cos(a), s = Math.sin(a); [x, y] = [c * x - s * y, s * x + c * y]; }
+      out.push(v3(x / RE, y / RE, z / RE));
+    }
+    return out;
+  }
+
+  rebuild() {
+    for (const o of [this.pathAll, this.pathPast, this.ref]) if (o) { this.scene.remove(o); o.geometry.dispose(); }
+    if (!this.traj) return;
+    const pts = this.points(this.traj);
+    this.pathAll = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x4f9cf7, transparent: true, opacity: 0.35 }));
+    this.pathPast = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x7fd3ff }));
+    this.scene.add(this.pathAll, this.pathPast);
+    if (this.refTraj) {
+      this.ref = new THREE.Line(new THREE.BufferGeometry().setFromPoints(this.points(this.refTraj)), new THREE.LineBasicMaterial({ color: 0xc08bff, transparent: true, opacity: 0.8 }));
+      this.scene.add(this.ref);
+    }
+    this.setTime(this.time ?? 0);
+  }
+
+  /** f: fractional sample index. */
+  setTime(f) {
+    this.time = f;
+    const t = this.traj;
+    if (!t) return;
+    const n = t.t.length;
+    const i = Math.max(0, Math.min(n - 1, Math.floor(f)));
+    const j = Math.min(n - 1, i + 1);
+    const w = Math.min(1, Math.max(0, f - i));
+    const lerp = (arr, k) => arr[3 * i + k] * (1 - w) + arr[3 * j + k] * w;
+    let x = lerp(t.itrf, 0), y = lerp(t.itrf, 1);
+    const z = lerp(t.itrf, 2);
+    const era = t.era[i] * (1 - w) + t.era[j] * w;
+    let sx = lerp(t.sunItrf, 0), sy = lerp(t.sunItrf, 1);
+    const sz = lerp(t.sunItrf, 2);
+    if (this.view === 'inertial') {
+      const c = Math.cos(era), s = Math.sin(era);
+      [x, y] = [c * x - s * y, s * x + c * y];
+      [sx, sy] = [c * sx - s * sy, s * sx + c * sy];
+      this.earth.rotation.set(0, era, 0);
+    } else {
+      this.earth.rotation.set(0, 0, 0);
+    }
+    this.marker.position.copy(v3(x / RE, y / RE, z / RE));
+    this.sun.position.copy(v3(sx, sy, sz).multiplyScalar(10));
+    if (this.pathPast) this.pathPast.geometry.setDrawRange(0, i + 1);
+    this.render();
+  }
+
+  controls() {
+    const c = this.renderer.domElement;
+    let drag = null;
+    c.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY, this.az, this.el]; c.setPointerCapture(e.pointerId); });
+    c.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      this.az = drag[2] - (e.clientX - drag[0]) * 0.006;
+      this.el = Math.max(-1.45, Math.min(1.45, drag[3] + (e.clientY - drag[1]) * 0.006));
+      this.place();
+    });
+    c.addEventListener('pointerup', () => { drag = null; });
+    c.addEventListener('wheel', (e) => { e.preventDefault(); this.dist = Math.max(1.4, Math.min(14, this.dist * (e.deltaY > 0 ? 1.1 : 0.9))); this.place(); }, { passive: false });
+    c.addEventListener('dblclick', () => { this.az = 0.6; this.el = 0.35; this.dist = 4.2; this.place(); });
+    this.place();
+  }
+
+  place() {
+    this.camera.position.set(this.dist * Math.cos(this.el) * Math.sin(this.az), this.dist * Math.sin(this.el), this.dist * Math.cos(this.el) * Math.cos(this.az));
+    this.camera.lookAt(0, 0, 0);
+    this.render();
+  }
+
+  resize() {
+    const w = this.container.clientWidth || 600, h = this.container.clientHeight || 400;
+    this.renderer.setSize(w, h);
+    this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix();
+    this.render();
+  }
+}

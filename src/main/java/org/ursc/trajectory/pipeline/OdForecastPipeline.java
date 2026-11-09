@@ -59,6 +59,13 @@ public final class OdForecastPipeline {
             final List<Path> prodFiles = InputFiles.expand(cfg.inputs.gpsProducts);
             hash(obsFiles, res);
             hash(prodFiles, res);
+            final List<String> craft = ObsLoader.spacecraft(obsFiles);
+            if (craft.size() > 1) {
+                res.errors.add("The GNSS observation files belong to different spacecraft (" + String.join(", ", craft)
+                        + "). Select the files of one spacecraft.");
+                res.status = RunResult.Status.FAILED_VALIDATION;
+                return res;
+            }
             final ObsLoader.Loaded obs = ObsLoader.load(obsFiles, cfg.od.samplingSeconds);
             res.warnings.addAll(obs.problems);
             pl.stage("Loading GPS orbit/clock products", 0.06);
@@ -85,7 +92,7 @@ public final class OdForecastPipeline {
     }
 
     /** Checks the three mandatory inputs; returns the parsed cutoff or null. */
-    static AbsoluteDate validate(final RunConfig cfg, final RunResult res) {
+    public static AbsoluteDate validate(final RunConfig cfg, final RunResult res) {
         if (cfg.inputs.gnssrd.isEmpty()) {
             res.errors.add("Mandatory input missing: GNSSRD observation file(s) or folder(s)");
         }
@@ -179,9 +186,23 @@ public final class OdForecastPipeline {
             }
             row.product = sel.source.productClass().label;
             row.predictedOrbit = sel.source.isPredicted(e.getDate());
-            final SppSolution sol = engine.solveEpoch(e, sel.source, guess);
+            final SppSolution sol;
+            try {
+                sol = engine.solveEpoch(e, sel.source, guess);
+            } catch (final RuntimeException ex) {
+                row.reason = "positioning failed: " + ex.getMessage();
+                guess = Vector3D.ZERO;
+                continue;
+            }
             if (sol == null) {
                 row.reason = "fewer than 4 usable satellites";
+                continue;
+            }
+            final double radius = sol.getPosition().getNorm();
+            if (!(radius > 6.2e6 && radius < 5.0e7)) {
+                row.reason = "implausible position (" + Math.round(radius / 1000) + " km from Earth's centre); "
+                        + "check that the observations and GPS products match";
+                guess = Vector3D.ZERO;
                 continue;
             }
             row.pdop = sol.getPdop();

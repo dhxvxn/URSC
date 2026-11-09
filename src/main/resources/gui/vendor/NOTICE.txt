@@ -1,0 +1,4 @@
+Country borders: Natural Earth 1:50m admin-0 (public domain, naturalearthdata.com),
+via the world-atlas 2.0.2 TopoJSON (ISC licence, see world-atlas.LICENSE.txt),
+converted to flat [lon,lat,...] polylines, one per shared border arc.
+three.js r160 (MIT licence, see three.LICENSE.txt).

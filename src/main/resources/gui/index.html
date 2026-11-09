@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>URSC Orbit Determination</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">URSC <span>orbit determination &amp; prediction</span></div>
+  <nav id="tabs" class="tabs">
+    <button data-tab="data" class="active">Data</button>
+    <button data-tab="run">Run</button>
+    <button data-tab="results">Results</button>
+    <button data-tab="history">History</button>
+    <button data-tab="help">Help</button>
+  </nav>
+  <form id="quick-search" class="quick-search" autocomplete="off">
+    <input id="quick-search-q" type="search" placeholder="Search help and settings…" aria-label="Search help">
+  </form>
+  <div id="job" class="job hidden"><div class="job-bar"><div></div></div><span class="job-text"></span></div>
+  <button id="theme" class="icon-btn" title="Toggle light/dark">◐</button>
+  <button id="quit" class="icon-btn" title="Stop the URSC server">⏻</button>
+</header>
+<main>
+  <section id="tab-data" class="tab active"></section>
+  <section id="tab-run" class="tab"></section>
+  <section id="tab-results" class="tab"></section>
+  <section id="tab-history" class="tab"></section>
+  <section id="tab-help" class="tab"></section>
+</main>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

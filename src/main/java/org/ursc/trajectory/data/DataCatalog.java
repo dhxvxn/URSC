@@ -259,6 +259,12 @@ public final class DataCatalog {
         } else if (isRinex(head, 'O')) {
             e.kind = Kind.GNSS_OBSERVATIONS;
             rinexLongName(n, e);
+            if (e.satellite.isEmpty()) {
+                e.satellite = org.ursc.trajectory.pipeline.ObsLoader.spacecraftOf(file);
+            }
+            if (e.coverageStart.isEmpty()) {
+                obsCoverage(file, e);
+            }
         } else if (isRinex(head, 'N')) {
             e.kind = Kind.GPS_BROADCAST_NAV;
             e.satellite = "GPS";
@@ -383,6 +389,41 @@ public final class DataCatalog {
         }
     }
 
+    /** First and last epoch of a plain RINEX observation file (GPS time), if it is small enough to scan. */
+    private static void obsCoverage(final Path f, final Entry e) {
+        try {
+            if (Files.size(f) > 200L * 1024 * 1024) {
+                return;
+            }
+            String first = null;
+            String last = null;
+            try (InputStream in = ProductInput.open(f);
+                 BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.US_ASCII))) {
+                String l;
+                while ((l = br.readLine()) != null) {
+                    if (l.startsWith(">")) {
+                        if (first == null) {
+                            first = l;
+                        }
+                        last = l;
+                    }
+                }
+            }
+            if (first != null) {
+                e.coverageStart = TimeUtil.formatUtc(epochLine(first));
+                e.coverageEnd = TimeUtil.formatUtc(epochLine(last));
+            }
+        } catch (final IOException | RuntimeException ignored) {
+            // leave coverage blank
+        }
+    }
+
+    private static AbsoluteDate epochLine(final String l) {
+        final String[] h = l.substring(1).trim().split("\\s+");
+        return new AbsoluteDate(Integer.parseInt(h[0]), Integer.parseInt(h[1]), Integer.parseInt(h[2]),
+                Integer.parseInt(h[3]), Integer.parseInt(h[4]), Double.parseDouble(h[5]), TimeScalesFactory.getGPS());
+    }
+
     private static void rinexLongName(final String n, final Entry e) {
         final Matcher m = RINEX_LONG.matcher(n);
         if (m.find() && e.coverageStart.isEmpty()) {
@@ -405,6 +446,17 @@ public final class DataCatalog {
      */
     public Map<String, List<String>> suggest(final AbsoluteDate cutoff, final double arcHours,
                                              final double spanDays, final boolean reconstruction) {
+        return suggest(cutoff, arcHours, spanDays, reconstruction, null);
+    }
+
+    /**
+     * As {@link #suggest(AbsoluteDate, double, double, boolean)}, restricted to one spacecraft's
+     * observations ({@code satellite} null = the spacecraft with the most matching files). The
+     * result also lists every spacecraft with matching observations under "satellites".
+     */
+    public Map<String, List<String>> suggest(final AbsoluteDate cutoff, final double arcHours,
+                                             final double spanDays, final boolean reconstruction,
+                                             final String satellite) {
         final AbsoluteDate a0 = cutoff.shiftedBy(-arcHours * 3600.0);
         final AbsoluteDate f1 = cutoff.shiftedBy(spanDays * 86400.0);
         final Map<String, List<String>> out = new LinkedHashMap<>();
@@ -413,11 +465,12 @@ public final class DataCatalog {
             out.put(role, new ArrayList<>());
         }
         final Map<String, Entry> newestSingle = new LinkedHashMap<>();
+        final Map<String, List<String>> obsBySat = new java.util.TreeMap<>();
         for (final Entry e : entries()) {
             switch (e.kind) {
                 case GNSS_OBSERVATIONS:
                     if (overlaps(e, a0, cutoff, false)) {
-                        out.get("gnssrd").add(e.path);
+                        obsBySat.computeIfAbsent(e.satellite.isEmpty() ? e.name : e.satellite, k -> new ArrayList<>()).add(e.path);
                     }
                     break;
                 case GPS_BROADCAST_NAV:
@@ -453,6 +506,19 @@ public final class DataCatalog {
         for (final Map.Entry<String, Entry> s : newestSingle.entrySet()) {
             out.get(s.getKey()).add(s.getValue().path);
         }
+        String pick = satellite != null && obsBySat.containsKey(satellite) ? satellite : null;
+        if (pick == null) {
+            for (final Map.Entry<String, List<String>> s : obsBySat.entrySet()) {
+                if (pick == null || s.getValue().size() > obsBySat.get(pick).size()) {
+                    pick = s.getKey();
+                }
+            }
+        }
+        if (pick != null) {
+            out.get("gnssrd").addAll(obsBySat.get(pick));
+        }
+        out.put("satellites", new ArrayList<>(obsBySat.keySet()));
+        out.put("satellite", pick == null ? List.of() : List.of(pick));
         return out;
     }
 

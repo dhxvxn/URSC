@@ -24,6 +24,8 @@ public final class SppEngine {
 
     private static final double C = GpsConstants.SPEED_OF_LIGHT;
     private static final double WE = GpsConstants.EARTH_ROTATION_RATE;
+    /** Upper bound on GNSS signal travel time to a receiver at or above the Earth's surface (s). */
+    static final double MAX_TRAVEL_TIME_S = 0.2;
 
     /** One epoch's result: the tag and the fix (null if the epoch had too few satellites). */
     public static final class Fix {
@@ -129,6 +131,11 @@ public final class SppEngine {
                     tau = rcv.distance(s0) / C;
                 }
                 final AbsoluteDate tTx = tRx.shiftedBy(-tau);
+                // a diverged receiver estimate gives an absurd travel time: drop the satellite
+                // rather than evaluating the orbit far outside the product's coverage
+                if (!(tau > 0.0 && tau < MAX_TRAVEL_TIME_S) || !source.covers(prn, tTx)) {
+                    continue;
+                }
                 final Vector3D satRx = rotateForTransit(source.positionEcef(prn, tTx), tau);
                 final double dts = source.clockBias(prn, tTx);
                 ranges.add(new SatelliteRange(prn, satRx, p, dts));

@@ -35,6 +35,20 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- Project documentation bundled for the GUI's offline help search -->
+            <resource>
+                <directory>docs</directory>
+                <targetPath>kb</targetPath>
+                <includes>
+                    <include>*.md</include>
+                    <include>reports/*/README.md</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

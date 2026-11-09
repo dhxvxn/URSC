@@ -7,9 +7,11 @@ import java.util.Map;
 import org.ursc.trajectory.app.command.Command;
 import org.ursc.trajectory.app.command.CompareCommand;
 import org.ursc.trajectory.app.command.DecayCommand;
+import org.ursc.trajectory.app.command.DemoDataCommand;
 import org.ursc.trajectory.app.command.BacktestCommand;
 import org.ursc.trajectory.app.command.FitCommand;
 import org.ursc.trajectory.app.command.ForecastCommand;
+import org.ursc.trajectory.app.command.GuiCommand;
 import org.ursc.trajectory.app.command.PredictCommand;
 import org.ursc.trajectory.app.command.PropagateCommand;
 import org.ursc.trajectory.app.command.SppCommand;
@@ -42,6 +44,8 @@ public final class Cli {
         register(new ForecastCommand());
         register(new PredictCommand());
         register(new SppCommand());
+        register(new GuiCommand());
+        register(new DemoDataCommand());
     }
 
     private Cli() {

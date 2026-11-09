@@ -49,6 +49,12 @@ public final class ObsLoader {
                 }
                 if (out.objectName.isEmpty()) {
                     identify(n, out);
+                    if (!n.toUpperCase(Locale.US).matches("^S\\d[A-Z]_.*")) {
+                        final String marker = markerName(f);
+                        if (!marker.isEmpty()) {
+                            out.objectName = marker;
+                        }
+                    }
                 }
             } catch (final IOException | RuntimeException e) {
                 out.problems.add(n + ": unreadable GNSS observation file (" + e.getMessage() + ")");
@@ -57,6 +63,49 @@ public final class ObsLoader {
         out.epochs.addAll(byTime.values());
         out.epochs.sort(Comparator.comparingDouble(e -> e.getDate().durationFromJ2000()));
         return out;
+    }
+
+    /**
+     * Spacecraft a GNSS observation file belongs to: the Sentinel mission code (S3A, S3B...) from
+     * the product name, else the RINEX MARKER NAME, else the file name.
+     */
+    public static String spacecraftOf(final Path f) {
+        final String n = f.getFileName().toString();
+        final String u = n.toUpperCase(Locale.US);
+        if (u.matches("^S\\d[A-Z]_.*")) {
+            return u.substring(0, 3);
+        }
+        final String m = markerName(f);
+        return m.isEmpty() ? n : m;
+    }
+
+    /** Distinct spacecraft among observation files (sorted). */
+    public static List<String> spacecraft(final List<Path> files) {
+        final java.util.TreeSet<String> s = new java.util.TreeSet<>();
+        for (final Path f : files) {
+            s.add(spacecraftOf(f));
+        }
+        return new ArrayList<>(s);
+    }
+
+    /** RINEX "MARKER NAME" header value (plain or compressed files), or "" if absent. */
+    public static String markerName(final Path f) {
+        try (InputStream in = ProductInput.open(f);
+             java.io.BufferedReader br = new java.io.BufferedReader(
+                     new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.US_ASCII))) {
+            String l;
+            for (int i = 0; i < 60 && (l = br.readLine()) != null; i++) {
+                if (l.length() > 60 && "MARKER NAME".equals(l.substring(60).trim())) {
+                    return l.substring(0, 60).trim();
+                }
+                if (l.contains("END OF HEADER")) {
+                    break;
+                }
+            }
+        } catch (final IOException | RuntimeException ignored) {
+            // fall back to the file-name guess
+        }
+        return "";
     }
 
     /** Sentinel product names start with the mission code (S3A_, S3B_, S6A_...). */
