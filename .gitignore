@@ -25,3 +25,4 @@ scratchpad/
 !docs/reports/one-day-multi-epoch-audit/seeds.csv
 !docs/reports/one-day-multi-epoch-audit/truth.csv
 !src/test/resources/numerics/j2-dop853-reference.csv
+dist/

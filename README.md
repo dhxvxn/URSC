@@ -14,6 +14,20 @@ the entire physics core is plain, auditable Java.
 
 ---
 
+## Graphical interface (offline)
+
+`java -jar target/leo-trajectory-*.jar gui` starts a local web interface on `127.0.0.1` and
+opens the browser: data catalog with watched folders, run setup with every setting and an
+info (ⓘ) note for each, OD + forecast or propagation, results on a 3D globe and 2D map,
+diagnostic plots, run history, comparison and sweeps, ground-station passes, printable report,
+OEM / KML / CZML downloads and an offline help search. It needs no internet connection.
+
+For air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
+(Windows) builds a self-contained bundle with its own Java runtime; see
+[packaging/README-OFFLINE.md](packaging/README-OFFLINE.md).
+
+---
+
 ## Documentation
 
 - **[docs/USAGE.md](docs/USAGE.md)** — build/run, every CLI command and flag, and
