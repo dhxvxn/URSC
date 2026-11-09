@@ -148,8 +148,10 @@ public final class SppSolver {
         double gdop = Double.NaN;
         double pdop = Double.NaN;
         double tdop = Double.NaN;
+        double[][] cofactor = null;
         try {
             final double[][] q = LinearSolver.invert(ata);
+            cofactor = q;
             final double pos = q[0][0] + q[1][1] + q[2][2];
             gdop = Math.sqrt(pos + q[3][3]);
             pdop = Math.sqrt(pos);
@@ -158,7 +160,11 @@ public final class SppSolver {
             // leave DOP as NaN when the geometry matrix is not invertible
         }
 
+        final int[] prns = new int[m];
+        for (int i = 0; i < m; i++) {
+            prns[i] = observations.get(i).getPrn();
+        }
         return new SppSolution(rcv, x[3], m, iterations, converged, postFitRms,
-                gdop, pdop, tdop, residuals);
+                gdop, pdop, tdop, residuals, cofactor, prns);
     }
 }

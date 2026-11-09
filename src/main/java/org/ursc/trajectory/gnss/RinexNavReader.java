@@ -58,6 +58,45 @@ public final class RinexNavReader {
         }
 
         /**
+         * Messages usable by a forecast cut off at {@code cutoff}: only those whose reference
+         * epoch (Toe, which for GPS LNAV equals Toc) is not after the cutoff. This is
+         * conservative: a message can be transmitted up to ~2 h before its Toe, so a few
+         * genuinely available messages are discarded, but no future message ever leaks in.
+         */
+        public Data availableBy(final AbsoluteDate cutoff) {
+            final Map<Integer, List<GpsBroadcastEphemeris>> out = new TreeMap<>();
+            for (final Map.Entry<Integer, List<GpsBroadcastEphemeris>> e : byPrn.entrySet()) {
+                final List<GpsBroadcastEphemeris> kept = new java.util.ArrayList<>();
+                for (final GpsBroadcastEphemeris eph : e.getValue()) {
+                    if (eph.getToe().durationFrom(cutoff) <= 0.0) {
+                        kept.add(eph);
+                    }
+                }
+                if (!kept.isEmpty()) {
+                    out.put(e.getKey(), kept);
+                }
+            }
+            return new Data(out);
+        }
+
+        /** Earliest and latest Toe present, or {@code null} if empty. */
+        public AbsoluteDate[] toeSpan() {
+            AbsoluteDate lo = null;
+            AbsoluteDate hi = null;
+            for (final List<GpsBroadcastEphemeris> l : byPrn.values()) {
+                for (final GpsBroadcastEphemeris eph : l) {
+                    if (lo == null || eph.getToe().isBefore(lo)) {
+                        lo = eph.getToe();
+                    }
+                    if (hi == null || eph.getToe().isAfter(hi)) {
+                        hi = eph.getToe();
+                    }
+                }
+            }
+            return lo == null ? null : new AbsoluteDate[] {lo, hi};
+        }
+
+        /**
          * Select the broadcast message for a satellite closest in time to {@code t}.
          *
          * @return the nearest-Toe ephemeris, or {@code null} if the PRN is absent

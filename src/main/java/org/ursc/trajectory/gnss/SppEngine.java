@@ -3,6 +3,7 @@ package org.ursc.trajectory.gnss;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ursc.trajectory.gnss.products.GnssOrbitClockSource;
 import org.ursc.trajectory.math.Vector3D;
 import org.ursc.trajectory.time.AbsoluteDate;
 
@@ -71,7 +72,11 @@ public final class SppEngine {
      */
     public static Vector3D satellitePositionAtReception(final GpsBroadcastEphemeris eph,
             final AbsoluteDate tRx, final double tau) {
-        final Vector3D satTx = eph.positionEcef(tRx.shiftedBy(-tau));
+        return rotateForTransit(eph.positionEcef(tRx.shiftedBy(-tau)), tau);
+    }
+
+    /** Rotate a transmit-epoch ECEF position into the reception-epoch frame (Sagnac). */
+    static Vector3D rotateForTransit(final Vector3D satTx, final double tau) {
         final double theta = WE * tau; // Earth rotation during transit
         final double cos = Math.cos(theta);
         final double sin = Math.sin(theta);
@@ -82,7 +87,7 @@ public final class SppEngine {
     }
 
     /**
-     * Solve one observation epoch.
+     * Solve one observation epoch from broadcast navigation (nearest-Toe message, no age limit).
      *
      * @param epoch the observation epoch
      * @param nav   the broadcast navigation data
@@ -91,8 +96,20 @@ public final class SppEngine {
      */
     public SppSolution solveEpoch(final RinexObsReader.Epoch epoch, final RinexNavReader.Data nav,
                                   final Vector3D guess) {
+        return solveEpoch(epoch, new NearestToeSource(nav), guess);
+    }
+
+    /**
+     * Solve one observation epoch from any GPS orbit/clock source (IGS Final, Rapid,
+     * Ultra-rapid or broadcast). Satellites the source does not cover are skipped.
+     *
+     * @return the fix, or {@code null} if fewer than four satellites were usable
+     */
+    public SppSolution solveEpoch(final RinexObsReader.Epoch epoch, final GnssOrbitClockSource source,
+                                  final Vector3D guess) {
         Vector3D rcv = guess;
         SppSolution solution = null;
+        final AbsoluteDate tRx = epoch.getDate();
 
         for (int outer = 0; outer < outerIterations; outer++) {
             final List<SatelliteRange> ranges = new ArrayList<>();
@@ -101,19 +118,20 @@ public final class SppEngine {
                 if (Double.isNaN(p)) {
                     continue;
                 }
-                final GpsBroadcastEphemeris eph = nav.ephemerisFor(sr.getPrn(), epoch.getDate());
-                if (eph == null) {
+                final int prn = sr.getPrn();
+                double tau = p / C;
+                if (!source.covers(prn, tRx.shiftedBy(-tau))) {
                     continue;
                 }
-                double tau = p / C;
                 if (!Vector3D.ZERO.equals(rcv)) {
                     // refine travel time against the current receiver estimate
-                    final Vector3D s0 = satellitePositionAtReception(eph, epoch.getDate(), tau);
+                    final Vector3D s0 = rotateForTransit(source.positionEcef(prn, tRx.shiftedBy(-tau)), tau);
                     tau = rcv.distance(s0) / C;
                 }
-                final Vector3D satRx = satellitePositionAtReception(eph, epoch.getDate(), tau);
-                final double dts = eph.clockBias(epoch.getDate().shiftedBy(-tau));
-                ranges.add(new SatelliteRange(sr.getPrn(), satRx, p, dts));
+                final AbsoluteDate tTx = tRx.shiftedBy(-tau);
+                final Vector3D satRx = rotateForTransit(source.positionEcef(prn, tTx), tau);
+                final double dts = source.clockBias(prn, tTx);
+                ranges.add(new SatelliteRange(prn, satRx, p, dts));
             }
             if (ranges.size() < SppSolver.MIN_SATELLITES) {
                 return null;
@@ -122,6 +140,50 @@ public final class SppEngine {
             rcv = solution.getPosition();
         }
         return solution;
+    }
+
+    /** Broadcast adapter reproducing the historical behaviour: nearest-Toe message, no age limit. */
+    private static final class NearestToeSource implements GnssOrbitClockSource {
+        private final RinexNavReader.Data nav;
+
+        NearestToeSource(final RinexNavReader.Data nav) {
+            this.nav = nav;
+        }
+
+        @Override
+        public ProductClass productClass() {
+            return ProductClass.BROADCAST;
+        }
+
+        @Override
+        public String description() {
+            return "broadcast navigation";
+        }
+
+        @Override
+        public AbsoluteDate issueTime() {
+            return null;
+        }
+
+        @Override
+        public boolean issueTimeVerified() {
+            return false;
+        }
+
+        @Override
+        public boolean covers(final int prn, final AbsoluteDate t) {
+            return nav.ephemerisFor(prn, t) != null;
+        }
+
+        @Override
+        public Vector3D positionEcef(final int prn, final AbsoluteDate t) {
+            return nav.ephemerisFor(prn, t).positionEcef(t);
+        }
+
+        @Override
+        public double clockBias(final int prn, final AbsoluteDate t) {
+            return nav.ephemerisFor(prn, t).clockBias(t);
+        }
     }
 
     /**
