@@ -82,6 +82,15 @@ public final class AbsoluteDate implements Comparable<AbsoluteDate> {
     }
 
     /**
+     * Seconds elapsed since J2000.0 (2000-01-01T12:00:00) read in the given scale, at full
+     * double precision (~0.1 microsecond). Prefer this to {@link #julianDate(TimeScale)} for
+     * Earth-rotation angles: a full Julian Date double resolves only ~40 microseconds.
+     */
+    public double secondsSinceJ2000(final TimeScale scale) {
+        return taiOffset + scale.offsetFromTAI(this);
+    }
+
+    /**
      * @param scale the scale in which the Julian Date is expressed
      * @return the Julian Date (days) of this instant in the given scale
      */

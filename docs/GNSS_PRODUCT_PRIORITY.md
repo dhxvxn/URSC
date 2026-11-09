@@ -46,16 +46,28 @@ coverage, observed/predicted status, selected orbit and clock sources, and fallb
 reasons. Explicit comparison modes may force a product tier, while preserving
 cutoff eligibility for forecast-labelled runs.
 
-## Implementation status and forthcoming inputs
+## Implementation status
 
-This document records the requested selection policy. Automatic precise-product
-selection and SP3/CLK integration are not implemented by this documentation
-commit. The published two-month report remains the original broadcast baseline;
-it has not been recalculated using precise products.
+Implemented in `org.ursc.trajectory.gnss.products` and used by `pipeline.OdForecastPipeline`:
 
-When product details arrive, establish supported SP3/CLK formats, providers,
-issue-time metadata, matching orbit/clock availability and actual date coverage.
-Then implement the resolver and adapters and test cutoff eligibility, priority,
-missing coverage, clock compatibility and deterministic fallback before rerunning
-the same daily cases. Final products must never enter forecast initialization
-merely because they are present in the input directory.
+- SP3-c/d orbits (11-point Lagrange interpolation) and RINEX CLK 2.x/3.x clocks, gzip or
+  Unix-compress (`.Z`) archives, detected by content. SP3 and CLK files of the same class,
+  provider and start are paired so orbit and clock always come from one product. IGS clocks
+  receive the `-2 r.v/c^2` relativistic term so every source follows the broadcast convention.
+- Product class, provider and span from long (`IGS0OPSFIN_...`) and legacy (`igs/igr/igu`)
+  names. Unrecognised names are reported and not used.
+- **Forecast mode**: eligibility before priority. A precise product is eligible only if its
+  issue time is known and not after the cutoff; issue times are a documented nominal
+  latency (Ultra-rapid: observed end + 3 h; Rapid: end of day + 17 h; Final: end + 18 days)
+  unless verified metadata is supplied, and `REQUIRE_VERIFIED` rejects nominal times.
+  Broadcast messages are limited to Toe at or before the cutoff.
+- **Reconstruction mode**: best product present; runs and OEM headers are labelled
+  retrospective.
+- One source serves a whole epoch (the first eligible source covering at least four of the
+  satellites in view), so orbit/clock conventions are never mixed inside one SPP solve.
+  Exclusions, per-source usage and fallbacks are recorded in the run result and OEM header.
+- A tier can be forced for comparison runs.
+
+Not yet verified against real IGS files: when real Final/Rapid/Ultra-rapid products for a day
+with GNSSRD coverage are available, rerun the daily cases and compare with the broadcast
+baseline. Final products never enter forecast initialisation merely because they are present.

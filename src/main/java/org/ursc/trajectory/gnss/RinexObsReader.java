@@ -92,6 +92,22 @@ public final class RinexObsReader {
         }
 
         /** @return epoch tag, in GPS time. */
+        /**
+         * Build a synthetic epoch (simulation and tests): each entry is a PRN and its
+         * ionosphere-free pseudorange in metres.
+         */
+        public static Epoch synthetic(final AbsoluteDate date, final java.util.Map<Integer, Double> ionoFree) {
+            final java.util.Map<String, Integer> idx = new java.util.LinkedHashMap<>();
+            idx.put("C1W", 0);
+            idx.put("C2W", 1);
+            final List<SatRecord> sats = new java.util.ArrayList<>();
+            for (final java.util.Map.Entry<Integer, Double> e : ionoFree.entrySet()) {
+                // iono-free(P, P) == P
+                sats.add(new SatRecord(e.getKey(), idx, new double[] {e.getValue(), e.getValue()}));
+            }
+            return new Epoch(date, 0.0, sats);
+        }
+
         public AbsoluteDate getDate() {
             return date;
         }

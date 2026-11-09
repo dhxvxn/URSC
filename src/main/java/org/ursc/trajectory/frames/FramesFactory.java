@@ -74,8 +74,8 @@ public final class FramesFactory {
      * @return GMST in radians, in [0, 2*pi)
      */
     public static double gmst(final AbsoluteDate date) {
-        final double jdUt1 = date.julianDate(TimeScalesFactory.getUT1());
-        final double d = jdUt1 - 2451545.0;
+        // days since J2000 kept at full precision (a full Julian Date double resolves ~40 us)
+        final double d = date.secondsSinceJ2000(TimeScalesFactory.getUT1()) / 86400.0;
         final double t = d / 36525.0;
         double gmstDeg = 280.46061837
                 + 360.98564736629 * d

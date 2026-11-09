@@ -32,14 +32,36 @@ public final class BatchLeastSquares {
         public final double postFitRms;  // m, after the fit
         public final int iterations;
         public final boolean converged;
+        /**
+         * Formal parameter covariance (parameter units squared), or {@code null} if not computed.
+         * Covariance-weighted fits: {@code (J^T W J)^-1}. Unit-weighted fits: scaled by the
+         * a-posteriori variance factor.
+         */
+        public final double[][] covariance;
+        /** A-posteriori variance factor: weighted residual sum of squares / (3m - p). */
+        public final double varianceFactor;
+        /** Whether the observations carried covariances (covariance-weighted fit). */
+        public final boolean weighted;
+        /** Post-fit position residuals (observed - computed), one per observation. */
+        public final Vector3D[] residuals;
 
         Result(final double[] params, final double preFitRms, final double postFitRms,
                final int iterations, final boolean converged) {
+            this(params, preFitRms, postFitRms, iterations, converged, null, Double.NaN, false, null);
+        }
+
+        Result(final double[] params, final double preFitRms, final double postFitRms,
+               final int iterations, final boolean converged, final double[][] covariance,
+               final double varianceFactor, final boolean weighted, final Vector3D[] residuals) {
             this.params = params;
             this.preFitRms = preFitRms;
             this.postFitRms = postFitRms;
             this.iterations = iterations;
             this.converged = converged;
+            this.covariance = covariance;
+            this.varianceFactor = varianceFactor;
+            this.weighted = weighted;
+            this.residuals = residuals;
         }
     }
 
@@ -48,6 +70,10 @@ public final class BatchLeastSquares {
     private final double[] scale;     // finite-difference step & column scaling per parameter
     private final AbsoluteDate epoch;
     private final double obsStep;
+    /** Sample index of each observation on the {@code obsStep} grid. */
+    private final int[] gridIndex;
+    /** Whitening matrices W_i = L_i^-1 (C_i = L_i L_i^T), or null for unit weighting. */
+    private final double[][][] whiten;
 
     public BatchLeastSquares(final PropagatorFactory factory, final List<PositionObservation> obs,
                              final double[] scale) {
@@ -58,7 +84,91 @@ public final class BatchLeastSquares {
         this.obs = obs;
         this.scale = scale.clone();
         this.epoch = obs.get(0).getDate();
-        this.obsStep = obs.get(1).getDate().durationFrom(epoch);
+        // the observations may have gaps, but must lie on a common grid (e.g. SPP epochs)
+        double step = Double.POSITIVE_INFINITY;
+        for (int i = 1; i < obs.size(); i++) {
+            final double d = obs.get(i).getDate().durationFrom(obs.get(i - 1).getDate());
+            if (d <= 0.0) {
+                throw new IllegalArgumentException("observations must be strictly time-ordered");
+            }
+            step = Math.min(step, d);
+        }
+        this.obsStep = step;
+        this.gridIndex = new int[obs.size()];
+        for (int i = 0; i < obs.size(); i++) {
+            final double k = obs.get(i).getDate().durationFrom(epoch) / step;
+            final long r = Math.round(k);
+            if (Math.abs(k - r) > 1.0e-6) {
+                throw new IllegalArgumentException("observation " + i + " is not on the common "
+                        + step + " s grid");
+            }
+            gridIndex[i] = (int) r;
+        }
+        boolean anyCov = false;
+        boolean allCov = true;
+        for (final PositionObservation o : obs) {
+            final boolean has = o.getCovariance() != null;
+            anyCov |= has;
+            allCov &= has;
+        }
+        if (anyCov && !allCov) {
+            throw new IllegalArgumentException("either all or none of the observations must carry covariance");
+        }
+        if (allCov) {
+            whiten = new double[obs.size()][][];
+            for (int i = 0; i < obs.size(); i++) {
+                whiten[i] = whitening(obs.get(i).getCovariance());
+            }
+        } else {
+            whiten = null;
+        }
+    }
+
+    /** Inverse of the lower Cholesky factor of a 3x3 SPD matrix. */
+    static double[][] whitening(final double[][] c) {
+        final double l00 = Math.sqrt(c[0][0]);
+        final double l10 = c[1][0] / l00;
+        final double l20 = c[2][0] / l00;
+        final double l11 = Math.sqrt(c[1][1] - l10 * l10);
+        final double l21 = (c[2][1] - l20 * l10) / l11;
+        final double l22 = Math.sqrt(c[2][2] - l20 * l20 - l21 * l21);
+        if (!(l00 > 0) || !(l11 > 0) || !(l22 > 0)) {
+            throw new IllegalArgumentException("observation covariance is not positive definite");
+        }
+        // invert lower-triangular L
+        final double i00 = 1.0 / l00;
+        final double i11 = 1.0 / l11;
+        final double i22 = 1.0 / l22;
+        final double i10 = -l10 * i00 * i11;
+        final double i21 = -l21 * i11 * i22;
+        final double i20 = -(l20 * i00 + l21 * i10) * i22;
+        return new double[][] {{i00, 0, 0}, {i10, i11, 0}, {i20, i21, i22}};
+    }
+
+    /** Whitened 3-vector W_i d (identity when unweighted). */
+    private double[] w(final int i, final Vector3D d) {
+        if (whiten == null) {
+            return new double[] {d.getX(), d.getY(), d.getZ()};
+        }
+        final double[][] m = whiten[i];
+        return new double[] {
+            m[0][0] * d.getX(),
+            m[1][0] * d.getX() + m[1][1] * d.getY(),
+            m[2][0] * d.getX() + m[2][1] * d.getY() + m[2][2] * d.getZ(),
+        };
+    }
+
+    /** Weighted cost per observation, sqrt(sum |W r|^2 / m); equals the position RMS when unweighted. */
+    private double cost(final Vector3D[] comp) {
+        if (whiten == null) {
+            return rms(comp);
+        }
+        double s = 0.0;
+        for (int i = 0; i < obs.size(); i++) {
+            final double[] r = w(i, obs.get(i).getPosition().subtract(comp[i]));
+            s += r[0] * r[0] + r[1] * r[1] + r[2] * r[2];
+        }
+        return Math.sqrt(s / obs.size());
     }
 
     public Result estimate(final double[] guess, final int maxIterations) {
@@ -67,8 +177,8 @@ public final class BatchLeastSquares {
         final int m = obs.size();
 
         Vector3D[] comp = computed(params);
-        double rms = rms(comp);
-        final double preRms = rms;
+        double rms = cost(comp);
+        final double preRms = rms(comp);
         boolean converged = false;
         int iter = 0;
 
@@ -76,10 +186,10 @@ public final class BatchLeastSquares {
             // residuals r = observed - computed
             final double[] r = new double[3 * m];
             for (int i = 0; i < m; i++) {
-                final Vector3D d = obs.get(i).getPosition().subtract(comp[i]);
-                r[3 * i] = d.getX();
-                r[3 * i + 1] = d.getY();
-                r[3 * i + 2] = d.getZ();
+                final double[] d = w(i, obs.get(i).getPosition().subtract(comp[i]));
+                r[3 * i] = d[0];
+                r[3 * i + 1] = d[1];
+                r[3 * i + 2] = d[2];
             }
 
             // scaled design matrix columns J~_j = (d comp / d p_j) * scale_j
@@ -89,10 +199,10 @@ public final class BatchLeastSquares {
                 pert[j] += scale[j];
                 final Vector3D[] cj = computed(pert);
                 for (int i = 0; i < m; i++) {
-                    final Vector3D dd = cj[i].subtract(comp[i]); // * (1/scale) * scale = identity scaling
-                    jt[j][3 * i] = dd.getX();
-                    jt[j][3 * i + 1] = dd.getY();
-                    jt[j][3 * i + 2] = dd.getZ();
+                    final double[] dd = w(i, cj[i].subtract(comp[i])); // * (1/scale) * scale = identity scaling
+                    jt[j][3 * i] = dd[0];
+                    jt[j][3 * i + 1] = dd[1];
+                    jt[j][3 * i + 2] = dd[2];
                 }
             }
 
@@ -132,7 +242,7 @@ public final class BatchLeastSquares {
                     trial[j] += step * dtilde[j] * scale[j];
                 }
                 final Vector3D[] trialComp = computed(trial);
-                final double trialRms = rms(trialComp);
+                final double trialRms = cost(trialComp);
                 if (trialRms < bestRms) {
                     best = trial;
                     bestRms = trialRms;
@@ -152,23 +262,90 @@ public final class BatchLeastSquares {
                 break;
             }
         }
-        return new Result(params, preRms, rms, iter, converged);
+        return new Result(params, preRms, rms(comp), iter, converged, null, Double.NaN,
+                whiten != null, residuals(comp));
+    }
+
+    private Vector3D[] residuals(final Vector3D[] comp) {
+        final Vector3D[] out = new Vector3D[obs.size()];
+        for (int i = 0; i < obs.size(); i++) {
+            out[i] = obs.get(i).getPosition().subtract(comp[i]);
+        }
+        return out;
+    }
+
+    /**
+     * Estimate, then evaluate the formal parameter covariance at the solution (one extra
+     * Jacobian, i.e. p+1 propagations).
+     */
+    public Result estimateWithCovariance(final double[] guess, final int maxIterations) {
+        final Result r = estimate(guess, maxIterations);
+        final int p = r.params.length;
+        final int m = obs.size();
+        final Vector3D[] comp = computed(r.params);
+        final double[][] jt = new double[p][3 * m];
+        for (int j = 0; j < p; j++) {
+            final double[] pert = r.params.clone();
+            pert[j] += scale[j];
+            final Vector3D[] cj = computed(pert);
+            for (int i = 0; i < m; i++) {
+                final double[] dd = w(i, cj[i].subtract(comp[i]));
+                jt[j][3 * i] = dd[0];
+                jt[j][3 * i + 1] = dd[1];
+                jt[j][3 * i + 2] = dd[2];
+            }
+        }
+        final double[][] n = new double[p][p];
+        for (int a = 0; a < p; a++) {
+            for (int b = a; b < p; b++) {
+                double sum = 0.0;
+                for (int k = 0; k < 3 * m; k++) {
+                    sum += jt[a][k] * jt[b][k];
+                }
+                n[a][b] = sum;
+                n[b][a] = sum;
+            }
+        }
+        double wssr = 0.0;
+        for (int i = 0; i < m; i++) {
+            final double[] d = w(i, obs.get(i).getPosition().subtract(comp[i]));
+            wssr += d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+        }
+        final int dof = Math.max(1, 3 * m - p);
+        final double vf = wssr / dof;
+        double[][] cov;
+        try {
+            cov = org.ursc.trajectory.math.LinearSolver.invert(n);
+        } catch (final IllegalArgumentException singular) {
+            cov = null;
+        }
+        if (cov != null) {
+            final double f = whiten == null ? vf : 1.0;
+            for (int a = 0; a < p; a++) {
+                for (int b = 0; b < p; b++) {
+                    cov[a][b] *= f * scale[a] * scale[b];
+                }
+            }
+        }
+        return new Result(r.params, r.preFitRms, r.postFitRms, r.iterations, r.converged, cov, vf,
+                whiten != null, r.residuals);
     }
 
     private Vector3D[] computed(final double[] params) {
         final SampledPropagator prop = factory.build(params);
         final EphemerisCollector col = new EphemerisCollector();
         prop.setStepHandler(obsStep, col);
-        prop.propagate(epoch.shiftedBy((obs.size() - 1) * obsStep));
+        final int last = gridIndex[gridIndex.length - 1];
+        prop.propagate(epoch.shiftedBy(last * obsStep));
         final List<SpacecraftState> states = col.getStates();
         final int m = obs.size();
-        if (states.size() < m) {
+        if (states.size() <= last) {
             throw new IllegalStateException("propagator produced "
-                    + states.size() + " samples, expected " + m);
+                    + states.size() + " samples, expected " + (last + 1));
         }
         final Vector3D[] pos = new Vector3D[m];
         for (int i = 0; i < m; i++) {
-            pos[i] = states.get(i).getPosition();
+            pos[i] = states.get(gridIndex[i]).getPosition();
         }
         return pos;
     }

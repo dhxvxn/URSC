@@ -131,12 +131,16 @@ final class Iau2006 {
         return gmst + ee;
     }
 
-    /** Earth Rotation Angle (radians) from UT1. */
+    /**
+     * Earth Rotation Angle (radians) from UT1, as SOFA iauEra00: the day count is kept
+     * relative to J2000 and its fractional part taken before scaling, so the angle keeps
+     * sub-microsecond (sub-millimetre at the surface) precision. Building a full Julian Date
+     * first would limit it to ~40 microseconds (~2 cm of Earth rotation).
+     */
     private static double era(final AbsoluteDate date, final EopProvider eop) {
-        final double jdUt1 = date.julianDate(TimeScalesFactory.getUTC())
-                + eop.getUT1MinusUTC(date) / 86400.0;
-        final double tu = jdUt1 - 2451545.0;
-        final double frac = fractionalPart(0.7790572732640 + 1.00273781191135448 * tu);
+        final double tu = (date.secondsSinceJ2000(TimeScalesFactory.getUTC())
+                + eop.getUT1MinusUTC(date)) / 86400.0;
+        final double frac = fractionalPart(fractionalPart(tu) + 0.7790572732640 + 0.00273781191135448 * tu);
         return normalize(TWO_PI * frac);
     }
 
