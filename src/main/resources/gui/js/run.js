@@ -26,6 +26,7 @@ export function renderRun(root) {
   const readyLine = el('div', { class: 'okline hidden' }, '✓ Ready to run');
   const runBtn = el('button', { class: 'btn primary', disabled: true }, '▶ Run');
   const cancelBtn = el('button', { class: 'btn danger hidden' }, '■ Cancel');
+  const sweepBtn = el('button', { class: 'btn', title: 'Run the same case several times, varying one setting, then compare the results' }, 'Sweep…');
   const progress = el('div', { class: 'hidden' }, el('div', { class: 'job-bar', style: 'width:100%;height:8px' }, el('div')),
     el('div', { class: 'small muted', style: 'margin-top:4px' }), el('div', { class: 'log', style: 'margin-top:8px' }));
   const presetSel = el('select', {});
@@ -50,7 +51,7 @@ export function renderRun(root) {
         el('button', { class: 'btn', title: 'Reset every setting to its default', onclick: () => { if (confirm('Reset all settings to defaults?')) loadConfig({}); } }, 'Reset'))),
     groupsBox,
     el('div', { class: 'card' },
-      el('div', { class: 'row' }, runBtn, cancelBtn, readyLine), errorsBox, progress));
+      el('div', { class: 'row' }, runBtn, sweepBtn, cancelBtn, readyLine), errorsBox, progress));
 
   async function savePreset() {
     const name = prompt('Preset name', cfg.runName || '');
@@ -228,9 +229,57 @@ export function renderRun(root) {
       toast(e.message, 'bad', 9000);
     }
   });
+  sweepBtn.addEventListener('click', sweepDialog);
+  async function sweepDialog() {
+    const candidates = state.params.params.filter((p) => ['enum', 'bool', 'number', 'int'].includes(p.type) && p.key !== 'workflow');
+    const sel = el('select', {}, ...candidates.map((p) => el('option', { value: p.key }, p.group + ' › ' + p.label)));
+    const valuesBox = el('div', { style: 'margin-top:10px' });
+    const hint = el('p', { class: 'muted small' });
+    const drawValues = () => {
+      const p = candidates.find((c) => c.key === sel.value);
+      const curVal = get(cfg, p.key);
+      hint.textContent = p.what + ' Current value: ' + curVal + (p.unit ? ' ' + p.unit : '') + '.';
+      if (p.type === 'enum' || p.type === 'bool') {
+        const opts = p.type === 'bool' ? [[true, 'on'], [false, 'off']] : p.options;
+        valuesBox.replaceChildren(...opts.map(([v, l]) => el('label', { style: 'display:block' },
+          el('input', { type: 'checkbox', class: 'sv', value: JSON.stringify(v), checked: true }), ' ' + l)));
+      } else {
+        valuesBox.replaceChildren(el('label', { class: 'small' }, 'Values, separated by commas' + (p.unit ? ' [' + p.unit + ']' : '')),
+          el('input', { class: 'sv-list', style: 'width:100%', value: [curVal * 0.5, curVal, curVal * 1.5].map((v) => +v.toPrecision(4)).join(', ') }));
+      }
+    };
+    sel.addEventListener('change', drawValues);
+    const dm = candidates.find((c) => c.key === 'forces.dragModel');
+    if (dm) sel.value = dm.key;
+    drawValues();
+    const body = el('div', {}, el('label', { class: 'small' }, 'Setting to vary'), sel, hint, valuesBox,
+      el('p', { class: 'muted small' }, 'Every other setting stays as in the form. Runs execute one after another (at most 12) and open in a comparison when finished.'));
+    const go = await modal('Perturbation / setting sweep', body, [{ label: 'Cancel', result: null }, { label: 'Start sweep', primary: true, value: () => true }]);
+    if (!go) return;
+    const p = candidates.find((c) => c.key === sel.value);
+    let values;
+    if (p.type === 'enum' || p.type === 'bool') values = [...valuesBox.querySelectorAll('.sv:checked')].map((c) => JSON.parse(c.value));
+    else values = valuesBox.querySelector('.sv-list').value.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
+    if (values.some((v) => Number.isNaN(v)) || values.length < 2) { toast('Give at least two valid values', 'warn'); return; }
+    try {
+      const r = await api('sweep', { method: 'POST', body: { config: cfg, key: p.key, values } });
+      state.sweep = r.ids;
+      runBtn.disabled = true; sweepBtn.disabled = true;
+      cancelBtn.classList.remove('hidden');
+      progress.classList.remove('hidden');
+      progress.querySelector('.log').textContent = '';
+      toast('Sweep of ' + p.label + ' started: ' + values.length + ' runs');
+    } catch (e) { toast(e.message, 'bad', 9000); }
+  }
   cancelBtn.addEventListener('click', () => state.job && api('runs/' + state.job + '/cancel', { method: 'POST' }));
 
   state.on('event', (evt) => {
+    if (evt.type === 'sweep-progress') {
+      state.job = evt.id;
+      progress.querySelector('.log').textContent += '— sweep run ' + (evt.index + 1) + ' of ' + evt.count + ' (' + evt.id + ')\n';
+      return;
+    }
+    if (evt.type === 'sweep') { sweepBtn.disabled = false; validate(); return; }
     if (evt.id !== state.job) return;
     if (evt.type === 'progress') {
       progress.querySelector('.job-bar div').style.width = Math.round(evt.fraction * 100) + '%';

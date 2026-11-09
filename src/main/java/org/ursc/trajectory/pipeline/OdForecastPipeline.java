@@ -302,6 +302,10 @@ public final class OdForecastPipeline {
             }
         }
         res.od = od;
+        res.flags.addAll(ManeuverCheck.assess(od, cfg.od.pseudorangeSigma));
+        for (final String f : res.flags) {
+            pl.log("WARNING: " + f);
+        }
         pl.log(String.format(java.util.Locale.US, "OD: converged=%s iterations=%d post-fit RMS %.2f m",
                 fit.converged, fit.iterations, fit.postFitRms));
         if (!fit.converged) {

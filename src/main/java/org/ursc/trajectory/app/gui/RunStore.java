@@ -51,6 +51,7 @@ final class RunStore {
         m.put("cutoffUtc", r.cutoffUtc);
         m.put("errors", r.errors);
         m.put("warnings", r.warnings);
+        m.put("flags", r.flags);
         m.put("defaultsUsed", r.defaultsUsed);
         m.put("log", r.log);
         m.put("inputHashes", r.inputHashes);
@@ -99,7 +100,7 @@ final class RunStore {
                 final Map<String, Object> full = Json.parseObject(Files.readString(f));
                 final Map<String, Object> m = new LinkedHashMap<>();
                 for (final String k : List.of("id", "runName", "workflow", "status", "label", "cutoffUtc",
-                        "objectName", "created", "elapsedSeconds", "states", "hasCovariance")) {
+                        "objectName", "created", "elapsedSeconds", "states", "hasCovariance", "flags")) {
                     m.put(k, full.get(k));
                 }
                 final Object od = full.get("od");

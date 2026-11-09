@@ -85,6 +85,15 @@ async function main() {
       toast(n + ' new file' + (n > 1 ? 's' : '') + ' found in watched folders: ' + evt.added.map((e) => e.name).slice(0, 3).join(', ')
         + (n > 3 ? '…' : ''), 'ok', 8000);
       await refreshCatalog();
+    } else if (evt.type === 'done' && state.sweep && state.sweep.includes(evt.id)) {
+      await refreshRuns();
+      toast('Sweep run ' + evt.id + ': ' + evt.status, evt.status === 'SUCCESS' ? 'ok' : 'bad');
+    } else if (evt.type === 'sweep') {
+      state.sweep = null;
+      await refreshRuns();
+      const done = evt.ids.filter((id) => state.runs.some((r) => r.id === id && r.status === 'SUCCESS'));
+      toast('Sweep of ' + evt.key + ' finished' + (evt.cancelled ? ' (cancelled)' : '') + ': ' + done.length + ' successful run(s)', 'ok', 9000);
+      if (done.length >= 2) { showTab('history'); state.emit('compare', done); }
     } else if (evt.type === 'done') {
       await refreshRuns();
       const ok = evt.status === 'SUCCESS';

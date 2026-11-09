@@ -262,7 +262,12 @@ public final class BatchLeastSquares {
                 break;
             }
         }
-        return new Result(params, preRms, rms(comp), iter, converged, null, Double.NaN,
+        double wssr = 0.0;
+        for (int i = 0; i < m; i++) {
+            final double[] d = w(i, obs.get(i).getPosition().subtract(comp[i]));
+            wssr += d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+        }
+        return new Result(params, preRms, rms(comp), iter, converged, null, wssr / Math.max(1, 3 * m - p),
                 whiten != null, residuals(comp));
     }
 

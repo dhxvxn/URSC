@@ -36,6 +36,9 @@ public final class OemExport {
                     "OD: %d SPP fixes, %s, post-fit RMS %.3f m, %d iterations", res.od.observations,
                     res.od.weighted ? "covariance-weighted" : "unit-weighted", res.od.postFitRms, res.od.iterations));
         }
+        for (final String f : res.flags) {
+            oem.headerComments.add("WARNING: " + f);
+        }
         for (final String d : res.defaultsUsed) {
             oem.headerComments.add("Default used: " + d);
         }

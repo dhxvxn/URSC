@@ -24,6 +24,14 @@ export class Globe {
     this.pathAll = null; this.pathPast = null; this.ref = null;
     this.marker = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffcc33 }));
     this.scene.add(this.marker);
+    // formal 1-sigma uncertainty ellipsoid, exaggerated so it is visible at globe scale
+    this.ell = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), new THREE.MeshBasicMaterial({ color: 0xff8a5c, wireframe: true, transparent: true, opacity: 0.75 }));
+    this.ell.matrixAutoUpdate = false;
+    this.ell.visible = false;
+    this.scene.add(this.ell);
+    this.showEll = false; this.ellScale = 0;
+    this.stations = new THREE.Group();
+    this.scene.add(this.stations);
     this.view = 'ecef';
     this.controls();
     new ResizeObserver(() => this.resize()).observe(container);
@@ -81,6 +89,38 @@ export class Globe {
 
   setView(v) { this.view = v; this.rebuild(); }
 
+  /** Show/hide the exaggerated 1-sigma ellipsoid. Returns the exaggeration factor (0 if none). */
+  setUncertainty(on) {
+    this.showEll = on;
+    const t = this.traj;
+    let mx = 0;
+    if (t && t.sigmaRtn) for (const s of t.sigmaRtn) if (s) mx = Math.max(mx, s[0], s[1], s[2]);
+    this.ellScale = mx > 0 ? 0.045 / mx : 0; // globe units per metre: the largest sigma of the run maps to ~290 km
+    this.setTime(this.time ?? 0);
+    return this.ellScale * RE * 1000;
+  }
+
+  /** Ground stations: [{name, latDeg, lonDeg}] drawn as small green markers. */
+  setStations(list) {
+    this.stations.clear();
+    const d = Math.PI / 180;
+    for (const s of list || []) {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(0.014, 10, 8), new THREE.MeshBasicMaterial({ color: 0x3fbf74 }));
+      const la = s.latDeg * d, lo = s.lonDeg * d;
+      m.position.copy(v3(Math.cos(la) * Math.cos(lo), Math.cos(la) * Math.sin(lo), Math.sin(la)).multiplyScalar(1.003));
+      this.stations.add(m);
+    }
+    this.render();
+  }
+
+  pointAt(k) {
+    const t = this.traj;
+    let x = t.itrf[3 * k], y = t.itrf[3 * k + 1];
+    const z = t.itrf[3 * k + 2];
+    if (this.view === 'inertial') { const a = t.era[k], c = Math.cos(a), s = Math.sin(a); [x, y] = [c * x - s * y, s * x + c * y]; }
+    return v3(x / RE, y / RE, z / RE);
+  }
+
   points(t, upto) {
     const out = [];
     const n = upto ?? t.t.length;
@@ -131,6 +171,20 @@ export class Globe {
       this.earth.rotation.set(0, 0, 0);
     }
     this.marker.position.copy(v3(x / RE, y / RE, z / RE));
+    const sig = t.sigmaRtn && t.sigmaRtn[i];
+    this.ell.visible = !!(this.showEll && sig && this.ellScale > 0);
+    if (this.ell.visible) {
+      const p = this.marker.position.clone();
+      const R = p.clone().normalize();
+      const T = this.pointAt(Math.min(n - 1, i + 1)).sub(this.pointAt(Math.max(0, i - 1)));
+      T.sub(R.clone().multiplyScalar(T.dot(R))).normalize();
+      const N = new THREE.Vector3().crossVectors(R, T);
+      const k = this.ellScale;
+      this.ell.matrix.makeBasis(R.multiplyScalar(Math.max(sig[0] * k, 1e-4)), T.multiplyScalar(Math.max(sig[1] * k, 1e-4)),
+        N.multiplyScalar(Math.max(sig[2] * k, 1e-4))).setPosition(p);
+      this.ell.matrixWorldNeedsUpdate = true;
+    }
+    this.stations.rotation.set(0, this.view === 'inertial' ? era : 0, 0);
     this.sun.position.copy(v3(sx, sy, sz).multiplyScalar(10));
     if (this.pathPast) this.pathPast.geometry.setDrawRange(0, i + 1);
     this.render();

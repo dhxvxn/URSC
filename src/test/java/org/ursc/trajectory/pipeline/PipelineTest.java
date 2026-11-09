@@ -101,55 +101,88 @@ class PipelineTest {
         return cfg;
     }
 
+    /** Simulated arc: truth orbit (optionally with an impulsive along-track burn), synthetic GPS, noisy ranges. */
+    static List<RinexObsReader.Epoch> simulate(final RunConfig cfg, final Environment env, final AbsoluteDate t0,
+                                               final AbsoluteDate end, final SyntheticGps gps, final double burnMps,
+                                               final Map<Long, SpacecraftState> truthAt) {
+        final double r = 7.18e6;
+        final double v = Math.sqrt(Constants.EARTH_MU / r);
+        final double inc = Math.toRadians(98.6);
+        SpacecraftState s0 = OdForecastPipeline.state(t0,
+                new double[] {r, 0, 0, 0, v * Math.cos(inc), v * Math.sin(inc)}, cfg.spacecraft.massKg);
+        final AbsoluteDate burnAt = t0.shiftedBy(3 * 3600.0);
+        for (final AbsoluteDate[] leg : new AbsoluteDate[][] {{t0, burnAt}, {burnAt, end}}) {
+            final SampledPropagator prop = ForceModelBuilder.build(s0, cfg.spacecraft.cd, cfg.spacecraft.cr, cfg, env, false);
+            final EphemerisCollector col = new EphemerisCollector();
+            prop.setStepHandler(300.0, col);
+            prop.propagate(leg[1]);
+            for (final SpacecraftState s : col.getStates()) {
+                truthAt.putIfAbsent(Math.round(s.getDate().durationFrom(t0)), s);
+            }
+            final SpacecraftState last = col.getStates().get(col.getStates().size() - 1);
+            final Vector3D dv = last.getVelocity().normalize().scalarMultiply(burnMps);
+            s0 = OdForecastPipeline.state(last.getDate(), new double[] {last.getPosition().getX(), last.getPosition().getY(),
+                last.getPosition().getZ(), last.getVelocity().getX() + dv.getX(), last.getVelocity().getY() + dv.getY(),
+                last.getVelocity().getZ() + dv.getZ()}, cfg.spacecraft.massKg);
+            if (burnMps != 0.0) {
+                // after the burn the truth differs: replace post-burn samples
+                for (final SpacecraftState s : col.getStates()) {
+                    truthAt.put(Math.round(s.getDate().durationFrom(t0)), s);
+                }
+            }
+        }
+        final Random rnd = new Random(42);
+        final List<RinexObsReader.Epoch> epochs = new ArrayList<>();
+        for (int k = 0; k <= 72; k++) {
+            if (k == 5 || k == 6 || k == 40) {
+                continue; // data gaps
+            }
+            final AbsoluteDate tRx = t0.shiftedBy(k * 300.0);
+            final Vector3D rcv = FramesFactory.getTransform(FramesFactory.getGCRF(), FramesFactory.getITRF(), tRx)
+                    .transformPosition(truthAt.get((long) (k * 300)).getPosition());
+            final Map<Integer, Double> pr = new LinkedHashMap<>();
+            for (final Map.Entry<Integer, GpsBroadcastEphemeris> e : gps.sats.entrySet()) {
+                double tau = 0.07;
+                for (int it = 0; it < 6; it++) {
+                    tau = rcv.distance(SppEngine.satellitePositionAtReception(e.getValue(), tRx, tau)) / C;
+                }
+                final Vector3D s = SppEngine.satellitePositionAtReception(e.getValue(), tRx, tau);
+                if (s.subtract(rcv).dotProduct(rcv) <= 0) {
+                    continue; // below the receiver's horizon
+                }
+                pr.put(e.getKey(), C * tau + 3000.0 - C * e.getValue().clockBias(tRx.shiftedBy(-tau)) + rnd.nextGaussian());
+            }
+            epochs.add(RinexObsReader.Epoch.synthetic(tRx, pr));
+        }
+        return epochs;
+    }
+
+    @Test
+    void flagsAManoeuvreInsideTheArc() throws Exception {
+        final RunConfig cfg = config("2024-10-16T06:00:00");
+        cfg.forecast.covariance = false;
+        cfg.forecast.spanDays = 0.1;
+        final AbsoluteDate cutoff = TimeUtil.parseUtc(cfg.cutoffUtc);
+        final AbsoluteDate t0 = cutoff.shiftedBy(-6 * 3600.0);
+        try (Environment env = Environment.setUp(cfg, cutoff)) {
+            final SyntheticGps gps = new SyntheticGps(t0.shiftedBy(3 * 3600.0), t0.shiftedBy(-86400.0));
+            final List<RinexObsReader.Epoch> epochs = simulate(cfg, env, t0, cutoff.shiftedBy(3600), gps, 0.05, new LinkedHashMap<>());
+            final RunResult res = new RunResult();
+            OdForecastPipeline.run(cfg, cutoff, epochs, List.of(gps), env, ProgressListener.NONE, res);
+            assertTrue(!res.flags.isEmpty(), "a 5 cm/s burn mid-arc must be flagged; vf=" + res.od.varianceFactor);
+            System.out.println("[manoeuvre] " + res.status + " flags: " + res.flags);
+        }
+    }
+
     @Test
     void recoversAndForecastsASimulatedOrbit() throws Exception {
         final RunConfig cfg = config("2024-10-16T06:00:00");
         final AbsoluteDate cutoff = TimeUtil.parseUtc(cfg.cutoffUtc);
         final AbsoluteDate t0 = cutoff.shiftedBy(-6 * 3600.0);
         try (Environment env = Environment.setUp(cfg, cutoff)) {
-            // ---- truth: ~800 km, 98.6 deg orbit
-            final double r = 7.18e6;
-            final double v = Math.sqrt(Constants.EARTH_MU / r);
-            final double inc = Math.toRadians(98.6);
-            final SpacecraftState s0 = OdForecastPipeline.state(t0,
-                    new double[] {r, 0, 0, 0, v * Math.cos(inc), v * Math.sin(inc)}, cfg.spacecraft.massKg);
-            final SampledPropagator truthProp = ForceModelBuilder.build(s0, cfg.spacecraft.cd, cfg.spacecraft.cr,
-                    cfg, env, false);
-            final EphemerisCollector truth = new EphemerisCollector();
-            truthProp.setStepHandler(300.0, truth);
-            truthProp.propagate(cutoff.shiftedBy(86400.0));
-            final Map<Long, SpacecraftState> truthAt = new LinkedHashMap<>();
-            for (final SpacecraftState s : truth.getStates()) {
-                truthAt.put(Math.round(s.getDate().durationFrom(t0)), s);
-            }
-
-            // ---- observations: 1 m Gaussian pseudorange noise, constant receiver clock, gaps
             final SyntheticGps gps = new SyntheticGps(t0.shiftedBy(3 * 3600.0), t0.shiftedBy(-86400.0));
-            final Random rnd = new Random(42);
-            final List<RinexObsReader.Epoch> epochs = new ArrayList<>();
-            for (int k = 0; k <= 72; k++) {
-                if (k == 5 || k == 6 || k == 40) {
-                    continue; // data gaps
-                }
-                final AbsoluteDate tRx = t0.shiftedBy(k * 300.0);
-                final Vector3D rcv = FramesFactory.getTransform(FramesFactory.getGCRF(), FramesFactory.getITRF(), tRx)
-                        .transformPosition(truthAt.get((long) (k * 300)).getPosition());
-                final Map<Integer, Double> pr = new LinkedHashMap<>();
-                for (final Map.Entry<Integer, GpsBroadcastEphemeris> e : gps.sats.entrySet()) {
-                    double tau = 0.07;
-                    for (int it = 0; it < 6; it++) {
-                        tau = rcv.distance(SppEngine.satellitePositionAtReception(e.getValue(), tRx, tau)) / C;
-                    }
-                    final Vector3D s = SppEngine.satellitePositionAtReception(e.getValue(), tRx, tau);
-                    if (s.subtract(rcv).dotProduct(rcv) <= 0) {
-                        continue; // below the receiver's horizon
-                    }
-                    pr.put(e.getKey(), C * tau + 3000.0 - C * e.getValue().clockBias(tRx.shiftedBy(-tau))
-                            + rnd.nextGaussian());
-                }
-                epochs.add(RinexObsReader.Epoch.synthetic(tRx, pr));
-            }
-
+            final Map<Long, SpacecraftState> truthAt = new LinkedHashMap<>();
+            final List<RinexObsReader.Epoch> epochs = simulate(cfg, env, t0, cutoff.shiftedBy(86400.0), gps, 0.0, truthAt);
             final RunResult res = new RunResult();
             OdForecastPipeline.run(cfg, cutoff, epochs, List.of(gps), env, ProgressListener.NONE, res);
             assertEquals(RunResult.Status.SUCCESS, res.status, String.join("; ", res.errors));
@@ -159,6 +192,7 @@ class PipelineTest {
             assertTrue(res.od.postFitRms < 5.0, "post-fit RMS " + res.od.postFitRms);
             assertEquals(70, res.productUsage.get("synthetic rapid"));
             assertTrue(res.label.startsWith("forecast"));
+            assertTrue(res.flags.isEmpty(), "clean arc must not be flagged: " + res.flags);
 
             // ---- forecast vs truth
             final RunResult.State atCutoff = res.states.get(0);

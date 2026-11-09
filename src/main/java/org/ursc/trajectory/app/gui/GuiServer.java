@@ -33,7 +33,11 @@ import org.ursc.trajectory.data.DataCatalog;
 import org.ursc.trajectory.data.FolderWatcher;
 import org.ursc.trajectory.pipeline.DemoDataset;
 import org.ursc.trajectory.pipeline.InputFiles;
+import org.ursc.trajectory.io.Oem;
+import org.ursc.trajectory.io.TrackExport;
 import org.ursc.trajectory.pipeline.OemExport;
+import org.ursc.trajectory.pipeline.Passes;
+import org.ursc.trajectory.pipeline.RunCompare;
 import org.ursc.trajectory.pipeline.ReferenceComparison;
 import org.ursc.trajectory.pipeline.ProgressListener;
 import org.ursc.trajectory.pipeline.RunConfig;
@@ -63,6 +67,8 @@ public final class GuiServer implements AutoCloseable {
     private final List<OutputStream> clients = new CopyOnWriteArrayList<>();
     private final CountDownLatch stopped = new CountDownLatch(1);
     private volatile Job current;
+    private volatile boolean sweeping;
+    private volatile boolean sweepCancel;
 
     /** Running job state. */
     private static final class Job {
@@ -225,6 +231,15 @@ public final class GuiServer implements AutoCloseable {
                 json(ex, 200, search.search(q.getOrDefault("q", ""), Integer.parseInt(q.getOrDefault("n", "8"))));
                 return;
             }
+            case "compare":
+                json(ex, 200, compare(query(ex).getOrDefault("ids", "")));
+                return;
+            case "stations":
+                stationsApi(ex, method);
+                return;
+            case "sweep":
+                startSweep(ex);
+                return;
             case "shutdown":
                 json(ex, 200, Map.of("ok", true));
                 new Thread(this::close).start();
@@ -293,8 +308,8 @@ public final class GuiServer implements AutoCloseable {
             json(ex, 400, Map.of("errors", errors));
             return;
         }
-        if (current != null) {
-            json(ex, 409, Map.of("error", "a run is already in progress (" + current.id + ")"));
+        if (current != null || sweeping) {
+            json(ex, 409, Map.of("error", "a run is already in progress" + (current == null ? "" : " (" + current.id + ")")));
             return;
         }
         final Job job = new Job(runs.newId());
@@ -439,10 +454,40 @@ public final class GuiServer implements AutoCloseable {
             case "log":
                 raw(ex, d.resolve("log.txt"), "text/plain; charset=utf-8", null);
                 return;
+            case "kml":
+            case "czml": {
+                final Map<String, Object> t = trajectory(d);
+                if (t == null) {
+                    json(ex, 404, Map.of("error", "no trajectory for this run"));
+                    return;
+                }
+                final Object on = Json.parseObject(Files.readString(d.resolve("result.json"))).get("objectName");
+                final String name = on == null || String.valueOf(on).isBlank() ? "satellite" : String.valueOf(on);
+                final String text = "kml".equals(what)
+                        ? TrackExport.kml(name, strings(t.get("epochs")), RunReport.nums(t.get("lat")), RunReport.nums(t.get("lon")), RunReport.nums(t.get("alt")))
+                        : TrackExport.czml(name, strings(t.get("epochs")), RunReport.nums(t.get("t")), RunReport.nums(t.get("lat")),
+                                RunReport.nums(t.get("lon")), RunReport.nums(t.get("alt")));
+                text(ex, "kml".equals(what) ? "application/vnd.google-earth.kml+xml" : "application/json", text,
+                        p[1] + ("kml".equals(what) ? ".kml" : ".czml"));
+                return;
+            }
+            case "passes":
+                json(ex, 200, Map.of("passes", passes(d), "stations", stations()));
+                return;
+            case "report": {
+                final Map<String, Object> res = Json.parseObject(Files.readString(d.resolve("result.json")));
+                final Map<String, Object> cfg = Json.parseObject(Files.readString(d.resolve("config.json")));
+                final Path rf = d.resolve("reference.json");
+                final Map<String, Object> ref = Files.isRegularFile(rf) ? Json.parseObject(Files.readString(rf)) : null;
+                text(ex, "text/html; charset=utf-8", RunReport.build(res, cfg, Json.parseObject(new RunConfig().toJson()),
+                        trajectory(d), ref, passes(d)), null);
+                return;
+            }
             case "cancel": {
                 final Job j = current;
                 if (j != null && j.id.equals(p[1])) {
                     j.cancel = true;
+                    sweepCancel = true;
                 }
                 json(ex, 200, Map.of("ok", true));
                 return;
@@ -594,6 +639,297 @@ public final class GuiServer implements AutoCloseable {
         try (OutputStream os = ex.getResponseBody()) {
             os.write(b);
         }
+    }
+
+    // ---- run extras: trajectory exports, passes, comparison, sweep ----
+
+    private static Map<String, Object> trajectory(final Path runDir) throws IOException {
+        final Path f = runDir.resolve("trajectory.json");
+        return Files.isRegularFile(f) ? Json.parseObject(Files.readString(f)) : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> strings(final Object o) {
+        final List<String> out = new ArrayList<>();
+        for (final Object v : (List<Object>) o) {
+            out.add(String.valueOf(v));
+        }
+        return out;
+    }
+
+    private static void text(final HttpExchange ex, final String type, final String body, final String download)
+            throws IOException {
+        final byte[] b = body.getBytes(StandardCharsets.UTF_8);
+        ex.getResponseHeaders().set("Content-Type", type);
+        ex.getResponseHeaders().set("Cache-Control", "no-store");
+        if (download != null) {
+            ex.getResponseHeaders().set("Content-Disposition", "attachment; filename=\"" + download + "\"");
+        }
+        ex.sendResponseHeaders(200, b.length);
+        try (OutputStream os = ex.getResponseBody()) {
+            os.write(b);
+        }
+    }
+
+    private Path stationsFile() {
+        return workspace.resolve("stations.json");
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Object> stations() throws IOException {
+        final Path f = stationsFile();
+        if (!Files.isRegularFile(f)) {
+            return new ArrayList<>();
+        }
+        final Object o = Json.parseObject(Files.readString(f)).get("stations");
+        return o instanceof List ? (List<Object>) o : new ArrayList<>();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void stationsApi(final HttpExchange ex, final String method) throws IOException {
+        if ("GET".equals(method)) {
+            json(ex, 200, Map.of("stations", stations()));
+            return;
+        }
+        final Object list = Json.parseObject(body(ex)).get("stations");
+        if (!(list instanceof List)) {
+            json(ex, 400, Map.of("error", "expected {stations:[...]}"));
+            return;
+        }
+        final List<Object> clean = new ArrayList<>();
+        final List<String> errors = new ArrayList<>();
+        for (final Object o : (List<Object>) list) {
+            final Map<String, Object> m = (Map<String, Object>) o;
+            final double lat = num(m.get("latDeg"), Double.NaN);
+            final double lon = num(m.get("lonDeg"), Double.NaN);
+            final String name = String.valueOf(m.getOrDefault("name", "")).trim();
+            if (name.isEmpty() || !(Math.abs(lat) <= 90) || !(Math.abs(lon) <= 360)) {
+                errors.add("station '" + name + "': name, latitude (-90..90) and longitude are required");
+                continue;
+            }
+            final Map<String, Object> c = new LinkedHashMap<>();
+            c.put("name", name);
+            c.put("latDeg", lat);
+            c.put("lonDeg", lon > 180 ? lon - 360 : lon);
+            c.put("heightM", num(m.get("heightM"), 0));
+            c.put("minElevationDeg", num(m.get("minElevationDeg"), 5));
+            clean.add(c);
+        }
+        if (!errors.isEmpty()) {
+            json(ex, 400, Map.of("errors", errors));
+            return;
+        }
+        Files.writeString(stationsFile(), Json.write(Map.of("stations", clean)));
+        json(ex, 200, Map.of("stations", clean));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> passes(final Path runDir) throws IOException {
+        final List<Map<String, Object>> out = new ArrayList<>();
+        final Map<String, Object> t = trajectory(runDir);
+        final List<Object> st = stations();
+        if (t == null || st.isEmpty()) {
+            return out;
+        }
+        final List<Double> tt = RunReport.nums(t.get("t"));
+        final List<Double> xk = RunReport.nums(t.get("itrf"));
+        final double[] ta = new double[tt.size()];
+        final double[] xa = new double[xk.size()];
+        for (int i = 0; i < ta.length; i++) {
+            ta[i] = tt.get(i);
+        }
+        for (int i = 0; i < xa.length; i++) {
+            xa[i] = xk.get(i) * 1000.0;
+        }
+        final org.ursc.trajectory.time.AbsoluteDate t0 = TimeUtil.parseUtc(String.valueOf(((List<Object>) t.get("epochs")).get(0)));
+        for (final Object o : st) {
+            final Map<String, Object> m = (Map<String, Object>) o;
+            final Passes.Station s = new Passes.Station();
+            s.name = String.valueOf(m.get("name"));
+            s.latDeg = num(m.get("latDeg"), 0);
+            s.lonDeg = num(m.get("lonDeg"), 0);
+            s.heightM = num(m.get("heightM"), 0);
+            s.minElevationDeg = num(m.get("minElevationDeg"), 5);
+            for (final Passes.Pass p : Passes.compute(s, ta, xa)) {
+                final Map<String, Object> r = new LinkedHashMap<>();
+                r.put("station", p.station);
+                r.put("aosUtc", TimeUtil.formatUtc(t0.shiftedBy(p.aos)));
+                r.put("losUtc", TimeUtil.formatUtc(t0.shiftedBy(p.los)));
+                r.put("maxUtc", TimeUtil.formatUtc(t0.shiftedBy(p.maxTime)));
+                r.put("aos", p.aos);
+                r.put("los", p.los);
+                r.put("durationS", p.los - p.aos);
+                r.put("maxElevationDeg", Math.round(p.maxElevationDeg * 100) / 100.0);
+                r.put("truncated", p.truncated);
+                out.add(r);
+            }
+        }
+        out.sort((a, b) -> Double.compare((Double) a.get("aos"), (Double) b.get("aos")));
+        return out;
+    }
+
+    private static List<Double> thin(final List<Double> v, final int stride) {
+        final List<Double> o = new ArrayList<>();
+        for (int i = 0; i < v.size(); i += stride) {
+            o.add(Math.round(v.get(i) * 1000.0) / 1000.0);
+        }
+        return o;
+    }
+
+    private Map<String, Object> compare(final String idList) throws IOException {
+        final List<String> ids = new ArrayList<>();
+        for (final String s : idList.split(",")) {
+            if (!s.isBlank()) {
+                ids.add(s.trim());
+            }
+        }
+        if (ids.size() < 2) {
+            throw new IllegalArgumentException("choose at least two runs");
+        }
+        final List<Map<String, Object>> runInfo = new ArrayList<>();
+        final List<Map<String, Object>> flat = new ArrayList<>();
+        for (final String id : ids) {
+            final Path d = runs.dir(id);
+            final Map<String, Object> res = Json.parseObject(Files.readString(d.resolve("result.json")));
+            final Map<String, Object> m = new LinkedHashMap<>();
+            for (final String k : List.of("id", "runName", "status", "label", "cutoffUtc", "states", "flags")) {
+                m.put(k, res.get(k));
+            }
+            if (res.get("od") instanceof Map) {
+                m.put("postFitRms", ((Map<?, ?>) res.get("od")).get("postFitRms"));
+            }
+            runInfo.add(m);
+            final Map<String, Object> f = new LinkedHashMap<>();
+            RunReport.flatten("", Json.parseObject(Files.readString(d.resolve("config.json"))), f);
+            flat.add(f);
+        }
+        final List<Map<String, Object>> settings = new ArrayList<>();
+        for (final String k : flat.get(0).keySet()) {
+            if (k.equals("runName")) {
+                continue;
+            }
+            final List<Object> vals = new ArrayList<>();
+            boolean differs = false;
+            for (final Map<String, Object> f : flat) {
+                vals.add(f.get(k));
+                differs |= !String.valueOf(f.get(k)).equals(String.valueOf(flat.get(0).get(k)));
+            }
+            if (differs) {
+                settings.add(Map.of("key", k, "values", vals));
+            }
+        }
+        final Path baseOem = runs.dir(ids.get(0)).resolve("output.oem");
+        final List<Map<String, Object>> diffs = new ArrayList<>();
+        for (int i = 1; i < ids.size(); i++) {
+            final Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", ids.get(i));
+            try {
+                final Path o = runs.dir(ids.get(i)).resolve("output.oem");
+                if (!Files.isRegularFile(baseOem) || !Files.isRegularFile(o)) {
+                    throw new IllegalArgumentException("a run has no OEM output");
+                }
+                final RunCompare.Result r = RunCompare.compare(Oem.read(baseOem), Oem.read(o));
+                final int stride = Math.max(1, r.t.size() / 2000);
+                m.put("frame", r.frame);
+                m.put("t", thin(r.t, stride));
+                m.put("err3d", thin(r.err3d, stride));
+                m.put("radial", thin(r.radial, stride));
+                m.put("along", thin(r.along, stride));
+                m.put("cross", thin(r.cross, stride));
+                m.put("max3d", r.max3d);
+                m.put("rms3d", r.rms3d);
+                m.put("final3d", r.final3d);
+                m.put("firstEpoch", r.epochs.get(0));
+            } catch (final RuntimeException e) {
+                m.put("error", e.getMessage());
+            }
+            diffs.add(m);
+        }
+        final Map<String, Object> out = new LinkedHashMap<>();
+        out.put("base", ids.get(0));
+        out.put("runs", runInfo);
+        out.put("settings", settings);
+        out.put("diffs", diffs);
+        return out;
+    }
+
+    /** Set a dotted key in a nested JSON map. */
+    @SuppressWarnings("unchecked")
+    private static void setPath(final Map<String, Object> root, final String key, final Object value) {
+        final String[] parts = key.split("\\.");
+        Map<String, Object> m = root;
+        for (int i = 0; i < parts.length - 1; i++) {
+            final Object n = m.get(parts[i]);
+            if (!(n instanceof Map)) {
+                throw new IllegalArgumentException("unknown setting " + key);
+            }
+            m = (Map<String, Object>) n;
+        }
+        if (!m.containsKey(parts[parts.length - 1])) {
+            throw new IllegalArgumentException("unknown setting " + key);
+        }
+        m.put(parts[parts.length - 1], value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void startSweep(final HttpExchange ex) throws IOException {
+        final Map<String, Object> b = Json.parseObject(body(ex));
+        final String key = String.valueOf(b.get("key"));
+        final Object vals = b.get("values");
+        if (!(vals instanceof List) || ((List<?>) vals).isEmpty() || ((List<?>) vals).size() > 12) {
+            json(ex, 400, Map.of("error", "give 1 to 12 values to sweep"));
+            return;
+        }
+        if (current != null || sweeping) {
+            json(ex, 409, Map.of("error", "a run is already in progress"));
+            return;
+        }
+        final String baseJson = Json.write(b.get("config"));
+        final List<RunConfig> cfgs = new ArrayList<>();
+        final List<List<String>> warns = new ArrayList<>();
+        final List<String> errors = new ArrayList<>();
+        for (final Object v : (List<Object>) vals) {
+            final Map<String, Object> m = Json.parseObject(baseJson);
+            try {
+                setPath(m, key, v);
+            } catch (final IllegalArgumentException e) {
+                json(ex, 400, Map.of("error", e.getMessage()));
+                return;
+            }
+            final String base = String.valueOf(m.getOrDefault("runName", ""));
+            m.put("runName", (base.isBlank() ? "sweep" : base) + " [" + key + "=" + v + "]");
+            final List<String> w = new ArrayList<>();
+            final RunConfig c = RunConfig.fromJson(Json.write(m), w);
+            for (final String e : Runs.validate(c)) {
+                errors.add(key + "=" + v + ": " + e);
+            }
+            cfgs.add(c);
+            warns.add(w);
+        }
+        if (!errors.isEmpty()) {
+            json(ex, 400, Map.of("errors", errors));
+            return;
+        }
+        sweeping = true;
+        sweepCancel = false;
+        final List<String> ids = new ArrayList<>();
+        for (int i = 0; i < cfgs.size(); i++) {
+            ids.add(runs.newId() + "-s" + i);
+        }
+        jobs.submit(() -> {
+            try {
+                for (int i = 0; i < cfgs.size() && !sweepCancel; i++) {
+                    final Job job = new Job(ids.get(i));
+                    current = job;
+                    broadcast(Map.of("type", "sweep-progress", "index", i, "count", cfgs.size(), "id", job.id));
+                    execute(job, cfgs.get(i), warns.get(i));
+                }
+            } finally {
+                sweeping = false;
+                broadcast(Map.of("type", "sweep", "ids", ids, "key", key, "cancelled", sweepCancel));
+            }
+        });
+        json(ex, 202, Map.of("ids", ids));
     }
 
     private static void raw(final HttpExchange ex, final Path f, final String type, final String download)

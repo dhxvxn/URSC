@@ -27,8 +27,8 @@ export function renderHistory(root) {
         el('button', { class: 'btn small danger', onclick: async () => { if (!confirm('Delete run ' + r.id + ' and its files?')) return; await api('runs/' + r.id, { method: 'DELETE' }); refreshRuns(); } }, 'Delete'))))));
   };
 
-  async function compare() {
-    const ids = [...root.querySelectorAll('.cmp:checked')].map((c) => c.value);
+  async function compare(_e, preset) {
+    const ids = preset || [...root.querySelectorAll('.cmp:checked')].map((c) => c.value);
     if (ids.length < 2) { toast('Tick at least two runs', 'warn'); return; }
     try {
       const d = await api('compare?ids=' + ids.join(','));
@@ -36,6 +36,7 @@ export function renderHistory(root) {
       renderCompare(compareBox, d);
     } catch (e) { toast(e.message, 'bad'); }
   }
+  state.on('compare', (ids) => compare(null, ids));
   state.on('runs', draw);
   draw();
 }

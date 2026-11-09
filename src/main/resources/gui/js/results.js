@@ -21,6 +21,11 @@ const playBtn = el('button', { class: 'btn' }, '▶');
 const speedSel = el('select', {}, ...[[60, '60×'], [300, '300×'], [600, '600×'], [1800, '1800×'], [3600, '3600×']].map(([v, l]) => el('option', { value: v, selected: v === 600 }, l)));
 const readout = el('span', { class: 'mono small' });
 const overlayText = el('div', { class: 'overlay' });
+const ellBox = el('input', { type: 'checkbox' });
+const ellLabel = el('span', { class: 'small muted' });
+const ellToggle = el('label', { class: 'small', title: 'Formal 1σ position uncertainty, enlarged so it is visible at globe scale' }, ellBox, ' 1σ ellipsoid ', ellLabel);
+const passesCard = el('div', { class: 'card' });
+let stations = [];
 
 export function renderResults(root) {
   const globeBox = el('div', { class: 'globe' }, overlayText,
@@ -32,14 +37,21 @@ export function renderResults(root) {
     el('div', { class: 'viz' }, globeBox, el('div', {}, mapCanvas,
       el('div', { class: 'kv small', style: 'margin-top:10px', id: 'viz-kv' }),
       el('p', { class: 'muted small' }, 'Drag the globe to rotate, scroll to zoom, double-click to reset. Purple: POEORB reference (display only).'))),
-    el('div', { class: 'timebar' }, playBtn, speedSel, slider, readout));
+    el('div', { class: 'timebar' }, playBtn, speedSel, slider, readout, ellToggle));
+  ellBox.addEventListener('change', () => {
+    const f = globe.setUncertainty(ellBox.checked);
+    ellLabel.textContent = ellBox.checked && f ? '(×' + Math.round(f).toLocaleString() + ')' : '';
+  });
   root.append(el('h2', {}, 'Results'),
     el('div', { class: 'card' }, el('div', { class: 'row' }, el('b', {}, 'Run'), picker,
       el('button', { class: 'btn', onclick: () => cur && window.open(apiUrl('runs/' + cur.id + '/oem')) }, '⬇ Download OEM'),
       el('button', { class: 'btn', onclick: () => cur && window.open(apiUrl('runs/' + cur.id + '/log')) }, 'Log'),
       el('button', { class: 'btn', onclick: () => { if (!cur) return; loadConfig(cur.config); showTab('run'); toast('Settings of ' + cur.id + ' loaded into the Run tab'); } }, 'Re-use settings'),
-      el('button', { class: 'btn', onclick: () => cur && window.open(apiUrl('runs/' + cur.id + '/report')) }, '📄 Report'))),
-    summary, vizCard, plotsCard, detailsCard);
+      el('button', { class: 'btn', title: 'Google Earth track', onclick: () => cur && window.open(apiUrl('runs/' + cur.id + '/kml')) }, 'KML'),
+      el('button', { class: 'btn', title: 'Cesium track', onclick: () => cur && window.open(apiUrl('runs/' + cur.id + '/czml')) }, 'CZML'),
+      el('button', { class: 'btn', title: 'Printable report; use the browser\'s Print to save a PDF', onclick: () => cur && window.open(apiUrl('runs/' + cur.id + '/report')) }, '📄 Report'))),
+    summary, vizCard, passesCard, plotsCard, detailsCard);
+  loadStations();
   picker.addEventListener('change', () => picker.value && openRun(picker.value));
   slider.addEventListener('input', () => setTime(+slider.value));
   playBtn.addEventListener('click', () => { playing = !playing; playBtn.textContent = playing ? '❚❚' : '▶'; lastT = performance.now(); if (playing) requestAnimationFrame(tick); });
@@ -107,8 +119,12 @@ export async function openRun(id) {
     slider.max = cur.traj.t.length - 1;
     globe.setTrajectory(cur.traj, cur.ref && cur.ref.track);
     map.setTrajectory(cur.traj, cur.ref && cur.ref.track);
+    ellToggle.classList.toggle('hidden', !cur.traj.sigmaRtn);
+    if (!cur.traj.sigmaRtn) ellBox.checked = false;
+    ellBox.dispatchEvent(new Event('change'));
     setTime(0);
   }
+  drawPasses();
   drawPlots();
   drawDetails();
 }
@@ -146,7 +162,9 @@ function drawSummary() {
   if ((r.warnings || []).length) add('Warnings', list(r.warnings));
   if ((r.errors || []).length) add('Errors', el('div', { style: 'color:var(--bad)' }, list(r.errors)));
   add('Run time', (r.elapsedSeconds || 0).toFixed(1) + ' s');
-  summary.replaceChildren(el('h3', {}, 'Run ' + cur.id + (r.runName ? ' — ' + r.runName : '')), el('div', { class: 'kv' }, ...kv));
+  const flags = (r.flags || []).length ? el('div', { class: 'flagbox' }, el('b', {}, '⚠ Check this run'),
+    el('ul', { style: 'margin:4px 0 0;padding-left:18px' }, ...r.flags.map((f) => el('li', {}, f)))) : '';
+  summary.replaceChildren(el('h3', {}, 'Run ' + cur.id + (r.runName ? ' — ' + r.runName : '')), flags, el('div', { class: 'kv' }, ...kv));
 }
 
 function drawPlots() {
@@ -210,4 +228,61 @@ function drawDetails() {
         el('td', {}, (s.product || '') + (s.predictedOrbit ? ' (predicted)' : '')), el('td', {}, s.satellites),
         el('td', {}, s.pdop == null ? '' : s.pdop.toFixed(2)), el('td', {}, s.rms == null ? '' : s.rms.toFixed(2)),
         el('td', {}, s.accepted ? '✓' : '✕'), el('td', { class: 'small muted' }, s.reason))))))));
+}
+
+// ---- ground stations and passes ----
+async function loadStations() {
+  try { stations = (await api('stations')).stations; } catch { stations = []; }
+  globe.setStations(stations);
+  map.setStations(stations);
+  drawPasses();
+}
+
+async function drawPasses() {
+  const rows = stations.map((s) => ({ ...s }));
+  const tbody = el('tbody');
+  const num = (o, k, step) => el('input', { type: 'number', step, value: o[k], oninput: (e) => { o[k] = e.target.value === '' ? null : +e.target.value; } });
+  const drawRows = () => tbody.replaceChildren(...rows.map((o, k) => el('tr', {},
+    el('td', {}, el('input', { value: o.name || '', oninput: (e) => { o.name = e.target.value; } })),
+    el('td', {}, num(o, 'latDeg', 'any')), el('td', {}, num(o, 'lonDeg', 'any')), el('td', {}, num(o, 'heightM', 'any')),
+    el('td', {}, num(o, 'minElevationDeg', 'any')),
+    el('td', {}, el('button', { class: 'btn small danger', onclick: () => { rows.splice(k, 1); drawRows(); } }, '✕')))));
+  drawRows();
+  const save = async () => {
+    try {
+      stations = (await api('stations', { method: 'POST', body: { stations: rows } })).stations;
+      toast('Stations saved');
+      globe.setStations(stations); map.setStations(stations);
+      drawPasses();
+    } catch (e) { toast(e.message, 'bad', 8000); }
+  };
+  const editor = el('details', { open: !stations.length },
+    el('summary', {}, el('b', {}, 'Stations'), ' — ' + stations.length + ' defined (saved in the workspace, used by every run)'),
+    el('div', { class: 'table-wrap', style: 'margin-top:8px' }, el('table', { class: 'stations' },
+      el('thead', {}, el('tr', {}, ...['Name', 'Latitude [°]', 'Longitude [°]', 'Height [m]', 'Elevation mask [°]', ''].map((h) => el('th', {}, h)))), tbody)),
+    el('div', { class: 'row', style: 'margin-top:8px' },
+      el('button', { class: 'btn', onclick: () => { rows.push({ name: '', latDeg: 0, lonDeg: 0, heightM: 0, minElevationDeg: 5 }); drawRows(); } }, '+ Add station'),
+      el('button', { class: 'btn primary', onclick: save }, 'Save stations')));
+  let table = el('p', { class: 'muted small' }, stations.length ? 'Open a run with a trajectory to list its passes.' : 'Add a station to list its visibility passes.');
+  if (cur && cur.traj && stations.length) {
+    try {
+      const p = (await api('runs/' + cur.id + '/passes')).passes;
+      table = p.length ? el('div', { class: 'table-wrap' }, el('table', {},
+        el('thead', {}, el('tr', {}, ...['Station', 'AOS (UTC)', 'LOS (UTC)', 'Duration', 'Max elevation'].map((h) => el('th', {}, h)))),
+        el('tbody', {}, ...p.map((x) => el('tr', { class: 'clickable', title: 'Show on the globe', onclick: () => jumpTo(x.aos) },
+          el('td', {}, x.station), el('td', { class: 'mono small' }, shortUtc(x.aosUtc)), el('td', { class: 'mono small' }, shortUtc(x.losUtc)),
+          el('td', {}, (x.durationS / 60).toFixed(1) + ' min'), el('td', {}, x.maxElevationDeg.toFixed(1) + '°' + (x.truncated ? ' (cut by span)' : ''))))))) :
+        el('p', { class: 'muted small' }, 'No passes above the elevation masks in this run.');
+    } catch (e) { table = el('p', { class: 'small', style: 'color:var(--bad)' }, e.message); }
+  }
+  passesCard.replaceChildren(el('h3', {}, 'Ground-station passes'), editor, table);
+}
+
+function jumpTo(seconds) {
+  if (!cur || !cur.traj) return;
+  const t = cur.traj.t;
+  let k = 0;
+  while (k < t.length - 1 && t[k + 1] <= seconds) k++;
+  setTime(k);
+  document.querySelector('.globe').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }

@@ -11,6 +11,8 @@ export class GroundMap {
 
   setTime(f) { this.time = f; this.draw(); }
 
+  setStations(list) { this.stationList = list || []; this.draw(); }
+
   draw() {
     const cv = this.cv;
     const dpr = window.devicePixelRatio || 1;
@@ -32,6 +34,11 @@ export class GroundMap {
         }
       }
       g.stroke();
+    }
+    for (const s of this.stationList || []) {
+      g.fillStyle = '#3fbf74'; g.beginPath();
+      g.moveTo(X(s.lonDeg), Y(s.latDeg) - 6); g.lineTo(X(s.lonDeg) - 5, Y(s.latDeg) + 4); g.lineTo(X(s.lonDeg) + 5, Y(s.latDeg) + 4); g.fill();
+      g.font = '10px system-ui'; g.fillText(s.name, X(s.lonDeg) + 7, Y(s.latDeg) + 4);
     }
     const t = this.traj;
     if (!t) return;

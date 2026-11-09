@@ -25,6 +25,8 @@ public final class RunResult {
     public final List<String> warnings = new ArrayList<>();
     public final List<String> defaultsUsed = new ArrayList<>();
     public final List<String> log = new ArrayList<>();
+    /** Quality warnings that deserve attention (e.g. a likely manoeuvre in the fitting arc). */
+    public final List<String> flags = new ArrayList<>();
 
     // provenance
     /** Input file -> SHA-256. */

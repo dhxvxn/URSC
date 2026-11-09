@@ -135,3 +135,11 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1
 .toasts { position: fixed; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 60; }
 .toast { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 8px 12px; max-width: 420px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
 .toast.ok { border-left-color: var(--ok); } .toast.bad { border-left-color: var(--bad); } .toast.warn { border-left-color: var(--warn); }
+
+/* comparison, flags, passes */
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: middle; }
+td.changed { background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.flagbox { border: 1px solid color-mix(in srgb, var(--warn) 55%, transparent); background: color-mix(in srgb, var(--warn) 10%, transparent); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+.flagbox b { color: var(--warn); }
+table.stations input { width: 100%; min-width: 60px; }
+tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--panel2); }
