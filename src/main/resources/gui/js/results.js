@@ -31,6 +31,7 @@ const modelSel = el('select', { title: 'Spacecraft model drawn on the globe (enl
   ...Object.entries(MODELS).map(([k, m]) => el('option', { value: k }, 'Model: ' + m.label)),
   el('option', { value: 'none' }, 'Model: dot only'));
 const followBtn = el('button', { title: 'Camera rides with the satellite; drag to look around it, scroll to zoom' }, '🛰 Follow satellite');
+const fullBtn = el('button', { title: 'Show the globe over the whole window (Esc to leave)' }, '⛶ Full view');
 let stations = [];
 
 export function renderResults(root) {
@@ -38,7 +39,10 @@ export function renderResults(root) {
     el('div', { class: 'viewsel toggle' },
       el('button', { class: 'on', onclick: (e) => setView('ecef', e.target) }, 'Earth-fixed'),
       el('button', { onclick: (e) => setView('inertial', e.target) }, 'Inertial')),
-    el('div', { class: 'modelsel row' }, modelSel, el('div', { class: 'toggle' }, followBtn)));
+    el('div', { class: 'modelsel row' }, modelSel, el('div', { class: 'toggle' }, followBtn, fullBtn)));
+  const setFull = (on) => { document.body.classList.toggle('globe-max', on); fullBtn.classList.toggle('on', on); fullBtn.textContent = on ? '✕ Leave full view' : '⛶ Full view'; };
+  fullBtn.addEventListener('click', () => setFull(!document.body.classList.contains('globe-max')));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('globe-max')) setFull(false); });
   modelSel.addEventListener('change', applyModel);
   followBtn.addEventListener('click', () => { const on = !followBtn.classList.contains('on'); followBtn.classList.toggle('on', on); globe.setFollow(on); });
   const mapCanvas = el('canvas', { class: 'map2d' });

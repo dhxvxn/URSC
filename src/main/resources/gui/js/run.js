@@ -208,9 +208,11 @@ export function renderRun(root) {
     }
   }
 
-  let lastSats = [], lastSat = null;
+  let lastSats = [], lastSat = null, selecting = false;
   async function autoSelect(satellite) {
     if (!cfg.cutoffUtc) { toast('Set the UTC cutoff first', 'warn'); return; }
+    if (selecting) return;
+    selecting = true;
     try {
       await refreshCatalog();
       const s = await api('catalog/suggest', { method: 'POST', body: { cutoffUtc: cfg.cutoffUtc, arcHours: cfg.od.arcHours, spanDays: cfg.forecast.spanDays, mode: cfg.products.mode, satellite } });
@@ -222,7 +224,7 @@ export function renderRun(root) {
       const n = s.gnssrd.length + s.gpsProducts.length;
       toast(n ? 'Selected ' + s.gnssrd.length + ' observation and ' + s.gpsProducts.length + ' GPS product file(s)' : 'No catalogued data covers this cutoff', n ? 'ok' : 'warn');
       changed();
-    } catch (e) { toast(e.message, 'bad'); }
+    } catch (e) { toast(e.message, 'bad'); } finally { selecting = false; }
   }
 
   runBtn.addEventListener('click', async () => {

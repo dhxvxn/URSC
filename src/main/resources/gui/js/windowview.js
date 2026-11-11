@@ -78,6 +78,8 @@ function onEvent(evt) {
   }
 }
 
+/** Short product name for the table: 'Broadcast nav', 'IGS Final', 'IGS Rapid', 'IGS Ultra-rapid'. */
+const productLabel = (p) => (/^broadcast/i.test(p) ? 'Broadcast nav' : p.replace(/ \(.*$/, ''));
 const fmt = (v, d = 2) => (v == null || Number.isNaN(+v) ? '' : (+v).toFixed(d));
 const fmtM = (v) => (v == null ? '' : +v >= 1000 ? (+v / 1000).toFixed(2) + ' km' : (+v).toFixed(2) + ' m');
 
@@ -112,7 +114,7 @@ function draw() {
     onclick: () => { if (r.runId) { showTab('results'); openRun(r.runId); } } },
   el('td', { class: 'mono small' }, r.date),
   el('td', {}, el('span', { class: 'badge ' + (r.status === 'SUCCESS' ? 'ok' : r.status === 'NO_DATA' ? 'warn' : 'bad') }, r.status === 'NO_DATA' ? 'no data' : r.status)),
-  el('td', { class: 'small' }, (r.products || []).map((p) => p.replace(/ \(.*$/, '')).join(', ')),
+  el('td', { class: 'small', title: (r.products || []).join('\n') }, [...new Set((r.products || []).map(productLabel))].join(', ')),
   el('td', {}, r.fixes ?? ''), el('td', {}, r.postFitRms == null ? '' : fmt(r.postFitRms) + ' m'), el('td', {}, fmt(r.varianceFactor, 3)),
   el('td', {}, (r.flags || []).length ? el('span', { class: 'badge warn', title: r.flags.join('\n') }, '⚠ ' + r.flags.length) : ''),
   el('td', {}, fmtM(r.errCutoff)), el('td', {}, fmtM(r.err1d)), el('td', {}, fmtM(r.err7d)),

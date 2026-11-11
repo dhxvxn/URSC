@@ -48,3 +48,11 @@ cross-track. Along-track normally grows fastest.
 settings (non-default values highlighted); print it to PDF from the browser. **KML** opens in
 Google Earth, **CZML** in Cesium. Both carry the time-tagged track; the OEM stays the
 authoritative output.
+
+## Spacecraft models and the follow camera
+The globe draws the satellite as a 3D model flying nadir-pointing along the predicted velocity.
+Sentinel-3A and Sentinel-3B use a Sentinel-3 build (main body, single solar wing, altimeter dish,
+radiometer, camera fan, scanner, GNSS antenna and star trackers); every other satellite uses a generic
+build with two solar wings. The model is enlarged so it is visible at globe scale. **Follow
+satellite** puts the camera beside the spacecraft: drag to circle it, scroll to zoom, double-click
+to reset. **Full view** fills the window with the globe for presentations (Esc to leave).

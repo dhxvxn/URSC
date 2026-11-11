@@ -155,3 +155,14 @@ tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--pane
 
 .guide-link { color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px; font-size: 13px; }
 .guide-link:hover { border-color: var(--accent); color: var(--accent); }
+
+/* globe full view (presentations) */
+body.globe-max .globe { position: fixed; inset: 0; height: 100%; z-index: 60; border-radius: 0; border: 0; }
+body.globe-max { overflow: hidden; }
+/* keep the top bar on one line on laptop screens */
+.job-text { max-width: 170px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (max-width: 1400px) {
+  .brand span { display: none; }
+  .quick-search input { width: 180px; }
+  .topbar { gap: 10px; }
+}

@@ -22,3 +22,21 @@ Everything else has a generic default (a 1000 kg cannonball spacecraft, bundled 
 
 - **OD + Forecast**: GNSS positioning (SPP) at each epoch of the arc, a covariance-weighted batch least-squares fit, then a numerical forecast with formal covariance.
 - **Propagate from a state**: no fitting; start from a typed state or a state taken from an OEM or POEORB file. Useful to study the effect of each force model.
+
+## Startup defaults: the tested Sentinel-3A window
+URSC starts with the settings of the tested campaign: Sentinel-3A, cutoff 2024-09-03 05:59:42 UTC
+(06:00:00 GPS), a six-hour arc sampled every 300 s, a seven-day forecast, 1,130 kg with 8 m² drag
+and radiation areas, NRLMSISE-00 density, EGM96 70×70 gravity, relative tolerance 1e-13 and Ap = 5
+after the cutoff. When you start URSC from the project folder for the first time, the project's
+`data` folder and the tested Earth orientation and space-weather files are added to the catalog in
+the background, and the inputs for the default cutoff are selected automatically. Every value can be
+changed. **Reset** returns to these defaults; **Generic** loads the plain library defaults
+(a 1,000 kg cannonball, no window).
+
+## Window runs
+A window run repeats orbit determination and a forecast for every day in a date range. Each day has
+its own cutoff (same time of day) and its own inputs, picked from the catalog. Set the first date,
+last date, cutoff time and step under **Run → Test window**, then press **Run whole window**. The
+**Window** tab shows the number of forecasts issued, failures, days without data and warnings, trend
+charts across the window, and a per-day table; click a row to open that day in Results. With the
+default settings one cutoff takes about two minutes, so the 61-day window takes about two hours.

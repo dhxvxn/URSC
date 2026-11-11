@@ -40,7 +40,7 @@ export class Globe {
     this.scene.add(this.stations);
     // spacecraft model (enlarged so it is visible), follow camera
     this.craft = null; this.craftKey = null; this.follow = false;
-    this.faz = 1.15; this.fel = 0.08; this.fdist = 0.034;
+    this.faz = 1.15; this.fel = 0.1; this.fdist = 0.027;
     this.view = 'ecef';
     this.controls();
     new ResizeObserver(() => this.resize()).observe(container);
@@ -295,7 +295,7 @@ export class Globe {
       this.dist = Math.max(1.4, Math.min(14, this.dist * (e.deltaY > 0 ? 1.1 : 0.9))); this.place();
     }, { passive: false });
     c.addEventListener('dblclick', () => {
-      if (this.follow) { this.faz = 1.15; this.fel = 0.08; this.fdist = 0.034; this.placeFollow(); this.render(); return; }
+      if (this.follow) { this.faz = 1.15; this.fel = 0.1; this.fdist = 0.027; this.placeFollow(); this.render(); return; }
       this.az = 0.6; this.el = 0.35; this.dist = 4.2; this.place();
     });
     this.place();
