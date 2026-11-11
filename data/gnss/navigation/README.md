@@ -126,3 +126,8 @@ PY
 Daily merged navigation products are retrospective archives. For strict as-issued
 forecasting, transmission/availability must be established separately; a record's
 orbit/clock reference epoch alone is not its publication time.
+
+
+## Alternative IGS merged Broadcast files
+
+The [IGS archive](IGS/README.md) adds 62 daily `BRDC00IGS_R` navigation files for September 2-November 2, 2024, with a separate checksum manifest. The original 63 DLR files above are unchanged.

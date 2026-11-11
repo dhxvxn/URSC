@@ -1,0 +1,567 @@
+{
+  "provider": "IGS merged broadcast navigation (BRDC00IGS_R)",
+  "classification": "Broadcast navigation, not IGS precise Final/Rapid/Ultra-Rapid products. Historical coverage does not establish publication-time eligibility.",
+  "date_start": "2024-09-02",
+  "date_end": "2024-11-02",
+  "files": 62,
+  "inputs": [
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242460000_01D_MN.rnx.gz",
+      "date": "2024-09-02",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1253039,
+      "sha256": "38a05a30f70628419076e6b81f94028a2f4a30af9b2fa5e22b9ba7b913bfb1b0",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242460000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242470000_01D_MN.rnx.gz",
+      "date": "2024-09-03",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1262350,
+      "sha256": "25d03271abde76148570bf8581a567c7d8a0363e70a5240b98f3590c9183c183",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242470000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242480000_01D_MN.rnx.gz",
+      "date": "2024-09-04",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1255361,
+      "sha256": "ebe24a3028fb7c53e861955afe78c2ebfc337def2028f7bdec2e899ee34ee125",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242480000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242490000_01D_MN.rnx.gz",
+      "date": "2024-09-05",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1287126,
+      "sha256": "2786f2cb81f69acd18c9b30fe8051c9bb97e50b5fa1df9ec58bb52ca06850caa",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242490000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242500000_01D_MN.rnx.gz",
+      "date": "2024-09-06",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1289303,
+      "sha256": "6e813dec378cf5cae26ab6e346e1c392ef0ebc05e61f3f33c0b592195bf70e39",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242500000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242510000_01D_MN.rnx.gz",
+      "date": "2024-09-07",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1301182,
+      "sha256": "b9b230237dba34d8e1637654e08e327d44ebf9cc56115f7b6ef68ddf5831702e",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242510000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242520000_01D_MN.rnx.gz",
+      "date": "2024-09-08",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1299602,
+      "sha256": "b5173ca9936ca0ab66cf4d76113b441a70d0d3f4b0bd71f7985cd23daf6eaed4",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242520000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242530000_01D_MN.rnx.gz",
+      "date": "2024-09-09",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1305919,
+      "sha256": "b7d6cd99fbc34ad0c395488f318a0cb3783b86e21f8deb66c6aaf0d66ada4aab",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242530000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242540000_01D_MN.rnx.gz",
+      "date": "2024-09-10",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1296918,
+      "sha256": "2e7752e460eee4557e119689d22564b3d8382512c1b4364e72633cebaadc4a49",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242540000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242550000_01D_MN.rnx.gz",
+      "date": "2024-09-11",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1300635,
+      "sha256": "884eb4be745fbb12c257f09b90fccf5cccf9ab73932eeba475f9f52f3142145b",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242550000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242560000_01D_MN.rnx.gz",
+      "date": "2024-09-12",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1284554,
+      "sha256": "580f74a011ef9a5599ea78a476cb1923743f10703cd2f1215467b98baeab846a",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242560000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242570000_01D_MN.rnx.gz",
+      "date": "2024-09-13",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1309021,
+      "sha256": "9b683ff281eec9ca2d716c19068e3f464d7d9d835f39a5b5fc10a0adf4436a05",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242570000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242580000_01D_MN.rnx.gz",
+      "date": "2024-09-14",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1329824,
+      "sha256": "542bea2629037231528f45ac4d74e9bc51f65d9bc5e0066fce2fc44e2851554f",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242580000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242590000_01D_MN.rnx.gz",
+      "date": "2024-09-15",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1304423,
+      "sha256": "a8533b06f3d9bdc3a49f4dfe4ff623cd8fb91538e748061efee93a4ba750c606",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242590000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242600000_01D_MN.rnx.gz",
+      "date": "2024-09-16",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1311235,
+      "sha256": "c4c70856798be7fbffb0102c112a3127cecd4531b9f9ddd4c1f3059d9494f465",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242600000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242610000_01D_MN.rnx.gz",
+      "date": "2024-09-17",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1309246,
+      "sha256": "52aa3e78766bb16bad9c4270fcc722d296b6cccd9c9d6ae48169fa2da0338de9",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242610000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242620000_01D_MN.rnx.gz",
+      "date": "2024-09-18",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1310257,
+      "sha256": "780e1057882da298c10406b5ec823d64790bde8d2bf87d18876decdf0db6c2be",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242620000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242630000_01D_MN.rnx.gz",
+      "date": "2024-09-19",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1310085,
+      "sha256": "2a2f5a0c66a183a015e50c1b3b990d0c9d235b4b6fa42173ea1312c22ce11622",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242630000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242640000_01D_MN.rnx.gz",
+      "date": "2024-09-20",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1307017,
+      "sha256": "367ccdefbde1dd3ceb770efac2ee449c5a4a4b9d43d7dc03bb70174844bc920e",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242640000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242650000_01D_MN.rnx.gz",
+      "date": "2024-09-21",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1304101,
+      "sha256": "de25c7e32b366461ac9d0c0c359905397f05ec3bba67e36cc2767c07f1ca9fc5",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242650000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242660000_01D_MN.rnx.gz",
+      "date": "2024-09-22",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1303341,
+      "sha256": "fd9c3ab915cc222202d5c56ddcf9b13e4ef1217da652641835b63daf287eea24",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242660000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242670000_01D_MN.rnx.gz",
+      "date": "2024-09-23",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1285565,
+      "sha256": "20d072cbae31257cb16966388b0d17184861c346b1827dec83aacfe6051f13fe",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242670000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242680000_01D_MN.rnx.gz",
+      "date": "2024-09-24",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1296256,
+      "sha256": "71e1b4d641315719ced6dfab7aa3b9e88cce504f85c99924574fc92199be4002",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242680000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242690000_01D_MN.rnx.gz",
+      "date": "2024-09-25",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1293009,
+      "sha256": "5f8411126ab10dcc9c427698a62b312b164db860644a9a49a5c04919c569c69e",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242690000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242700000_01D_MN.rnx.gz",
+      "date": "2024-09-26",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1302106,
+      "sha256": "9f7ed5ab2c094bf31ba05be55d595757d5227cd25799f5a8ac883c403faf9196",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242700000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242710000_01D_MN.rnx.gz",
+      "date": "2024-09-27",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1327621,
+      "sha256": "cdb63272b29a30a9e63d824bf5f33c9744f5976b3d6a436af192430d2edb9da1",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242710000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242720000_01D_MN.rnx.gz",
+      "date": "2024-09-28",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1338110,
+      "sha256": "df63e4cf1fdcfb306116b329f115473fdc94ae660ff600307a072a6ee3621905",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242720000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242730000_01D_MN.rnx.gz",
+      "date": "2024-09-29",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1319564,
+      "sha256": "20de5c2f89e5634122d9c872a3f7fdc8ec7e68514a0c3cf36312f929fb63dcf3",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242730000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242740000_01D_MN.rnx.gz",
+      "date": "2024-09-30",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1325241,
+      "sha256": "8def3c8c349ed40289120726dbcc17ac2689d21e24e0ece796bb1052816ffc2f",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242740000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242750000_01D_MN.rnx.gz",
+      "date": "2024-10-01",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1328475,
+      "sha256": "183f03364b38b931fa4cb03d32e4b63701fa0575c0a661843e5f079b458dc6e9",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242750000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242760000_01D_MN.rnx.gz",
+      "date": "2024-10-02",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1317353,
+      "sha256": "c2cccbcfaa69b30de202fa1d11956d78e0636014b2e9d16dbb8fc2ac747f9986",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242760000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242770000_01D_MN.rnx.gz",
+      "date": "2024-10-03",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1318481,
+      "sha256": "e0fb9d298cc99bb8a64a230beb8b1a87827040a75788b0a2b2fca990b52ce35f",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242770000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242780000_01D_MN.rnx.gz",
+      "date": "2024-10-04",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1289545,
+      "sha256": "c2268fa01b92bb1a6f4499b7b82dc28150aa12dca35fdcdc742ff8a841608aa8",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242780000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242790000_01D_MN.rnx.gz",
+      "date": "2024-10-05",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1299608,
+      "sha256": "84a57a5db0ddbe4db36f6024edee04589a257499ac31ab0abfe1374af03e4420",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242790000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242800000_01D_MN.rnx.gz",
+      "date": "2024-10-06",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1302624,
+      "sha256": "25997f24b2fd5f58ae977e49d862031e7b45f1151ac8953c527b3629504e2ab1",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242800000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242810000_01D_MN.rnx.gz",
+      "date": "2024-10-07",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1288916,
+      "sha256": "b699f44f6c636d0068e406a48e85a1ccdc464b2c743b7fa30a94f066511e7c07",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242810000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242820000_01D_MN.rnx.gz",
+      "date": "2024-10-08",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1291988,
+      "sha256": "8c9f28850bf26c31c0b6931e5e18044f911e300780752fc68de2d42010046477",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242820000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242830000_01D_MN.rnx.gz",
+      "date": "2024-10-09",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1177618,
+      "sha256": "fe646cb612f2c06183d651db70c4a5d9dc3d6f3ba7dd994d04815482fa351886",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242830000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242840000_01D_MN.rnx.gz",
+      "date": "2024-10-10",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1228003,
+      "sha256": "0ed51d2c1df7bfcfab9d3f1342ec098b13f457f2980d25db8704e0f5594d7db7",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242840000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242850000_01D_MN.rnx.gz",
+      "date": "2024-10-11",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1292582,
+      "sha256": "55ac036d365854694cd2c23da5c61d3096fce50b9f4da767abf25be60f1f4dad",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242850000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242860000_01D_MN.rnx.gz",
+      "date": "2024-10-12",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1297292,
+      "sha256": "93877461c1ecbf90ccbe407be3e12ce4826fe87a1964edf0d40bb7cd600a6b30",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242860000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242870000_01D_MN.rnx.gz",
+      "date": "2024-10-13",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1299837,
+      "sha256": "99cebb68c5146b261482826889523e076928512aea09f8c0f3a02f0c9e14f64f",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242870000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242880000_01D_MN.rnx.gz",
+      "date": "2024-10-14",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1289834,
+      "sha256": "c52bede6e831804d7038c40cb523ae94ed70cfd2c946781ced67a6334c101e22",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242880000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242890000_01D_MN.rnx.gz",
+      "date": "2024-10-15",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1297387,
+      "sha256": "a88ef2b15f6d63ddda0a8131559a2014f8a37fcdb14ac50ce17aa8bc80bb920b",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242890000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242900000_01D_MN.rnx.gz",
+      "date": "2024-10-16",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1278037,
+      "sha256": "bd26a3a38f83139e086ea58cc3746ccc8e51b50e757620cac4e925420086392c",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242900000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242910000_01D_MN.rnx.gz",
+      "date": "2024-10-17",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1286656,
+      "sha256": "b43cb617b0747b9258c8d31d6bc916f4d14aaf5a64cb6eb7319a12659960f918",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242910000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242920000_01D_MN.rnx.gz",
+      "date": "2024-10-18",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1293307,
+      "sha256": "44ca8d52c20647193a6ea1126a09e8a0e4e3a81a7dd72005551629f2af6925a7",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242920000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242930000_01D_MN.rnx.gz",
+      "date": "2024-10-19",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1289819,
+      "sha256": "a1df757978b578812b23a0926f17965c5f81506803fd9e2c4593eb2ed639498b",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242930000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242940000_01D_MN.rnx.gz",
+      "date": "2024-10-20",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1249320,
+      "sha256": "6299c9818d8df044d5f747911422a71ceb18238c46a21de8b85dfcb2ce8f9b31",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242940000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242950000_01D_MN.rnx.gz",
+      "date": "2024-10-21",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1255482,
+      "sha256": "e25be2e2c30fe1586772d87ad321f6a5c1d2b2d4a4daaa159cc16ec8260bca56",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242950000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242960000_01D_MN.rnx.gz",
+      "date": "2024-10-22",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1279911,
+      "sha256": "46f6cbeda2284ff26fadc6580ee623f3a16964a90dc800f559a8dbd1447d0990",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242960000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242970000_01D_MN.rnx.gz",
+      "date": "2024-10-23",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1266874,
+      "sha256": "9e2e674db7d07734402224ccce0b36c54218c0e806e782c21114adb94bbe0152",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242970000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242980000_01D_MN.rnx.gz",
+      "date": "2024-10-24",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1282694,
+      "sha256": "24a44a6620bd06ccb8cc94a83f127b7f246efcd75159d9c82afaec01718071ed",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242980000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20242990000_01D_MN.rnx.gz",
+      "date": "2024-10-25",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1268466,
+      "sha256": "75af15470ece3819e48f10bd89c93cb4d603439e3eebe32297aad81a71a81312",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20242990000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243000000_01D_MN.rnx.gz",
+      "date": "2024-10-26",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1282373,
+      "sha256": "359e2730c5fb53a3a46a982273ac413cc91512ff8ffb2627bf18a1a42c39b2bb",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243000000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243010000_01D_MN.rnx.gz",
+      "date": "2024-10-27",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1268549,
+      "sha256": "0294ff5d8ac7271ef999f9a3402efdb36c292f039ca2bbc46c1a536f5074fae1",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243010000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243020000_01D_MN.rnx.gz",
+      "date": "2024-10-28",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1276754,
+      "sha256": "0efede4f2cd46744c5b4ee5cfbd1196339039854b3613a4f03b00ee9efe0c397",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243020000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243030000_01D_MN.rnx.gz",
+      "date": "2024-10-29",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1269060,
+      "sha256": "fffa144476a939af9ca68513a7af19f5b0d9a35722eb8c8f7255c7be31f7782f",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243030000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243040000_01D_MN.rnx.gz",
+      "date": "2024-10-30",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1276952,
+      "sha256": "a29c75de96fcdeb7e5049b10e885e4952ca413b12a24484f6a1f1813c50a72eb",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243040000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243050000_01D_MN.rnx.gz",
+      "date": "2024-10-31",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1273573,
+      "sha256": "cc88daa92728528e717fa44362dfb7c384557339990b986c8be9b37aca5b455a",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243050000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243060000_01D_MN.rnx.gz",
+      "date": "2024-11-01",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1293296,
+      "sha256": "c9d9368bc5d0bcdf956ce46b245618f9da349ac665c9b8bb6a99d1cc936976ef",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243060000_01D_MN.rnx.gz"
+    },
+    {
+      "path": "data/gnss/navigation/IGS/2024/BRDC00IGS_R_20243070000_01D_MN.rnx.gz",
+      "date": "2024-11-02",
+      "kind": "IGS merged multi-GNSS broadcast navigation",
+      "bytes": 1248844,
+      "sha256": "10dde0306319e2b85a1cc857048594fa680767cdfaa8280ca0fd9710de78a82a",
+      "rinex_version": "3.04",
+      "origin": "BRDC00IGS_R_20243070000_01D_MN.rnx.gz"
+    }
+  ]
+}
