@@ -169,7 +169,7 @@ public final class DemoDataset {
         try (BufferedWriter w = Files.newBufferedWriter(eof)) {
             w.write("<?xml version=\"1.0\"?>\n<Earth_Explorer_File>\n<Earth_Explorer_Header><Fixed_Header>\n");
             w.write("<File_Name>" + REF_FILE.replace(".EOF", "") + "</File_Name>\n");
-            w.write("<File_Description>SIMULATED reference orbit for the URSC demo (not a real POEORB)</File_Description>\n");
+            w.write("<File_Description>SIMULATED reference orbit for the demo (not a real POEORB)</File_Description>\n");
             w.write("<Notes>Simulated truth in POEORB layout for the comparison display</Notes>\n<Mission>SIMSAT</Mission>\n");
             w.write("<File_Type>AUX_POEORB</File_Type>\n<Validity_Period>\n");
             final AbsoluteDate e0 = TimeUtil.parseUtc(String.format(Locale.US, "%04d-%02d-%02dT00:00:00", YEAR, MONTH, DAY));
@@ -196,7 +196,7 @@ public final class DemoDataset {
 
         final Path readme = dir.resolve("README-SIMULATED-DATA.txt");
         Files.writeString(readme, String.join("\n",
-                "URSC demo dataset - SIMULATED DATA, not from any real satellite or IGS analysis centre.",
+                "Demo dataset - SIMULATED DATA, not from any real satellite or IGS analysis centre.",
                 "",
                 "Contents: GNSS observations of a simulated 790 km sun-synchronous satellite (30 s, 1 m noise,",
                 "14 January 22:00 to 15 January 08:00 GPS time), one synthetic 24-satellite GPS constellation",

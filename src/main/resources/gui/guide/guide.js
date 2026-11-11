@@ -1,4 +1,4 @@
-// URSC feature guide: walkthrough stepper, feature filter, section index and screenshot zoom.
+// GNSS OD feature guide: walkthrough stepper, feature filter, section index and screenshot zoom.
 (function () {
   'use strict';
   var panes = Array.prototype.slice.call(document.querySelectorAll('.step-pane'));

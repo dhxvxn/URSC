@@ -24,7 +24,7 @@ public final class Oem {
 
     /** Header block. */
     public String creationDate = "";
-    public String originator = "URSC";
+    public String originator = "GNSS Based Orbit Determination and Trajectory Prediction";
     public final List<String> headerComments = new ArrayList<>();
     public final List<Segment> segments = new ArrayList<>();
 

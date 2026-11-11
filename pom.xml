@@ -9,7 +9,7 @@
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
-    <name>URSC LEO Trajectory Predictor</name>
+    <name>GNSS Based Orbit Determination and Trajectory Prediction</name>
     <description>
         A modular numerical orbit-propagation library for long-term prediction of
         Low Earth Orbit (LEO) satellite trajectories. Every force model, integrator,

@@ -1,6 +1,6 @@
 # Offline operation
 
-URSC is designed for networks without internet access.
+This application is designed for networks without internet access.
 
 - The program runs a small web server **bound to this computer only** (127.0.0.1); the browser is just the window. Nothing is exposed to the network.
 - Every page asset is inside the application: the 3D globe engine (three.js), country borders (Natural Earth), plots, help pages and the search index. No fonts, maps or scripts are fetched from outside.

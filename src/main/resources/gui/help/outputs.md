@@ -26,7 +26,7 @@ model, a perturbation switch, Cd or the OD arc length — and opens the comparis
 finish. Use it to see how much a modelling choice moves the forecast. At most 12 runs.
 
 ## Manoeuvre and quality flags
-After orbit determination URSC checks the residuals. A flag appears when they are much larger
+After orbit determination the app checks the residuals. A flag appears when they are much larger
 than the assumed pseudorange noise (variance factor above 9), when they grow towards one end of
 the arc, or when they jump abruptly. Typical causes: a manoeuvre inside the arc, bad
 observations, or force settings unsuitable for the period. Flags are warnings: inspect the OD

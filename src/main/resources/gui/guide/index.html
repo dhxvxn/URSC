@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>URSC Feature Guide</title>
+<title>GNSS Orbit Determination — Feature Guide</title>
 <link rel="stylesheet" href="guide.css">
 </head>
 <body>
 <header class="top">
   <div class="wrap">
-    <h1>URSC feature guide</h1>
-    <p class="lede">URSC determines the orbit of a low-Earth-orbit satellite from its own GPS measurements and predicts where it will be over the next days. It runs as a local web application on one computer, with no internet connection. This guide walks through every feature: what it does, why it is needed, and how to use it.</p>
+    <h1>GNSS Based Orbit Determination and Trajectory Prediction</h1>
+    <p class="sub">Feature guide</p>
+    <p class="lede">This application determines the orbit of a low-Earth-orbit satellite from its own GPS measurements and predicts where it will be over the next days. It runs as a local web application on one computer, with no internet connection. This guide walks through every feature: what it does, why it is needed, and how to use it.</p>
     <div class="facts">
       <span class="fact">Test satellite <b>Sentinel-3A</b></span>
       <span class="fact">Tested window <b>3 Sep – 2 Nov 2024</b>, <b>61</b> daily cutoffs</span>
@@ -29,7 +30,7 @@
     </div>
     <div class="stepper">
       <ol class="steps" id="steps">
-        <li><button type="button" data-step="0"><span class="n">01</span><span>Start URSC</span></button></li>
+        <li><button type="button" data-step="0"><span class="n">01</span><span>Start the app</span></button></li>
         <li><button type="button" data-step="1"><span class="n">02</span><span>The data catalog</span></button></li>
         <li><button type="button" data-step="2"><span class="n">03</span><span>Run setup with tested defaults</span></button></li>
         <li><button type="button" data-step="3"><span class="n">04</span><span>Explain any setting with ⓘ</span></button></li>
@@ -42,7 +43,7 @@
       </ol>
       <div class="stage" id="stage" aria-live="polite">
         <div class="step-pane" data-pane="0">
-          <h3>Start URSC</h3>
+          <h3>Start the app</h3>
           <p>One command starts a small web server on this computer only and opens the browser. On first start the project's data folders are catalogued automatically.</p>
           <p><code>java -jar target\leo-trajectory-0.1.0.jar gui</code></p>
           <p class="say">Say: “Everything runs locally. No data leaves the machine, which is what an air-gapped mission facility needs.”</p>
@@ -114,7 +115,7 @@
   <section class="block" id="defaults" aria-labelledby="def-h">
     <div class="head">
       <h2 id="def-h">Startup defaults: the tested window</h2>
-      <p>These values are loaded when URSC starts. Every one can be changed in the Run tab. <b>Reset</b> returns to them; <b>Generic</b> loads the plain library defaults (a 1,000 kg cannonball and no window).</p>
+      <p>These values are loaded when the app starts. Every one can be changed in the Run tab. <b>Reset</b> returns to them; <b>Generic</b> loads the plain library defaults (a 1,000 kg cannonball and no window).</p>
     </div>
     <div class="tablewrap">
       <table class="vals">
@@ -516,7 +517,7 @@
               <div class="where"><span class="chip tab">Results tab</span></div>
               <dl class="wwh">
                 <dt>What</dt><dd>A printable report with summary, flags, plots, passes, inputs and all settings (changed ones highlighted); KML for Google Earth; CZML for Cesium; the full run log.</dd>
-                <dt>Why</dt><dd>For review, archiving and sharing with people who do not run URSC.</dd>
+                <dt>Why</dt><dd>For review, archiving and sharing with people who do not run the app.</dd>
                 <dt>How</dt><dd>Buttons beside Download OEM; print the report to PDF.</dd>
               </dl>
             </div>
@@ -555,7 +556,7 @@
     </div>
   </section>
 </main>
-<footer class="wrap">URSC LEO orbit determination and prediction. Screenshots taken from the program running the tested Sentinel-3A window.</footer>
+<footer class="wrap">GNSS Based Orbit Determination and Trajectory Prediction. Screenshots taken from the program running the tested Sentinel-3A window.</footer>
 
 <dialog class="zoom" id="zoom" aria-label="Enlarged screenshot">
   <button type="button" class="btn close" id="zoom-close">Close</button>

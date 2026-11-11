@@ -114,6 +114,9 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1
 .globe .overlay { position: absolute; left: 10px; top: 8px; font: 12px var(--mono); color: #cfe0f5; pointer-events: none; text-shadow: 0 1px 2px #000; }
 .globe .viewsel { position: absolute; right: 10px; top: 8px; }
 .map2d { width: 100%; height: 260px; display: block; border-radius: 10px; border: 1px solid var(--line); background: #0a1018; }
+.layerbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.layerbar .chip { cursor: pointer; user-select: none; }
+.layerbar .chip input { accent-color: var(--accent, #4f9cf7); }
 .timebar { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
 .timebar input[type=range] { flex: 1; }
 .chart { width: 100%; height: 220px; display: block; }

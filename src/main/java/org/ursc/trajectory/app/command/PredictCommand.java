@@ -393,7 +393,7 @@ public final class PredictCommand implements Command {
             this.br = interactive
                     ? new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8)) : null;
             if (interactive) {
-                System.out.println(Ansi.bold("URSC predict — enter the state (press Enter to accept a default)"));
+                System.out.println(Ansi.bold("Predict — enter the state (press Enter to accept a default)"));
             }
         }
 

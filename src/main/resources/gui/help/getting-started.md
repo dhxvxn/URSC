@@ -1,6 +1,6 @@
 # Getting started
 
-URSC determines a satellite's orbit from its own GPS measurements and forecasts it, writing the result as a CCSDS OEM file. Everything runs on this computer; no internet connection is used.
+This application determines a satellite's orbit from its own GPS measurements and forecasts it, writing the result as a CCSDS OEM file. Everything runs on this computer; no internet connection is used.
 
 ## The three things you must provide
 
@@ -24,10 +24,10 @@ Everything else has a generic default (a 1000 kg cannonball spacecraft, bundled 
 - **Propagate from a state**: no fitting; start from a typed state or a state taken from an OEM or POEORB file. Useful to study the effect of each force model.
 
 ## Startup defaults: the tested Sentinel-3A window
-URSC starts with the settings of the tested campaign: Sentinel-3A, cutoff 2024-09-03 05:59:42 UTC
+The app starts with the settings of the tested campaign: Sentinel-3A, cutoff 2024-09-03 05:59:42 UTC
 (06:00:00 GPS), a six-hour arc sampled every 300 s, a seven-day forecast, 1,130 kg with 8 m² drag
 and radiation areas, NRLMSISE-00 density, EGM96 70×70 gravity, relative tolerance 1e-13 and Ap = 5
-after the cutoff. When you start URSC from the project folder for the first time, the project's
+after the cutoff. When you start the app from the project folder for the first time, the project's
 `data` folder and the tested Earth orientation and space-weather files are added to the catalog in
 the background, and the inputs for the default cutoff are selected automatically. Every value can be
 changed. **Reset** returns to these defaults; **Generic** loads the plain library defaults

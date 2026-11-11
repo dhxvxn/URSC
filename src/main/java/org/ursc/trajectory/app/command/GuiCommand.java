@@ -45,7 +45,7 @@ public final class GuiCommand implements Command {
             server.registerInBackground(data);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(server::close));
-        System.out.println("URSC GUI running (this computer only, no internet used).");
+        System.out.println("GNSS Based Orbit Determination and Trajectory Prediction\n(running on this computer only, no internet used).");
         System.out.println("Workspace: " + workspace.toAbsolutePath());
         System.out.println("Open:      " + server.url());
         System.out.println("Stop with Ctrl+C or the Quit button.");
@@ -56,7 +56,7 @@ public final class GuiCommand implements Command {
         return 0;
     }
 
-    /** Folders of the URSC project checkout that hold run inputs (tested-window data, EOP, space weather). */
+    /** Folders of the project checkout that hold run inputs (tested-window data, EOP, space weather). */
     static List<String> projectData() {
         final List<Path> roots = new ArrayList<>();
         roots.add(Paths.get("").toAbsolutePath());

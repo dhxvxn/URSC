@@ -51,9 +51,9 @@ async function main() {
     localStorage.setItem('ursc-theme', t);
   });
   document.getElementById('quit').addEventListener('click', async () => {
-    if (!confirm('Stop the URSC server? Running jobs are cancelled.')) return;
+    if (!confirm('Stop the server? Running jobs are cancelled.')) return;
     await api('shutdown', { method: 'POST' });
-    document.body.innerHTML = '<p style="padding:40px">URSC has stopped. You can close this tab.</p>';
+    document.body.innerHTML = '<p style="padding:40px">The server has stopped. You can close this tab.</p>';
   });
   document.querySelectorAll('#tabs button').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
   document.getElementById('quick-search').addEventListener('submit', (e) => {
@@ -66,8 +66,8 @@ async function main() {
     [state.params, state.defaults] = await Promise.all([
       fetch('params.json').then((r) => r.json()), api('config/default')]);
   } catch (e) {
-    document.body.innerHTML = '<p style="padding:40px">Cannot reach the URSC server: ' + e.message
-      + '. Open the exact URL printed when URSC started (it contains the session token).</p>';
+    document.body.innerHTML = '<p style="padding:40px">Cannot reach the server: ' + e.message
+      + '. Open the exact URL printed when the server started (it contains the session token).</p>';
     return;
   }
   await Promise.all([refreshCatalog(), refreshRuns()]);

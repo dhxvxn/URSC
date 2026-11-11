@@ -63,7 +63,7 @@ public final class Cli {
             return;
         }
         if (argv[0].equals("version") || argv[0].equals("--version")) {
-            System.out.println("URSC LEO Trajectory Predictor " + VERSION);
+            System.out.println("GNSS Based Orbit Determination and Trajectory Prediction " + VERSION);
             return;
         }
 
@@ -85,7 +85,7 @@ public final class Cli {
     }
 
     private static void printHelp() {
-        System.out.println(Ansi.bold("URSC LEO Trajectory Predictor " + VERSION));
+        System.out.println(Ansi.bold("GNSS Based Orbit Determination and Trajectory Prediction " + VERSION));
         System.out.println("usage: leoprop <command> [options]\n");
         System.out.println("commands:");
         for (final Command c : COMMANDS.values()) {

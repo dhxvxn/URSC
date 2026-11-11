@@ -46,10 +46,17 @@ export function renderResults(root) {
   modelSel.addEventListener('change', applyModel);
   followBtn.addEventListener('click', () => { const on = !followBtn.classList.contains('on'); followBtn.classList.toggle('on', on); globe.setFollow(on); });
   const mapCanvas = el('canvas', { class: 'map2d' });
+  const layerDefs = [['fullTrack', 'Full track', true], ['ref', 'Reference', true], ['night', 'Day / night', true], ['stations', 'Stations', true], ['grid', 'Grid', true]];
+  const layerBar = el('div', { class: 'layerbar small' }, el('span', { class: 'muted' }, 'Map layers:'),
+    ...layerDefs.map(([k, label, on]) => {
+      const box = el('input', { type: 'checkbox', checked: on });
+      box.addEventListener('change', () => map.setLayers({ [k]: box.checked }));
+      return el('label', { class: 'chip' }, box, ' ', label);
+    }));
   vizCard.append(
-    el('div', { class: 'viz' }, globeBox, el('div', {}, mapCanvas,
+    el('div', { class: 'viz' }, globeBox, el('div', {}, mapCanvas, layerBar,
       el('div', { class: 'kv small', style: 'margin-top:10px', id: 'viz-kv' }),
-      el('p', { class: 'muted small' }, 'Drag the globe to rotate, scroll to zoom, double-click to reset. Purple: POEORB reference (display only).'))),
+      el('p', { class: 'muted small' }, 'Hover the map to scrub time everywhere; click to pin a moment. Drag the globe to rotate, scroll to zoom, double-click to reset. Purple: POEORB reference (display only).'))),
     el('div', { class: 'timebar' }, playBtn, speedSel, slider, readout, ellToggle));
   ellBox.addEventListener('change', () => {
     const f = globe.setUncertainty(ellBox.checked);
@@ -71,6 +78,8 @@ export function renderResults(root) {
   speedSel.addEventListener('change', () => { speed = +speedSel.value; });
   globe = new Globe(globeBox);
   map = new GroundMap(mapCanvas);
+  map.onScrub = (i) => { if (!playing) setTime(i); };   // hovering the map scrubs the whole view
+  map.onPick = (i) => { if (playing) { playing = false; playBtn.textContent = '▶'; } setTime(i); };
   fetch('vendor/borders-50m.json').then((r) => r.json()).then((b) => { borders = b.lines; globe.setBorders(borders); map.setBorders(borders); });
   const fill = () => {
     picker.replaceChildren(el('option', { value: '' }, '— choose a run —'), ...state.runs.map((r) =>
