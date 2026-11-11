@@ -1,0 +1,19 @@
+{
+  "files_with_verified_hashes": 946,
+  "verified_bytes": 3514128606,
+  "counts": {
+    "final": 174,
+    "rapid": 143,
+    "ultra-rapid": 289,
+    "broadcast_dlr": 63,
+    "broadcast_igs": 62,
+    "gnssrd": 62,
+    "proqua": 63,
+    "poeorb": 63,
+    "incomplete_backups": 14
+  },
+  "source_aliases_verified": 483,
+  "all_new_files_in_remote_tree": true,
+  "verified_data_commit": "b28693447fab03eaf87ef540c2bf69957344956f",
+  "note": "Checksums were verified against Git blobs reachable from the stated published data commit. This verification/documentation commit changes no raw input bytes."
+}

@@ -1,6 +1,6 @@
 # Archived project inputs
 
-Original bytes are retained. [The central checksum manifest](input-manifest.json) records newly archived inputs; DLR navigation has its own existing manifest. [The archive audit](all-input-archive-manifest.json) records aliases and retained same-name variants.
+Original bytes are retained. [The central checksum manifest](input-manifest.json) records newly archived inputs; DLR navigation has its own existing manifest. [The archive audit](all-input-archive-manifest.json) records aliases and retained same-name variants. [Published verification](ARCHIVE_VERIFICATION.json) records the checked data revision and category counts.
 
 | Input category | Location | Files / coverage |
 |---|---|---|
@@ -9,10 +9,10 @@ Original bytes are retained. [The central checksum manifest](input-manifest.json
 | Final GNSS products | [gnss/products/final/](gnss/products/final/README.md) | 174 files; CODE OPS campaign plus partial uploaded providers; exact dates in manifest |
 | Rapid GNSS products | [gnss/products/rapid/](gnss/products/rapid/README.md) | 143 files; CODE OPS campaign plus partial uploaded providers; exact dates in manifest |
 | Ultra-Rapid GNSS products | [gnss/products/ultra-rapid/](gnss/products/ultra-rapid/README.md) | 289 files; CODE OPS campaign plus partial uploaded providers; exact dates in manifest |
-| Sentinel GNSSRD observations | `gnss/observations/2024/` | 62 unique archives; filenames/validity intervals in manifest |
+| Sentinel GNSSRD observations | `gnss/observations/2024/` | 61 Sentinel-3A + 1 Sentinel-3B archives; filenames/validity intervals in manifest |
 | Sentinel PROQUA auxiliaries | `attitude/2024/` | 63 unique archives; uploaded September-November 2024 collection |
 | Sentinel POEORB references | `orbits/2024/` | 63 files; archived reference arcs and fixtures |
-| Weather, Earth orientation and gravity | `environment/` and existing `../docs/**/inputs/` | Original inputs retained or linked by duplicate aliases |
+| Weather, Earth orientation and gravity | [Gravity/EOP](../docs/project-journal/inputs/) and [weather/EOP](../docs/reports/perturbation-ladder-truestate-7day/inputs/) | Existing original inputs retained; checksums verified |
 | JPL DE440 ephemeris | `ephemeris/` | Existing binary retained |
 | Historical daily seed states | `seed-states/` | Existing August-October first-OSV states retained |
 | Unconfirmed partial downloads | [unconfirmed-downloads/](unconfirmed-downloads/README.md) | Backup only; excluded from model input coverage |
