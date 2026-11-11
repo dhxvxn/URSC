@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,7 +34,12 @@ class DataCatalogTest {
 
     private static void link(final Path dir, final String repoPath) throws Exception {
         final Path src = ROOT.resolve(repoPath);
-        Files.createSymbolicLink(dir.resolve(src.getFileName()), src);
+        final Path dest = dir.resolve(src.getFileName());
+        try {
+            Files.createSymbolicLink(dest, src);
+        } catch (final IOException | UnsupportedOperationException e) {
+            Files.copy(src, dest); // Windows without the symlink privilege: a copy reads the same
+        }
     }
 
     private static Entry byName(final List<Entry> l, final String fragment) {
