@@ -139,6 +139,27 @@ public final class DataCatalog {
         return l;
     }
 
+    /**
+     * The end of the most recent GNSS observation arc in the catalog, as the UTC cutoff a run
+     * would use by default. {@code satellite} null = any spacecraft; otherwise only that one's
+     * observations. Returns an empty string when no observation coverage is known.
+     */
+    public synchronized String latestObservationEnd(final String satellite) {
+        String best = "";
+        for (final Entry e : entries.values()) {
+            if (e.kind != Kind.GNSS_OBSERVATIONS || e.coverageEnd.isEmpty()) {
+                continue;
+            }
+            if (satellite != null && !satellite.isEmpty() && !satellite.equalsIgnoreCase(e.satellite)) {
+                continue;
+            }
+            if (e.coverageEnd.compareTo(best) > 0) {
+                best = e.coverageEnd;
+            }
+        }
+        return best;
+    }
+
     public synchronized List<String> watchedFolders() {
         return new ArrayList<>(watched);
     }

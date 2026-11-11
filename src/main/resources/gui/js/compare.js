@@ -31,9 +31,17 @@ export function renderCompare(box, d) {
     el('h4', {}, 'Settings that differ'), settings,
     el('p', { class: 'muted small' }, 'Differences are other run minus base, in the base run\'s radial / along-track / cross-track frame. Epochs that do not coincide are interpolated (8-point Lagrange).'),
     charts));
+  const colorOf = (id) => { const k = d.runs.findIndex((r) => r.id === id); return k === 0 ? 'var(--muted)' : COLORS[(k - 1) % COLORS.length]; };
+  const add = (title, opts) => { const cv = el('canvas', { class: 'chart' }); charts.append(el('div', {}, cv)); requestAnimationFrame(() => lineChart(cv, Object.assign({ title }, opts))); };
+  // Error vs the POEORB truth orbit, one curve per run — the headline for a product-tier comparison.
+  const refs = (d.refErrors || []).filter((r) => r.err3d && r.err3d.some((v) => v != null));
+  if (refs.length) {
+    const rx = refs.reduce((a, b) => (b.x.length > a.x.length ? b : a)).x;
+    add('Error vs POEORB truth [m]', { x: rx, xLabel: 'h from cutoff', yUnit: 'm', yMin: 0,
+      series: refs.map((r) => ({ name: name(r.id), y: r.err3d, color: colorOf(r.id), width: 2 })) });
+  }
   const ok = d.diffs.filter((x) => !x.error && x.t.length);
   if (!ok.length) return;
-  const add = (title, opts) => { const cv = el('canvas', { class: 'chart' }); charts.append(el('div', {}, cv)); requestAnimationFrame(() => lineChart(cv, Object.assign({ title }, opts))); };
   // all runs share the base's time axis
   const ref = ok.reduce((a, b) => (b.t.length > a.t.length ? b : a));
   const x = ref.t.map((s) => s / 3600);

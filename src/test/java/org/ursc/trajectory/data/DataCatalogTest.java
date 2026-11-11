@@ -160,4 +160,18 @@ class DataCatalogTest {
         cat.add(List.of(data.toString()));
         assertEquals(Kind.IGS_CLOCK, byName(cat.entries(), "COD0OPSFIN").kind);
     }
+
+    /** latestObservationEnd returns the end of the newest observation arc, as the default cutoff. */
+    @Test
+    void reportsTheLatestObservationEndAsADefaultCutoff(@TempDir final Path tmp) throws Exception {
+        final Path data = Files.createDirectories(tmp.resolve("in"));
+        link(data, "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241007T071056_V20240930T235942_20241001T235941.tgz");
+        link(data, "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241008T071049_V20241001T235942_20241002T235941.tgz");
+        final DataCatalog cat = new DataCatalog(tmp.resolve("ws"));
+        cat.add(List.of(data.toString()));
+        final String end = cat.latestObservationEnd("S3A");
+        assertTrue(end.startsWith("2024-10-02T23:59"), end);
+        assertEquals(end, cat.latestObservationEnd(null));
+        assertEquals("", cat.latestObservationEnd("S3B"));
+    }
 }

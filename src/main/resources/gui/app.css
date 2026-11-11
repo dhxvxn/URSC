@@ -76,6 +76,12 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1
 .field .mod { color: var(--warn); font-size: 11px; }
 .field .reset { margin-left: auto; font-size: 11px; color: var(--muted); background: none; border: none; text-decoration: underline; }
 .field input[type=text], .field input[type=number], .field select, .field input[type=datetime-local] { width: 100%; }
+.numpresets { display: flex; gap: 8px; align-items: center; }
+.numpresets input[type=number] { flex: 1; }
+.presets { display: inline-flex; gap: 4px; }
+.preset { background: var(--panel2); border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 5px 9px; font: inherit; font-size: 12px; cursor: pointer; }
+.preset:hover { color: var(--ink); }
+.preset.on { background: var(--accent); color: #fff; border-color: var(--accent); }
 .mandatory label::after { content: "required"; font-size: 10px; color: var(--bad); border: 1px solid var(--bad); border-radius: 3px; padding: 0 4px; }
 .info { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--accent); color: var(--accent); background: none; font: italic 600 11px/16px Georgia, serif; padding: 0; }
 .popover { position: fixed; z-index: 50; max-width: 380px; background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; box-shadow: 0 8px 30px rgba(0,0,0,.35); font-size: 13px; }

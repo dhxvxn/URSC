@@ -301,6 +301,13 @@ public final class GuiServer implements AutoCloseable {
                         b.get("satellite") == null ? null : String.valueOf(b.get("satellite"))));
                 return;
             }
+            case "cutoff": {
+                // Default UTC cutoff = end of the latest GNSS observation arc, so the user need not type it.
+                final Map<String, Object> b = method.equals("POST") ? Json.parseObject(body(ex)) : Map.of();
+                final String sat = b.get("satellite") == null ? null : String.valueOf(b.get("satellite"));
+                json(ex, 200, Map.of("cutoffUtc", catalog.latestObservationEnd(sat)));
+                return;
+            }
             default:
                 json(ex, 404, Map.of("error", "unknown catalog route"));
         }
@@ -786,6 +793,19 @@ public final class GuiServer implements AutoCloseable {
         return o;
     }
 
+    /** Thin a JSON-parsed numeric list (elements are Number or null), keeping nulls as gaps. */
+    private static List<Object> thinNum(final List<?> v, final int stride) {
+        final List<Object> o = new ArrayList<>();
+        if (v == null) {
+            return o;
+        }
+        for (int i = 0; i < v.size(); i += stride) {
+            final Object e = v.get(i);
+            o.add(e instanceof Number ? Math.round(((Number) e).doubleValue() * 1000.0) / 1000.0 : null);
+        }
+        return o;
+    }
+
     private Map<String, Object> compare(final String idList) throws IOException {
         final List<String> ids = new ArrayList<>();
         for (final String s : idList.split(",")) {
@@ -855,11 +875,46 @@ public final class GuiServer implements AutoCloseable {
             }
             diffs.add(m);
         }
+        // Error vs the POEORB truth orbit per run (display only), overlaid in the Compare view.
+        final List<Map<String, Object>> refErrors = new ArrayList<>();
+        for (final String id : ids) {
+            final Path d = runs.dir(id);
+            final Path rf = d.resolve("reference.json");
+            final Path tf = d.resolve("trajectory.json");
+            if (!Files.isRegularFile(rf) || !Files.isRegularFile(tf)) {
+                continue;
+            }
+            try {
+                final Map<String, Object> ref = Json.parseObject(Files.readString(rf));
+                final Map<String, Object> traj = Json.parseObject(Files.readString(tf));
+                final List<?> idx = (List<?>) ref.get("runIndex");
+                final List<?> t = (List<?>) traj.get("t");
+                if (idx == null || t == null || idx.isEmpty()) {
+                    continue;
+                }
+                final List<Object> x = new ArrayList<>();
+                for (final Object o : idx) {
+                    final int i = ((Number) o).intValue();
+                    x.add(i < t.size() ? ((Number) t.get(i)).doubleValue() / 3600.0 : null);
+                }
+                final int stride = Math.max(1, x.size() / 2000);
+                final Map<String, Object> m = new LinkedHashMap<>();
+                m.put("id", id);
+                m.put("x", thinNum(x, stride));
+                for (final String k : List.of("err3d", "radial", "along", "cross")) {
+                    m.put(k, thinNum((List<?>) ref.get(k), stride));
+                }
+                refErrors.add(m);
+            } catch (final RuntimeException ignored) {
+                // a run without a usable reference is simply left off the error overlay
+            }
+        }
         final Map<String, Object> out = new LinkedHashMap<>();
         out.put("base", ids.get(0));
         out.put("runs", runInfo);
         out.put("settings", settings);
         out.put("diffs", diffs);
+        out.put("refErrors", refErrors);
         return out;
     }
 

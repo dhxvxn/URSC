@@ -27,6 +27,7 @@ export function renderRun(root) {
   const runBtn = el('button', { class: 'btn primary', disabled: true }, '▶ Run');
   const cancelBtn = el('button', { class: 'btn danger hidden' }, '■ Cancel');
   const sweepBtn = el('button', { class: 'btn', title: 'Run the same case several times, varying one setting, then compare the results' }, 'Sweep…');
+  const tiersBtn = el('button', { class: 'btn', title: 'Run this case with each GPS product tier (Broadcast, Ultra-rapid, Rapid, Final) and compare the error against POEORB' }, '⚖ Compare product tiers');
   const progress = el('div', { class: 'hidden' }, el('div', { class: 'job-bar', style: 'width:100%;height:8px' }, el('div')),
     el('div', { class: 'small muted', style: 'margin-top:4px' }), el('div', { class: 'log', style: 'margin-top:8px' }));
   const presetSel = el('select', {});
@@ -52,7 +53,7 @@ export function renderRun(root) {
         el('button', { class: 'btn', title: 'Generic library defaults: cannonball spacecraft, no window', onclick: async () => { if (confirm('Load the generic defaults (cannonball 1000 kg, no window)?')) { loadConfig(await api('config/generic')); } } }, 'Generic'))),
     groupsBox,
     el('div', { class: 'card' },
-      el('div', { class: 'row' }, runBtn, sweepBtn, cancelBtn, readyLine), errorsBox, progress));
+      el('div', { class: 'row' }, runBtn, sweepBtn, tiersBtn, cancelBtn, readyLine), errorsBox, progress));
 
   async function savePreset() {
     const name = prompt('Preset name', cfg.runName || '');
@@ -125,17 +126,33 @@ export function renderRun(root) {
         input = el('select', { onchange: (e) => setv(e.target.value) }, ...p.options.map(([v, l]) => el('option', { value: v, selected: v === val }, l)));
         break;
       case 'int':
-      case 'number':
-        input = el('input', { type: 'number', step: p.type === 'int' ? 1 : 'any', min: p.min, max: p.max, value: val,
+      case 'number': {
+        const numInput = el('input', { type: 'number', step: p.type === 'int' ? 1 : 'any', min: p.min, max: p.max, value: val,
           onchange: (e) => { const n = p.type === 'int' ? parseInt(e.target.value, 10) : parseFloat(e.target.value); if (!Number.isNaN(n)) setv(n); } });
+        if (Array.isArray(p.presets) && p.presets.length) {
+          input = el('div', { class: 'numpresets' }, numInput,
+            el('div', { class: 'presets' }, ...p.presets.map((pv) =>
+              el('button', { type: 'button', class: 'preset' + (+val === +pv ? ' on' : ''), onclick: () => setv(pv) }, String(pv)))));
+        } else {
+          input = numInput;
+        }
         break;
+      }
       case 'date':
         input = el('input', { type: 'date', value: val || '', onchange: (e) => setv(e.target.value) });
         break;
-      case 'datetime':
-        input = el('input', { type: 'datetime-local', step: 1, value: (val || '').replace(/Z$/, '').slice(0, 19),
+      case 'datetime': {
+        const dt = el('input', { type: 'datetime-local', step: 1, value: (val || '').replace(/Z$/, '').slice(0, 19),
           onchange: (e) => setv(e.target.value) });
+        if (p.key === 'cutoffUtc') {
+          input = el('div', { class: 'numpresets' }, dt,
+            el('button', { type: 'button', class: 'preset', title: 'Set the cutoff to the end of the latest observation arc in the catalog',
+              onclick: () => fillCutoffFromData(lastSat) }, '↻ Latest from data'));
+        } else {
+          input = dt;
+        }
         break;
+      }
       case 'files':
       case 'file':
         input = fileField(p, val, setv);
@@ -209,8 +226,17 @@ export function renderRun(root) {
   }
 
   let lastSats = [], lastSat = null, selecting = false;
+  /** Fill cutoffUtc with the end of the latest observation arc (optionally for one spacecraft). Returns the value or ''. */
+  async function fillCutoffFromData(satellite) {
+    try {
+      const r = await api('catalog/cutoff', { method: 'POST', body: { satellite: satellite || '' } });
+      if (r.cutoffUtc) { set(cfg, 'cutoffUtc', r.cutoffUtc); changed(); toast('Cutoff set to the end of the latest observations: ' + r.cutoffUtc.replace('T', ' ') + ' UTC', 'ok'); }
+      else { toast('No catalogued observations to take a cutoff from', 'warn'); }
+      return r.cutoffUtc || '';
+    } catch (e) { toast(e.message, 'bad'); return ''; }
+  }
   async function autoSelect(satellite) {
-    if (!cfg.cutoffUtc) { toast('Set the UTC cutoff first', 'warn'); return; }
+    if (!cfg.cutoffUtc) { const c = await fillCutoffFromData(satellite); if (!c) return; }
     if (selecting) return;
     selecting = true;
     try {
@@ -256,7 +282,7 @@ export function renderRun(root) {
     try {
       const r = await api('window', { method: 'POST', body: cfg });
       state.window = r.id;
-      runBtn.disabled = true; sweepBtn.disabled = true;
+      runBtn.disabled = true; sweepBtn.disabled = true; tiersBtn.disabled = true;
       cancelBtn.classList.remove('hidden');
       progress.classList.remove('hidden');
       progress.querySelector('.log').textContent = '';
@@ -299,11 +325,31 @@ export function renderRun(root) {
     try {
       const r = await api('sweep', { method: 'POST', body: { config: cfg, key: p.key, values } });
       state.sweep = r.ids;
-      runBtn.disabled = true; sweepBtn.disabled = true;
+      runBtn.disabled = true; sweepBtn.disabled = true; tiersBtn.disabled = true;
       cancelBtn.classList.remove('hidden');
       progress.classList.remove('hidden');
       progress.querySelector('.log').textContent = '';
       toast('Sweep of ' + p.label + ' started: ' + values.length + ' runs');
+    } catch (e) { toast(e.message, 'bad', 9000); }
+  }
+  tiersBtn.addEventListener('click', compareTiers);
+  async function compareTiers() {
+    if (cfg.workflow !== 'OD_FORECAST') { toast('Product-tier comparison applies to OD + Forecast runs', 'warn'); return; }
+    if (!cfg.inputs.gnssrd.length || !cfg.inputs.gpsProducts.length) {
+      toast('Selecting inputs for this cutoff first…', 'warn');
+      await autoSelect(lastSat);
+      if (!cfg.inputs.gpsProducts.length) { toast('No GPS products in the catalog for this cutoff', 'bad'); return; }
+    }
+    const c = clone(cfg);
+    c.products.mode = 'RECONSTRUCTION'; // so every tier present in the catalog can be used
+    try {
+      const r = await api('sweep', { method: 'POST', body: { config: c, key: 'products.tier', values: ['BROADCAST', 'ULTRA_RAPID', 'RAPID', 'FINAL'] } });
+      state.sweep = r.ids;
+      runBtn.disabled = true; sweepBtn.disabled = true; tiersBtn.disabled = true;
+      cancelBtn.classList.remove('hidden');
+      progress.classList.remove('hidden');
+      progress.querySelector('.log').textContent = '';
+      toast('Comparing product tiers: Broadcast, Ultra-rapid, Rapid, Final (reconstruction). Tiers with no data are skipped.', 'ok', 8000);
     } catch (e) { toast(e.message, 'bad', 9000); }
   }
   cancelBtn.addEventListener('click', () => state.job && api('runs/' + state.job + '/cancel', { method: 'POST' }));
@@ -314,14 +360,14 @@ export function renderRun(root) {
       progress.querySelector('.log').textContent += '— sweep run ' + (evt.index + 1) + ' of ' + evt.count + ' (' + evt.id + ')\n';
       return;
     }
-    if (evt.type === 'sweep') { sweepBtn.disabled = false; validate(); return; }
+    if (evt.type === 'sweep') { sweepBtn.disabled = false; tiersBtn.disabled = false; validate(); return; }
     if (evt.type === 'window-progress') {
       state.job = evt.id;
       progress.classList.remove('hidden');
       progress.querySelector('.log').textContent += '— window cutoff ' + (evt.index + 1) + ' of ' + evt.count + ': ' + evt.date + '\n';
       return;
     }
-    if (evt.type === 'window-done') { state.job = null; sweepBtn.disabled = false; cancelBtn.classList.add('hidden'); validate(); return; }
+    if (evt.type === 'window-done') { state.job = null; sweepBtn.disabled = false; tiersBtn.disabled = false; cancelBtn.classList.add('hidden'); validate(); return; }
     if (evt.id !== state.job) return;
     if (evt.type === 'progress') {
       progress.querySelector('.job-bar div').style.width = Math.round(evt.fraction * 100) + '%';
