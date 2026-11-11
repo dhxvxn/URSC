@@ -180,7 +180,7 @@
     },
     {
       "path": "data/orbits/2024/S3A_POEORB_20241001-02.EOF",
-      "kind": "Sentinel-3A precise orbit ephemeris (POEORB, truth)",
+      "kind": "Sentinel-3B precise orbit ephemeris (POEORB, truth); the file name says S3A but the content (Mission, File_Name) is Sentinel-3B S3B_OPER_AUX_POEORB_POD__20241027T080606_V20241001T215942_20241002T235942_DGNS",
       "bytes": 4653570,
       "sha256": "8cd32c73c528c5fa8289b2e3ce02867ba704b77b96ccd85cc40d291649140e0d",
       "origin": "S3A_POEORB_20241001-02.EOF"

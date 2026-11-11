@@ -111,6 +111,14 @@ public final class DataCatalog {
         for (final Object o : (List<Object>) m.getOrDefault("entries", List.of())) {
             final Entry e = new Entry();
             Json.bind((Map<String, Object>) o, e);
+            if (e.kind == Kind.POEORB && e.satellite.isEmpty() && Files.isRegularFile(Paths.get(e.path))) {
+                // catalogued before the spacecraft was read from the header: classify again
+                try {
+                    classify(Paths.get(e.path), e);
+                } catch (final IOException | RuntimeException ignored) {
+                    // keep the old entry
+                }
+            }
             entries.put(e.path, e);
         }
         for (final Object o : (List<Object>) m.getOrDefault("watched", List.of())) {
@@ -274,8 +282,13 @@ public final class DataCatalog {
             e.kind = Kind.IGS_CLOCK;
             e.satellite = "GPS";
             igsName(n, e);
-        } else if (all.contains("AUX_POEORB") || all.contains("AUX_RESORB") || all.contains("AUX_PREORB")) {
+        } else if ((all.contains("AUX_POEORB") || all.contains("AUX_RESORB") || all.contains("AUX_PREORB"))
+                && all.contains("Earth_Explorer")) {
             e.kind = Kind.POEORB;
+            final Matcher ms = Pattern.compile("<Mission>\\s*Sentinel-?(\\d)([AB])\\s*<", Pattern.CASE_INSENSITIVE).matcher(all);
+            if (ms.find()) {
+                e.satellite = "S" + ms.group(1) + ms.group(2).toUpperCase(java.util.Locale.ROOT);
+            }
             final Matcher vs = Pattern.compile("<Validity_Start>UTC=([0-9T:\\-.]+)<").matcher(all);
             final Matcher ve = Pattern.compile("<Validity_Stop>UTC=([0-9T:\\-.]+)<").matcher(all);
             if (vs.find() && ve.find()) {
@@ -466,6 +479,7 @@ public final class DataCatalog {
         }
         final Map<String, Entry> newestSingle = new LinkedHashMap<>();
         final Map<String, List<String>> obsBySat = new java.util.TreeMap<>();
+        final List<Entry> perCraft = new ArrayList<>();
         for (final Entry e : entries()) {
             switch (e.kind) {
                 case GNSS_OBSERVATIONS:
@@ -482,12 +496,12 @@ public final class DataCatalog {
                     break;
                 case POEORB:
                     if (overlaps(e, cutoff, f1, false)) {
-                        out.get("poeorb").add(e.path);
+                        perCraft.add(e);
                     }
                     break;
                 case ATTITUDE_PROQUA:
                     if (overlaps(e, a0, reconstruction ? f1 : cutoff, false)) {
-                        out.get("proqua").add(e.path);
+                        perCraft.add(e);
                     }
                     break;
                 case EOP:
@@ -516,6 +530,12 @@ public final class DataCatalog {
         }
         if (pick != null) {
             out.get("gnssrd").addAll(obsBySat.get(pick));
+        }
+        // reference orbits and attitude belong to one spacecraft: never offer another one's
+        for (final Entry e : perCraft) {
+            if (pick == null || e.satellite.isEmpty() || e.satellite.equalsIgnoreCase(pick)) {
+                out.get(e.kind.role).add(e.path);
+            }
         }
         out.put("satellites", new ArrayList<>(obsBySat.keySet()));
         out.put("satellite", pick == null ? List.of() : List.of(pick));

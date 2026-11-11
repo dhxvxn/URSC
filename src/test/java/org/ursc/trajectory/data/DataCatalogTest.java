@@ -127,4 +127,22 @@ class DataCatalogTest {
         }
         assertEquals(List.of(inbox.toString()), cat.watchedFolders());
     }
+
+    /** A reference orbit or attitude file of another spacecraft is never suggested, whatever its file name says. */
+    @Test
+    void suggestsReferenceOrbitsOfTheSameSpacecraftOnly(@TempDir final Path tmp) throws Exception {
+        final Path data = Files.createDirectories(tmp.resolve("in"));
+        link(data, "data/gnss/observations/2024/S3A_OPER_AUX_GNSSRD_POD__20241008T071049_V20241001T235942_20241002T235941.tgz");
+        // named S3A_ but its header says Mission Sentinel-3B
+        link(data, "data/orbits/2024/S3A_POEORB_20241001-02.EOF");
+        link(data, "docs/reports/perturbation-ladder-truestate-7day/inputs/S3A_POEORB_truth_20241007-08.EOF");
+        final DataCatalog cat = new DataCatalog(tmp.resolve("ws"));
+        cat.add(List.of(data.toString()));
+        assertEquals("S3B", byName(cat.entries(), "S3A_POEORB_20241001-02").satellite);
+        assertEquals("S3A", byName(cat.entries(), "truth_20241007-08").satellite);
+        final Map<String, List<String>> s = cat.suggest(TimeUtil.parseUtc("2024-10-02T05:59:42"), 6.0, 7.0, false);
+        assertEquals(List.of("S3A"), s.get("satellite"));
+        assertTrue(s.get("poeorb").stream().noneMatch(p -> p.contains("S3A_POEORB_20241001-02")), String.valueOf(s.get("poeorb")));
+        assertTrue(s.get("poeorb").stream().anyMatch(p -> p.contains("truth_20241007-08")), String.valueOf(s.get("poeorb")));
+    }
 }

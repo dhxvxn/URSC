@@ -136,6 +136,26 @@
     </div>
   </section>
 
+  <section class="block" id="window-result" aria-labelledby="wr-h">
+    <div class="head">
+      <h2 id="wr-h">Result of the full tested window</h2>
+      <p>The whole window was run with the defaults above: one orbit determination and 7-day forecast for each of the 61 cutoffs, with each day's inputs picked from the catalog. Only broadcast GPS navigation was used, because no IGS orbit or clock products are stored in the repository.</p>
+    </div>
+    <div class="tablewrap">
+      <table class="vals">
+        <thead><tr><th>Measure</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Forecasts issued</td><td class="mono">61 of 61</td><td>Every cutoff converged, none flagged as a possible manoeuvre</td></tr>
+          <tr><td>Orbit-fit post-fit RMS</td><td class="mono">median 2.35 m (1.85 – 4.38 m)</td><td>How closely the fitted orbit matches the GPS position fixes</td></tr>
+          <tr><td>Position fixes per cutoff</td><td class="mono">73</td><td>6-hour arc sampled every 300 s</td></tr>
+          <tr><td>Run time per cutoff</td><td class="mono">median 125 s</td><td>About 2 hours for the whole window on one computer</td></tr>
+          <tr><td>Error against POEORB at the cutoff</td><td class="mono">2.17 m (8 Oct), 0.48 m (16 Oct)</td><td>Only days whose Sentinel-3A reference orbit is in the repository</td></tr>
+          <tr><td>Error against POEORB after 1 day</td><td class="mono">268 m (7 Oct), 28.7 m (15 Oct)</td><td>Forecast quality one day ahead, for the same reference days</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section class="block" id="features" aria-labelledby="ft-h">
     <div class="head">
       <h2 id="ft-h">All features</h2>
