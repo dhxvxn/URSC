@@ -1,282 +1,193 @@
-# URSC LEO Trajectory Predictor
+# GNSS Based Orbit Determination and Trajectory Prediction
 
-A **modular numerical orbit-propagation library in Java** for determining and
-predicting the **long-term trajectory of Low Earth Orbit (LEO) satellites**.
+A self-contained Java application that determines the orbit of a **Low Earth Orbit (LEO)
+satellite** from its own **GPS measurements** and **predicts where it will be** over the
+coming days. It is built and validated on the ESA **Sentinel-3A** satellite.
 
-Every force model, integrator, orbit representation, and output is a pluggable
-component, and every physical variable is selectable from configuration — so you
-can start from a coarse two-body analysis and refine to a high-fidelity
-multi-perturbation lifetime simulation by changing data, not code.
+In plain terms: a satellite in orbit records the GPS signals it receives. This program reads
+those recordings, works out exactly where the satellite was (orbit determination), then runs a
+physics simulation of gravity, atmospheric drag, Sun/Moon pull and more to forecast where it
+will be next (trajectory prediction). Every result is written as a standard **CCSDS OEM**
+ephemeris file.
 
-The architecture and physics are modelled on (but fully independent of) the
-[Orekit](https://www.orekit.org/) library. It has **no runtime dependencies** —
-the entire physics core is plain, auditable Java.
+It runs entirely on **one computer with no internet connection** (suitable for secure,
+air-gapped facilities): the 3D globe, maps, documentation and search are all bundled inside the
+program. It has **no runtime dependencies** — the physics core is plain, auditable Java. A local
+web interface (opened in your browser) provides data management, run setup, a 3D globe and 2D
+ground-track map, diagnostic plots, product comparisons and downloads.
+
+**New to the project? Read [`docs/REPORT.md`](docs/REPORT.md)** — a full illustrated report that
+explains the problem, the method, the features and the results, with a glossary of every term.
 
 ---
 
-## Graphical interface (offline)
+## Installation and running
 
-`java -jar target/leo-trajectory-*.jar gui` starts a local web interface on `127.0.0.1` and
-opens the browser: data catalog with watched folders, run setup with every setting and an
-info (ⓘ) note for each, OD + forecast or propagation, results on a 3D globe and 2D map,
-diagnostic plots, run history, comparison and sweeps, ground-station passes, printable report,
-OEM / KML / CZML downloads and an offline help search. It needs no internet connection.
+You need two free tools: a **Java Development Kit (JDK) 17 or newer** and **Apache Maven** (the
+build tool). Below is the complete process on both Linux and Windows, from installing those tools
+to seeing the program run in your browser.
 
-For air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
-(Windows) builds a self-contained bundle with its own Java runtime; see
-[packaging/README-OFFLINE.md](packaging/README-OFFLINE.md).
+### Linux
+
+```bash
+# 1. Install Java 17+ and Maven (Debian/Ubuntu shown; use your distro's package manager)
+sudo apt update
+sudo apt install -y openjdk-17-jdk maven
+
+# 2. Check they are installed (both commands should print a version)
+java -version
+mvn -version
+
+# 3. Get the project
+git clone https://github.com/dhxvxn/URSC.git
+cd URSC
+
+# 4. Build the program (compiles and runs the tests; a few minutes the first time)
+mvn clean package
+#    …or skip the tests to build faster:
+#    mvn -q clean package -DskipTests
+
+# 5. Run it — this starts the browser interface
+java -jar target/leo-trajectory-0.1.0.jar gui
+```
+
+### Windows (PowerShell)
+
+Windows has no built-in package for these tools, so install them once, then the steps match
+Linux.
+
+```powershell
+# 1a. Install Java 17+ (Microsoft OpenJDK) with winget
+winget install --id Microsoft.OpenJDK.21 -e
+
+# 1b. Install Maven. winget often does not carry Maven, so install it by hand:
+#     - Download the "Binary zip archive" from https://maven.apache.org/download.cgi
+#     - Unzip it to a folder you control, e.g.  C:\Users\<you>\tools\apache-maven-3.9.9
+#     - Add its \bin folder to your PATH, OR call it by full path as shown below.
+#     Close and reopen PowerShell after installing so PATH changes take effect.
+
+# 2. Check they are installed (both should print a version)
+java -version
+mvn -version
+#    If 'mvn' is not recognised, use the full path instead, e.g.:
+#    C:\Users\<you>\tools\apache-maven-3.9.9\bin\mvn -version
+
+# 3. Get the project
+git clone https://github.com/dhxvxn/URSC.git
+cd URSC
+
+# 4. Build the program (compiles and runs the tests; a few minutes the first time)
+mvn clean package
+#    …or skip the tests to build faster:
+#    mvn -q clean package -DskipTests
+
+# 5. Run it — this starts the browser interface
+java -jar target\leo-trajectory-0.1.0.jar gui
+```
+
+### What you should see
+
+When it starts, it prints a line like:
+
+```
+Open:  http://127.0.0.1:XXXXX/#t=<token>
+```
+
+and opens your browser there automatically. If it does not open, copy that exact address
+(the token matters) into your browser. Everything is in that page:
+
+- **Data** — the catalogue of input files (it recognises each file by its content).
+- **Run** — set up and launch an orbit determination + forecast (it opens on the tested
+  Sentinel-3A window by default). Buttons: **▶ Run**, **⚖ Compare product tiers**.
+- **Results** — the 3D globe, the interactive 2D ground-track map (hover to scrub time), the
+  diagnostic plots, and the OEM / KML / CZML / report downloads.
+- **Window** — run a whole date range (e.g. the 61-day campaign) and see the trends.
+- **Help** — ask a question and get an answer from the bundled documentation, offline.
+
+Stop the program with **Ctrl+C** in the terminal, or the ⏻ button at the top-right of the page.
+
+> **Notes.** Run the `gui` command from the project folder so it finds the `data` directory.
+> The first launch spends about a minute cataloguing the ~950 bundled input files. For
+> air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
+> (Windows) builds a bundle that carries its own Java runtime — see
+> [`packaging/README-OFFLINE.md`](packaging/README-OFFLINE.md).
+
+---
+
+## How it works (one paragraph)
+
+For a chosen cut-off time, the program takes the satellite's GPS observations over a short arc
+(6 hours by default), computes a position fix at each epoch by **single-point positioning**,
+fits a single consistent orbit to those fixes by **batch least-squares orbit determination**,
+and then **numerically propagates** that orbit forward (gravity field, atmospheric drag, solar
+radiation, Sun/Moon, tides, relativity) to produce the forecast. Where a precise reference orbit
+(**POEORB**) exists, it also reports the error against it — for display only; it is never fed
+back into the computation. Full detail, with pictures and a glossary, is in
+[`docs/REPORT.md`](docs/REPORT.md).
 
 ---
 
 ## Documentation
 
-- **[docs/USAGE.md](docs/USAGE.md)** — build/run, every CLI command and flag, and
-  the complete scenario `.properties` reference.
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — package map, the extension
-  interfaces, and how to add a force model / atmosphere / integrator / propagator.
-- **[docs/PHYSICS.md](docs/PHYSICS.md)** — every model with its formula and
-  reference, plus the full validation table and honest accuracy caveats.
-- **[docs/OREKIT_DATA.md](docs/OREKIT_DATA.md)** — using orekit-data EOP
-  (`--eop-file`) and gravity models (`--gravity-file`); which files to supply.
+- **[docs/REPORT.md](docs/REPORT.md)** — illustrated end-to-end report (problem → results) with a glossary.
+- **[docs/USAGE.md](docs/USAGE.md)** — every CLI command and flag, and the scenario `.properties` reference.
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — package map and how to add a force model / atmosphere / integrator / propagator.
+- **[docs/PHYSICS.md](docs/PHYSICS.md)** — every model with its formula, references and accuracy caveats.
+- **[docs/OREKIT_DATA.md](docs/OREKIT_DATA.md)** — supplying orekit-data EOP and gravity models.
+
+The in-app **Guide** (the *Guide* button in the interface, or
+`src/main/resources/gui/guide/`) walks through every feature with screenshots.
 
 ---
 
-## Why this design
+## What is implemented
 
-The request was a *modular* model where you "plug in necessary force models and
-every variable is flexible to choose." That maps directly onto one extension
-point and one configuration surface:
+A merged pipeline **GPS observations → single-point positioning → batch orbit determination →
+numerical propagation → CCSDS OEM**, with:
 
-- **`ForceModel`** — the single interface every perturbation implements. The
-  propagator simply sums whatever models you register. Add solid tides, albedo,
-  thrust, a new atmosphere — implement `ForceModel`, register it, done.
-- **`PropagationConfig` / `.properties` scenarios** — turn individual forces on
-  and off and set their parameters, the integrator, tolerances, the orbit
-  representation, and the output, all without recompiling.
+- **GPS products**, in priority order **IGS Final → Rapid → Ultra-rapid → Broadcast**, chosen
+  per satellite and per epoch; works in cut-off-safe *Forecast* mode or retrospective
+  *Reconstruction* mode.
+- **Force models** (each independently on/off with a model choice): spherical-harmonic gravity
+  (EGM96 to degree/order 70), atmospheric drag (exponential / Harris-Priester / NRLMSISE-00 /
+  JB2008), solar radiation pressure with eclipse, Sun and Moon third bodies, solid and ocean
+  tides, general relativity (Schwarzschild + Lense-Thirring), Earth albedo/IR, empirical
+  acceleration.
+- **Integrators:** Dormand-Prince 5(4) adaptive (default) and RK4; a semi-analytical DSST
+  mean-element propagator for long runs.
+- **Formal covariance** propagated from the orbit-determination solution to the output epochs.
+- **Outputs:** CCSDS OEM 2.0 (with covariance), KML, CZML, a printable HTML report, and a log —
+  every run is reproducible from its stored configuration and input checksums.
+- **Offline web interface:** 3D globe (with a Sentinel-3A build and a generic build), interactive
+  2D ground-track map, diagnostic plots, run history, multi-run comparison, product-tier
+  comparison, parameter sweeps, ground-station passes, and an offline retrieval-augmented (RAG)
+  help search.
 
----
-
-## Features implemented
-
-### Time
-- Absolute dates on a uniform atomic timeline (sub-microsecond precision)
-- Time scales: **TAI, UTC, TT, UT1, GPS**, with the full 1972–2017 leap-second table
-- Leap-second-free durations; calendar ↔ instant conversion in any scale
-
-### Geometry / frames
-- Pseudo-inertial **GCRF/J2000** frame (propagation frame)
-- Earth-fixed **ITRF** frame via the full **IAU-2006 precession + IAU-2000B
-  nutation + ERA/GAST + polar motion** transform (validated against SOFA), with a
-  fast GMST-only `SIMPLE` mode; optional **IERS EOP C04** loading (`IersEopProvider`)
-- Kinematic `Transform` (rotation + angular velocity → correct velocity transforms)
-- `OneAxisEllipsoid` with Bowring geodetic conversion (latitude, longitude, altitude)
-
-### Bodies
-- Earth (central body), **Sun and Moon** low-precision analytical ephemerides
-  (Montenbruck & Gill)
-
-### Orbits
-- **Cartesian, Keplerian, Equinoctial** representations with loss-free conversions
-- Mean / eccentric / true anomaly handling (Kepler's equation solved by Newton)
-
-### Force models (all pluggable via `ForceModel`)
-| Model | Class | Notes |
-|-------|-------|-------|
-| Central attraction | `NewtonianAttraction` | point mass |
-| **Spherical-harmonic gravity** | `SphericalHarmonicGravity` | Cunningham/Gottlieb recursion, degree/order selectable; default J2–J6 zonal, or load a full normalised field |
-| **Third-body** | `ThirdBodyAttraction` | Sun, Moon, or any `CelestialBody` |
-| **Atmospheric drag** | `DragForce` | pluggable `Atmosphere`: `ExponentialAtmosphere`, `HarrisPriesterAtmosphere` (diurnal bulge), **`NRLMSISE00Atmosphere`** (full empirical thermosphere, solar/geomagnetic driven via a `SpaceWeatherProvider`) |
-| **Solar radiation pressure** | `SolarRadiationPressure` | conical umbra/penumbra eclipse model |
-| **Solid Earth tides** | `SolidTides` | Sun+Moon geopotential deformation, IERS-2010 (degree 2-3 + k⁺ degree-4) |
-| **Ocean tides** | `OceanTides` | IERS-2010 eq 6.15, bundled FES2004 8-constituent (Q1,O1,P1,K1,N2,M2,S2,K2) to d/o 4 |
-| **Earth albedo + IR** | `EarthRadiationPressure` | Knocke-Ries reflected-sunlight + thermal-IR pressure |
-| **General relativity** | `Relativity` | Schwarzschild + optional Lense-Thirring (frame dragging) |
-| **Empirical** | `EmpiricalAcceleration` | constant RTN, for unmodelled forces |
-
-### Integrators (pluggable via `ODEIntegrator`)
-- **Dormand-Prince 5(4)** adaptive step with error control (recommended)
-- Classical **RK4** fixed step
-
-### Propagation
-- `NumericalPropagator` — Cowell integration of the summed forces (osculating)
-- **`DSSTPropagator`** — semi-analytical mean-element propagator (numerically-averaged
-  DSST): orbit-averages the variational equations so the mean elements step in
-  hours-to-a-day, ~20× faster than Cowell for multi-year/lifetime runs, reusing
-  every force model; outputs mean elements
-- `KeplerianPropagator` — analytical two-body baseline
-- Dense (cubic-Hermite) output on a user-defined grid; multiple step handlers
-- In-memory ephemeris collection and CSV export (with ground track)
-- **Event detection** (g-stop with bracketing + bisection): apside, node, altitude
-  (re-entry), eclipse
-
-### Validation & orbit determination
-- **POEORB precise-orbit reader** (`PoeOrbReader`) — parses CCSDS/Earth-Explorer
-  `AUX_POEORB *.EOF` files (e.g. Sentinel-3), including the carried UT1−UTC offset
-- **`validate` command** — seed from a precise state, propagate the full force
-  model, and report radial/along/cross-track position error vs the precise orbit
-  (table + ASCII plot). A conservative ground-truth check on the whole stack
-- **Batch least-squares orbit determination** (`BatchLeastSquares`) — Gauss-Newton
-  fit of the initial state (and, optionally, the drag coefficient) to position
-  observations, via finite-difference partials so it works with any force model
-  and either propagation engine; parameter scaling + step-halving backtracking
-- **`fit` command** — run the batch OD against a POEORB arc and report pre/post-fit
-  residual RMS and the estimated parameters
-
-### I/O & configuration
-- `.properties` scenario files (see `sample-scenario.properties`)
-- CSV ephemeris writer
-- TLE parser (approximate seeding)
-
----
-
-## Build & run
-
-Requires JDK 17+ and Maven.
-
-```bash
-mvn test          # compile + run the verification suite
-mvn package       # build the jar
-
-# run a scenario
-java -cp target/classes org.ursc.trajectory.app.PropagatorApp sample-scenario.properties
-```
-
-Example output for a 600 km, 51.6° orbit over one day (gravity 6×0 + Sun + Moon +
-Harris-Priester drag + SRP) shows a nodal regression of about **−4.55°/day**,
-matching the classical J2 secular rate to within the contribution of the other
-perturbations.
-
-### Programmatic use
-
-```java
-AbsoluteDate epoch = new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
-KeplerianOrbit orbit = new KeplerianOrbit(
-        Constants.EARTH_EQUATORIAL_RADIUS + 600_000, 0.001, Math.toRadians(51.6),
-        0, Math.toRadians(30), 0, PositionAngle.MEAN,
-        FramesFactory.getGCRF(), epoch, Constants.EARTH_MU);
-
-NumericalPropagator propagator = new PropagationConfig()
-        .initialState(new SpacecraftState(orbit, 500.0))
-        .integrator(new DormandPrince54Integrator(1e-6, 1e-9, 1e-3, 300.0), 60.0)
-        .gravityField(GravityFieldFactory.getDefaultZonalField(), 6, 0)
-        .thirdBody(CelestialBodyFactory.getSun())
-        .thirdBody(CelestialBodyFactory.getMoon())
-        .drag(new HarrisPriesterAtmosphere(), 2.2, 2.0)
-        .solarRadiationPressure(CelestialBodyFactory.getSun(), 1.5, 2.0)
-        .outputType(OrbitType.KEPLERIAN)
-        .build();
-
-SpacecraftState finalState = propagator.propagate(epoch.shiftedBy(86400));
-```
-
-## Scenario configuration
-
-See `sample-scenario.properties` — every force is an independent `force.* = true/false`
-toggle with its own parameters; the integrator, orbit, spacecraft, output and
-optional re-entry event are all data-driven.
-
-## Adding a new force model
-
-```java
-public final class MyPerturbation implements ForceModel {
-    public Vector3D acceleration(SpacecraftState state) {
-        // return the acceleration (m/s^2) in the state's inertial frame
-    }
-    public String getName() { return "MyPerturbation"; }
-}
-```
-Register it with `propagator.addForceModel(new MyPerturbation())` (or add a knob
-to `PropagationConfig`). Nothing else changes.
+See [docs/REPORT.md](docs/REPORT.md) for the full feature tour and the validation results on the
+Sentinel-3A two-month campaign.
 
 ---
 
 ## Verification
 
-The test suite (`mvn test`) checks:
-- loss-free orbit-parameter conversions and anomaly consistency
-- specific-energy conservation under two-body dynamics over 10 orbits
-- numerical vs. analytical Keplerian agreement to sub-metre over an hour
-- J2 nodal regression matching the secular formula `dΩ/dt = -1.5 n J2 (Re/p)² cos i`
-- time-scale offsets, leap seconds, and calendar round-trips
-- **NRLMSISE-00 reproduces the official reference test case to 7 significant figures**
-  (densities, total mass density, and both temperatures)
-- **DSST** matches two-body exactly, the J2 secular nodal rate to ~1%, and the
-  Cowell secular SMA decay under drag to ~0.1 m over 3 days (mean-vs-mean)
-- **Batch least-squares OD** recovers a perturbed initial state to ~mm and a
-  known drag coefficient to within 0.05 from noise-free synthetic observations
-- **POEORB reader** parses records, state-vector fields and the UT1−UTC offset
-
-Beyond the unit suite, the propagator has been checked end-to-end against **real
-Sentinel-3A/3B precise orbits**: pure propagation from a single POEORB state
-holds radial and cross-track error to a few metres over a day, with the residual
-dominated by along-track (drag/ballistic) growth — which the `fit` command then
-collapses by estimating the drag coefficient (e.g. ~38 m → ~4 m RMS over a 6 h
-arc).
+`mvn test` runs the full suite (120+ tests): loss-free orbit conversions, energy conservation,
+J2 nodal regression, the time-scale/leap-second table, NRLMSISE-00 against its official reference
+case, DSST agreement, batch-OD recovery of a known state and drag coefficient, POEORB parsing,
+CCSDS OEM round-trip, and the data-catalogue content recognition. The pipeline is additionally
+checked end-to-end against real **Sentinel-3A** precise orbits (POEORB).
 
 ---
 
-## Modelling assumptions & accuracy
+## Data
 
-This is a faithful first release focused on the perturbations that dominate
-**long-term LEO** behaviour. Known simplifications (each is an isolated, clearly
-marked extension point):
-
-- GCRF→ITRF uses the full IAU-2006/2000B precession-nutation + ERA/GAST + polar
-  motion (validated against SOFA); sub-arcsecond accuracy needs an IERS EOP file,
-  otherwise UT1=UTC and polar motion are zero.
-- Sun/Moon ephemerides are low-precision analytical series (≈0.1° / few-hundred-km),
-  ample for perturbation forcing.
-- UT1 ≈ UTC (dUT1 = 0); no IERS Earth-orientation data yet.
-- Atmosphere models range from static (exponential) through diurnal
-  (Harris-Priester) to the full solar/geomagnetic-driven **NRLMSISE-00**, driven
-  by a `SpaceWeatherProvider` that is either constant or **file-backed**
-  (`CssiSpaceWeatherProvider` reads a CelesTrak CSSI `SW-All.csv` for historical
-  F10.7 and Ap).
-- TLE seeding is approximate (no SGP4 mean-to-osculating recovery).
-
-## Roadmap (toward broader Orekit parity + beyond)
-
-Natural next modules, all building on the existing interfaces:
-- **Atmosphere:** Jacchia-Bowman 2008, DTM2000 (NRLMSISE-00 with a file-backed
-  CelesTrak space-weather provider is implemented)
-- **Gravity:** embedded higher-degree EGM2008 subset (EGM96 to d/o 70, solid &
-  ocean tides, and Lense-Thirring are implemented)
-- **Perturbations:** frequency-dependent (Step 2) tide terms, pole tide, de Sitter
-- **Frames:** full IAU-2000A nutation (1365-term) if sub-mas is needed; automatic
-  EOP download (IAU-2006/2000B precession-nutation, polar motion and EOP C04 loading
-  are implemented)
-- **Propagation:** DSST short-period recovery (osculating output); analytical
-  Brouwer-Lyddane; state-transition matrix & covariance propagation (the
-  numerically-averaged DSST mean-element propagator is implemented)
-- **Determination:** batch least-squares and Kalman/Unscented filters over measurements
-- **Maneuvers:** impulsive and finite-burn models
-- **I/O:** CCSDS OEM/OMM/OPM, SP3, RINEX
+The bundled dataset covers the tested window (Sentinel-3A, 2 September – 2 November 2024):
+GNSSRD GPS observations, PROQUA attitude, POEORB reference orbits, and GPS products (Broadcast,
+IGS Final, Rapid, Ultra-rapid from several analysis centres), each with checksums. See the
+[input-data table](data/README.md) and the [machine-readable manifest](data/input-manifest.json).
+Incomplete downloads are quarantined under `data/unconfirmed-downloads/` and are not used.
 
 ---
 
-*Built as a reference-quality, extensible foundation. Contributions extend it one
-`ForceModel`, `Atmosphere`, `ODEIntegrator`, or `Propagator` at a time.*
-
-
-## Uploaded navigation data and RINEX 4 support
-
-The [navigation dataset and compatibility guide](data/gnss/navigation/README.md) includes
-63original RINEX4.02 daily files (September1–November2,2024), checksums and coverage.
-The GPS navigation reader now supports GPS LNAV in RINEX3.x and RINEX4.00–4.02
-(including gzip), used directly by the `spp --nav` input.
-
-Previously uploaded observations, attitude and orbit-state fixtures are now archived
-with checksums. See the [input data inventory](data/README.md) and
-[machine-readable manifest](data/input-manifest.json).
-
-The [input-data table](data/README.md) also links the archived
-[CODE Final SP3 orbit and CLK clock products](data/gnss/products/final/README.md):
-124 files covering September 2-November 2, 2024, with per-file checksums.
-
-The [agreed estimation/prediction architecture](docs/MERGED_ARCHITECTURE.md) preserves
-the merged batch-OD, force-model and propagation engine for future implementation.
-
-
-## Complete available input archive
-
-The [input-data table](data/README.md) now includes Broadcast, Final, Rapid and Ultra-Rapid products, uploaded GNSSRD/PROQUA/POEORB inputs, supporting GNSS products and checksum manifests. Coverage varies by provider; incomplete downloads are quarantined and excluded from model input coverage.
+*Licence note: the NRLMSIS 2.0 and DTM2020 atmosphere models and their coefficient files are not
+included for licensing reasons; the shipped drag options are exponential, Harris-Priester,
+NRLMSISE-00 and JB2008.*
