@@ -1,5 +1,5 @@
 {
-  "scope": "Previously uncommitted input data only; published navigation retained unchanged",
+  "scope": "Archived input data, including CODE Final GNSS SP3/CLK products; published navigation retains its separate manifest",
   "new_input_files": [
     {
       "path": "data/attitude/2024/S3A_OPER_AUX_PROQUA_POD__20240919T070047_V20240917T235942_20240918T235941.tgz",
@@ -639,6 +639,874 @@
       "bytes": 27424645,
       "sha256": "48461c0b0f8bfee1a216c6d5e3de94d5a868a133b2295853504a5ea6e848f67c",
       "origin": "S3A_OPER_AUX_GNSSRD_POD__20240909T071039_V20240902T235942_20240903T235941.tgz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242460000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633947,
+      "sha256": "2dc42fc3cd981208f6583c50478114993d8607afaca2fdceaeac7eec8c25b0eb",
+      "origin": "COD0OPSFIN_20242460000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242460000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4999889,
+      "sha256": "640dd8297952566af52adf4e9cd42fd3fda7b18b5406717bdbc2be92e38a094e",
+      "origin": "COD0OPSFIN_20242460000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242470000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 632493,
+      "sha256": "d918a79a8721807df03293c01576682861252214151ceee1fe1ad107bf3e4a29",
+      "origin": "COD0OPSFIN_20242470000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242470000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5007883,
+      "sha256": "6ddab445d85e8bc1b0f8bc687296651bdbcd066f6597863bf1ae2e849ce24d5b",
+      "origin": "COD0OPSFIN_20242470000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242480000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633553,
+      "sha256": "eb5a62ceaa0efab7b269850417ff4e91f1e602abb9b51ff29bb30da0fd68cffd",
+      "origin": "COD0OPSFIN_20242480000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242480000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5064879,
+      "sha256": "ec84f5eb667c00405b50f8f22228787740479712795227e23546f97b655473ef",
+      "origin": "COD0OPSFIN_20242480000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242490000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633748,
+      "sha256": "1ab88bfc4860612e7e3f6e106afd2a07a812b786326a512e3a288f3bf9b21467",
+      "origin": "COD0OPSFIN_20242490000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242490000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5080656,
+      "sha256": "9002d92b0de5963459d29e0ae473d7b6af482a27facb5c18826a68e2f0be7579",
+      "origin": "COD0OPSFIN_20242490000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242500000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633738,
+      "sha256": "7348fd0ec01cf0e4216882b1c6959542ac9b4c058ab4c349cd27b95230da4332",
+      "origin": "COD0OPSFIN_20242500000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242500000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5022451,
+      "sha256": "c0e823aa89ed8ad24e587a8ac6d60b5a3bee1d751436ddb82e60dc1bb8868bb3",
+      "origin": "COD0OPSFIN_20242500000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242510000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634017,
+      "sha256": "2179a2637d2da6a00e0828b9199e9c771e7df57f600a7108cd60105692aed8b9",
+      "origin": "COD0OPSFIN_20242510000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242510000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4984675,
+      "sha256": "e09c9d336413e53a236ca7b9ec8394c14dfb33c02727900e985c15328235d74e",
+      "origin": "COD0OPSFIN_20242510000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242520000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633922,
+      "sha256": "58de99173632e4304d509a2a0cf1f1c731eaec2be483ebd668f837ed86aa25ce",
+      "origin": "COD0OPSFIN_20242520000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242520000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5054976,
+      "sha256": "0d78b8e87fc5d14e4b1d2583412f7c0e19d17cd1654c2d56a346c0330271b13d",
+      "origin": "COD0OPSFIN_20242520000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242530000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633825,
+      "sha256": "4cd63f327470989033ef78c059024bb3196f22441df3fa980b245ef3caee3f6e",
+      "origin": "COD0OPSFIN_20242530000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242530000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5035883,
+      "sha256": "cb35b6417110689ce98d05611600304d46114a44d2e03177df8ea35c6df92234",
+      "origin": "COD0OPSFIN_20242530000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242540000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634106,
+      "sha256": "4efdbdee5937f7e50565bb03c86fdb44fa39c6f5ff64ae4c1a853fa51182e09e",
+      "origin": "COD0OPSFIN_20242540000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242540000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5066021,
+      "sha256": "0012bd1099a135d3e9eb4c81729544fbeceb25fe4cd4eec50cbd89a5d7817047",
+      "origin": "COD0OPSFIN_20242540000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242550000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634060,
+      "sha256": "c68b818db88d1dfe9a7170d84a991f47fd2122b30ea584e0adc905ad4bd05422",
+      "origin": "COD0OPSFIN_20242550000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242550000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5039906,
+      "sha256": "6875f3f552b4a3f0b29b4043ce2352388956f25fa491bfcc423a93c4d328bf67",
+      "origin": "COD0OPSFIN_20242550000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242560000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633966,
+      "sha256": "dd5fe6a8a8bcd780aafcecf618a94d3d0b764f779462b4270c5fa82ed5fdc1df",
+      "origin": "COD0OPSFIN_20242560000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242560000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4996804,
+      "sha256": "87c672ee5305cda11cb34f75426fef3fdf7820e071027b069279b764c4f3cf18",
+      "origin": "COD0OPSFIN_20242560000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242570000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633951,
+      "sha256": "4cd55806c9e063f3a7beb59d6033076f7b08ecc250891205f87c4b90e870d71a",
+      "origin": "COD0OPSFIN_20242570000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242570000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5043046,
+      "sha256": "8d7d38db910869c0379d439feab8d79dc31a474ef5df970d120618c59f8b223a",
+      "origin": "COD0OPSFIN_20242570000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242580000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634253,
+      "sha256": "664adc42ff606fb23f946d9b87ca70f481680afffa75e271e0aec896358f1bd4",
+      "origin": "COD0OPSFIN_20242580000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242580000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5050575,
+      "sha256": "6aaa189824fb54826938a6b0503698b51ce7985934fa7a60d0097cbe0eb1b727",
+      "origin": "COD0OPSFIN_20242580000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242590000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633912,
+      "sha256": "9221e9f6edcd8f6c8f73216a065fef924edc7e2fbe20df369fb627f4c6244b60",
+      "origin": "COD0OPSFIN_20242590000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242590000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5035377,
+      "sha256": "b5a5c4a706169bb4d092d2bcf82d41e6c961260c2ef6546e251b411b42178f94",
+      "origin": "COD0OPSFIN_20242590000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242600000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634067,
+      "sha256": "2edc6223f24aa8e22ba09e3479359e42495f89af69ce67513822d8f911ff8881",
+      "origin": "COD0OPSFIN_20242600000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242600000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5057624,
+      "sha256": "cd16e7ac77bb7344a2172ed77b8d5f5da1ebf7d7e800825a943387ea9d833ece",
+      "origin": "COD0OPSFIN_20242600000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242610000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633869,
+      "sha256": "6827e918c5fc380c55992f5efe545e50345c8482d58c81bd20ed900dde53964e",
+      "origin": "COD0OPSFIN_20242610000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242610000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5048311,
+      "sha256": "1c2aeba28994a7a5e80099cd156ea7a864ec1a4d9f1eadcb58d60e4778767b58",
+      "origin": "COD0OPSFIN_20242610000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242620000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633367,
+      "sha256": "ff86ba0e854a22d49504d3cf41e2aa934f2de72ae67dc6ba0ff992edead71c9e",
+      "origin": "COD0OPSFIN_20242620000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242620000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5034242,
+      "sha256": "8553b6eedf231a08418babe3c4aab24345af40e796764eed8dd3e4a92aded96a",
+      "origin": "COD0OPSFIN_20242620000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242630000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633551,
+      "sha256": "4de85757a0e9807ebc137b12fda55164512da43054cead6450d657e1e45bf63a",
+      "origin": "COD0OPSFIN_20242630000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242630000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5025095,
+      "sha256": "471042f91f3724a7aabcd77d40e5b9b4788c92fe78d69158830f7875ee2437c2",
+      "origin": "COD0OPSFIN_20242630000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242640000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633879,
+      "sha256": "eba6cbd912d8ecac8b031dcec237d6008fc4d8784cfcdc7306cd4d3e91debe73",
+      "origin": "COD0OPSFIN_20242640000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242640000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5071666,
+      "sha256": "a704cb650916b04768801c599cbc2672f3875e55c6eb1f619f7dad54ccd35c7b",
+      "origin": "COD0OPSFIN_20242640000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242650000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633759,
+      "sha256": "6e08a827f8e48379acbf037e9afd20cc45a8956ff0f46c05fdd2c6c610562102",
+      "origin": "COD0OPSFIN_20242650000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242650000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5005097,
+      "sha256": "f6307562acc12bb4df074a259d3a6f54841ce82eae6795b8d917a93924ac6457",
+      "origin": "COD0OPSFIN_20242650000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242660000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634164,
+      "sha256": "f24ef7e7851d9a619c48faa1ffe4ab4675824dd9d187ea2152db48a0f5be8a26",
+      "origin": "COD0OPSFIN_20242660000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242660000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5006394,
+      "sha256": "a522d8411936b279d0941520fb97c3383577775ebc9b3f8e00762dcdc49a8e43",
+      "origin": "COD0OPSFIN_20242660000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242670000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633644,
+      "sha256": "d7d7f1a0db1e21cbd8ce7d4b0562edebffd4bfc3982df0fda7a0e98bd8461ad9",
+      "origin": "COD0OPSFIN_20242670000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242670000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5009655,
+      "sha256": "1bc99635adde6183e98dfd24a9d0c78551bd204107aa4581f76876744d73917f",
+      "origin": "COD0OPSFIN_20242670000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242680000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633907,
+      "sha256": "c5cab98b7c8f8338deb0f0d554a62a86b337938b10e479f9728dbe1d6fa930eb",
+      "origin": "COD0OPSFIN_20242680000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242680000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5029417,
+      "sha256": "991de6d444464814c6ad959e827ca3fa1de8dc640cbf3806a9ac6a91ef690641",
+      "origin": "COD0OPSFIN_20242680000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242690000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633815,
+      "sha256": "d3c741e2120cfc3fabdc13acbe7d260e33e3fe5aecbc8ab6c608a2b3c1f6d4a5",
+      "origin": "COD0OPSFIN_20242690000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242690000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5013860,
+      "sha256": "d7a6a39f944225d09f49b3f2db96a7ff3486e35f95b51f551d46d65b929215f1",
+      "origin": "COD0OPSFIN_20242690000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242700000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633818,
+      "sha256": "8dcd32223c65736a5f7c8bcbce9bca2c36d15f92187b8aa00178c421c0b2710f",
+      "origin": "COD0OPSFIN_20242700000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242700000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5010176,
+      "sha256": "f4543fe60585743ec6ee3135d076feea639976d743e6978b0e69535640db122f",
+      "origin": "COD0OPSFIN_20242700000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242710000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633896,
+      "sha256": "64ad7a9a687dcb5491428f4fec14e81589fe04b4702456b17df06303a47ca80d",
+      "origin": "COD0OPSFIN_20242710000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242710000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5007073,
+      "sha256": "f3ef5977f3866ad8edaddc9c405c3916be07724cdb48e3db9e56f4108475465d",
+      "origin": "COD0OPSFIN_20242710000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242720000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634176,
+      "sha256": "fec0b50ff8ed3bc0d12abe4ee35ddb1aa96aac6fef85a2d706ec61f0b3fef906",
+      "origin": "COD0OPSFIN_20242720000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242720000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5005229,
+      "sha256": "5dd78c8fb8d0a3c050705d631d20709be670c54dfc59d2efcd5969b99b08b7a6",
+      "origin": "COD0OPSFIN_20242720000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242730000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633896,
+      "sha256": "b5dfacca5b6f68c6eea6d8e82dcf0e37dd2bba31aab4030321f5cfda7ff1e3dc",
+      "origin": "COD0OPSFIN_20242730000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242730000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5012755,
+      "sha256": "27d7b9320a08a32dbd31ea2fc0044c914c7dccc95caab3edc2d166c41223a87d",
+      "origin": "COD0OPSFIN_20242730000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242740000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634038,
+      "sha256": "d6a3e2b33c82f96717358ef013be2e93a0aaad5eeb13cda8d7052d3fdcd78c2f",
+      "origin": "COD0OPSFIN_20242740000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242740000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5021825,
+      "sha256": "959da258ba18d54be2f031156fc8d9149f8cba83ccd14272a83bb13646724775",
+      "origin": "COD0OPSFIN_20242740000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242750000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633521,
+      "sha256": "77502d279853d028b734a5f22d3bb1809f2ef4f602fa08cb040b7d245b277b50",
+      "origin": "COD0OPSFIN_20242750000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242750000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5024076,
+      "sha256": "4a2e3f312d8ef88bf978069641fb76d629a1402654b6bc94d1e830a918faca1f",
+      "origin": "COD0OPSFIN_20242750000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242760000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634083,
+      "sha256": "5f66d70beefe460eb5f629019fd5c917682f87d5f5bf598a86b5888690c7d7b0",
+      "origin": "COD0OPSFIN_20242760000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242760000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5047287,
+      "sha256": "aef026949f4b209dc58f5c9ac452d8ce8189fbcda9275618b6b004b91f8c8411",
+      "origin": "COD0OPSFIN_20242760000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242770000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633649,
+      "sha256": "c1bae2015a17af0f2b28e82e25cc1279e26a22db949e3893319e1d9dd56aeb47",
+      "origin": "COD0OPSFIN_20242770000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242770000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5047686,
+      "sha256": "14ca58ed4bf6fbf31d9f3a6152631c88f9d71e2fe4d48c93dfeda72861566b73",
+      "origin": "COD0OPSFIN_20242770000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242780000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 631728,
+      "sha256": "c9207805f9d8aa2d74dfd7a8df6bb36a70d8253ae6d4adc64156a89286dd072b",
+      "origin": "COD0OPSFIN_20242780000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242780000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4979268,
+      "sha256": "031642e18f401f82aee1177227c99b34f4f644c44ecfc4f2f87ab4f02c626c83",
+      "origin": "COD0OPSFIN_20242780000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242790000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634248,
+      "sha256": "a7f01b0070c96d2f66fb87c1496d06335165a8b3bd887dfec1544a0ecee2d5dd",
+      "origin": "COD0OPSFIN_20242790000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242790000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5052079,
+      "sha256": "536928734dc7639787a6f60a537094c971be24827942df361b944b878943c5af",
+      "origin": "COD0OPSFIN_20242790000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242800000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633515,
+      "sha256": "290473c427b35b60e81a576e4a1875e135f3145bb72456d519a5358359a237b5",
+      "origin": "COD0OPSFIN_20242800000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242800000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5040341,
+      "sha256": "063eadba8a9ac78acbc03422d0d798fe1cd8ae8e187ee47e2651f6ab716335d5",
+      "origin": "COD0OPSFIN_20242800000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242810000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 633233,
+      "sha256": "0d6600e33e7b6a1e4e4f4032337e8339688692ed86d6837bc89a75b07b19ae26",
+      "origin": "COD0OPSFIN_20242810000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242810000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5065385,
+      "sha256": "5747eba7b5ac0b7aa5fa0ffa2818207cec091da52ed4de463e416325aa63af9b",
+      "origin": "COD0OPSFIN_20242810000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242820000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625795,
+      "sha256": "a5e740b49c53eda6c84510333a2ff57d994e3eb80d4acc00ccabc347af4fa2ab",
+      "origin": "COD0OPSFIN_20242820000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242820000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5027067,
+      "sha256": "ce8936c68c5e567999215e7bdf0f0670bac0d40d322bdde6d1f5780c22452175",
+      "origin": "COD0OPSFIN_20242820000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242830000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625864,
+      "sha256": "c066dcf862d60611785b93f67d670d239dec27100cc0faf3944ce7ff519cf0fc",
+      "origin": "COD0OPSFIN_20242830000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242830000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4984178,
+      "sha256": "628316fc9fbf987cfb36d5fe995769486741e9ec2c96335c6620acbc946c32fe",
+      "origin": "COD0OPSFIN_20242830000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242840000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625952,
+      "sha256": "1f47457ab2696f11f1b57a247c42d6843175b787cc1ce0aeaaa49fcb2ad42380",
+      "origin": "COD0OPSFIN_20242840000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242840000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4960917,
+      "sha256": "0ed0205265cc73c5d8ac80b11d932f1128252edfb4c16b49d7ff328a5974cc8f",
+      "origin": "COD0OPSFIN_20242840000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242850000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625926,
+      "sha256": "3db7c4464601d1498769df5e71920976cfc6da1b03a36e65deb1887ae291ee26",
+      "origin": "COD0OPSFIN_20242850000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242850000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5018029,
+      "sha256": "6ff0d1a3346eecccbd792be0d874ec83573446ff78fcec1074a0631ff7a9302c",
+      "origin": "COD0OPSFIN_20242850000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242860000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625939,
+      "sha256": "cec9fa17e30f03b77b359b967bf5b33c2a5f5b19004c91728837b1e4443eceed",
+      "origin": "COD0OPSFIN_20242860000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242860000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5011086,
+      "sha256": "9cbd642503791b9f95e96f6821a77047d6059501b314501967491c3032e412d2",
+      "origin": "COD0OPSFIN_20242860000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242870000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 626186,
+      "sha256": "2dccea1b313f1be0cbbe13d00f74441f6e469ec2636c41df5d640a22f9c55adf",
+      "origin": "COD0OPSFIN_20242870000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242870000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5027349,
+      "sha256": "429bd3bff7a8fc23ce3c6ae6135cd4e97d937deedb9433b990316dd632c0bb08",
+      "origin": "COD0OPSFIN_20242870000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242880000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625674,
+      "sha256": "6946b39fa66de3d7a196e1fe534ba673db279814116e17c6e09ba36f305bc32c",
+      "origin": "COD0OPSFIN_20242880000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242880000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5009986,
+      "sha256": "20d366dc30c50855052d9e9520e58de36760187555185e5f362883604173df3b",
+      "origin": "COD0OPSFIN_20242880000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242890000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625884,
+      "sha256": "df18fbc3321f042192b566c52b5cd1a293624fc8086fffcc0c8eddf63a52f002",
+      "origin": "COD0OPSFIN_20242890000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242890000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4991935,
+      "sha256": "90ea5ce045d3d1161820614c48eb96ad7cee8b32859e9828d4f9c7c113c3994f",
+      "origin": "COD0OPSFIN_20242890000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242900000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 626137,
+      "sha256": "49ea2db1e69a844b4a594a11a84b493b9ecf1e31eda1d5f5b3f1201803a9a996",
+      "origin": "COD0OPSFIN_20242900000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242900000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5003165,
+      "sha256": "86a6b0f5262dbc77597d1d90355286e25523b56b5ca06791e644474ff3de83ca",
+      "origin": "COD0OPSFIN_20242900000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242910000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 624959,
+      "sha256": "ec75c199bb6560f8159910f7e3f88f42a637a9d8935d1d706644aa943eb1eac4",
+      "origin": "COD0OPSFIN_20242910000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242910000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4985034,
+      "sha256": "10eb674c3121e363a1deb179d045157d9222719453f7cf62bc1d02a8a69f6d59",
+      "origin": "COD0OPSFIN_20242910000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242920000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625565,
+      "sha256": "9e516fd16efce1d338af980e1fed1f060290e22a8929bedda2d2c92875ee73f0",
+      "origin": "COD0OPSFIN_20242920000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242920000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4979414,
+      "sha256": "bbb53d2159db50538fca0096dfae03f69c54349c4709185d818cc37b88d4d124",
+      "origin": "COD0OPSFIN_20242920000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242930000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625956,
+      "sha256": "118583605d3661513bb312c7f3408d7e8e9fef61da49484cb10e5adc14c06aa9",
+      "origin": "COD0OPSFIN_20242930000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242930000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5002937,
+      "sha256": "039f994922d4aea7813a6945c0a63848e943cbf3b9285c4f3454a2f923415f01",
+      "origin": "COD0OPSFIN_20242930000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242940000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 626083,
+      "sha256": "36471c7beab735626526703a575bd39d7fb2be22413957000aa054ad3e3f7554",
+      "origin": "COD0OPSFIN_20242940000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242940000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5029542,
+      "sha256": "0bc03bb29685d6a718c284d93a8d548ef92307e943c145b8f2fa11ec93e70188",
+      "origin": "COD0OPSFIN_20242940000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242950000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625816,
+      "sha256": "cf3677c22a4bfd49c08ad83a6ed5070f292e95ec045ea4aa6f31e3e63834675f",
+      "origin": "COD0OPSFIN_20242950000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242950000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4988876,
+      "sha256": "4f02742c7c381d5d58762097d29197d13c99a62a8dfffa3c691c7812b67bd683",
+      "origin": "COD0OPSFIN_20242950000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242960000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 632613,
+      "sha256": "59c3d0671d6ae4503d34cec7001189559c1d5d1b3d6a4710e7962caf4ec4bb9e",
+      "origin": "COD0OPSFIN_20242960000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242960000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5004457,
+      "sha256": "f563e92a79beff7953b1a89af8fe87d8ecbad80f0253648143c90c55553045c7",
+      "origin": "COD0OPSFIN_20242960000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242970000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 640514,
+      "sha256": "3c8b996c9a38bfc73e8a3f931e22b09b4e0cc40429402c11a9bf2b7865082f9d",
+      "origin": "COD0OPSFIN_20242970000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242970000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5074905,
+      "sha256": "fd072a1a15e243bcd8fb49b4c72255621e0bf9adaed253606d01830b68f3de20",
+      "origin": "COD0OPSFIN_20242970000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242980000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 634071,
+      "sha256": "71f11a0dd06c78493dc899bd19c675c19adf56f493355e637cd7bbf94c104695",
+      "origin": "COD0OPSFIN_20242980000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242980000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5059942,
+      "sha256": "63dd95fc02cfa1b4d80893c881553971249ce3a5f29aa86be34c864429a8fe08",
+      "origin": "COD0OPSFIN_20242980000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242990000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 640979,
+      "sha256": "f3d4b1d4af059d4d26ba1f0719b358a2f7737ac0d96bece165be6bb5586a8e29",
+      "origin": "COD0OPSFIN_20242990000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20242990000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5066017,
+      "sha256": "4857113feda99d0b05c5dd7979a90e3a43b0e3065ce644a78568920ee9f47a1d",
+      "origin": "COD0OPSFIN_20242990000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243000000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 641451,
+      "sha256": "aadfdc049d4cdc35e629b5dab7d5ed5c7844c06137faeaa0ad326130b5861081",
+      "origin": "COD0OPSFIN_20243000000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243000000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5055371,
+      "sha256": "a916cf0398fae32a61395cf4f66bc5166053b57da73c02f71981e5c321912670",
+      "origin": "COD0OPSFIN_20243000000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243010000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 641632,
+      "sha256": "6806f26fc754f3124e7eb904b963f6c601bd07585d836327bea692912db861c6",
+      "origin": "COD0OPSFIN_20243010000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243010000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5094858,
+      "sha256": "1ed0ad9531bf4ee81608b2604c3ff170210be6a258d53eee75b10f1f4058417e",
+      "origin": "COD0OPSFIN_20243010000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243020000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 639828,
+      "sha256": "17380bc4cff7b1158f41d556166033624ade3862b8bc624bced0eeb84270652b",
+      "origin": "COD0OPSFIN_20243020000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243020000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5033294,
+      "sha256": "b111d26d8b3fde245ffbad1ec50e981430062a072a2a2de16b97fe31f48afdbd",
+      "origin": "COD0OPSFIN_20243020000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243030000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625515,
+      "sha256": "74482474663188a128f5363fceb1e5c165219e5415d18828e74a84bd8682148b",
+      "origin": "COD0OPSFIN_20243030000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243030000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5007825,
+      "sha256": "738af9d2a6f894c1ae6d0e719094db5206b422a20998aa2e2215adcf97069d64",
+      "origin": "COD0OPSFIN_20243030000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243040000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625517,
+      "sha256": "056e8d7418e7ebb2c4ab9b91dcf5622e8fdf1fbd275a2accd56e704adde9a496",
+      "origin": "COD0OPSFIN_20243040000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243040000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4993389,
+      "sha256": "6e4e394761f824a9ef1bce87ecb120589a2e10d8304730b553276ac720abc2df",
+      "origin": "COD0OPSFIN_20243040000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243050000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 625070,
+      "sha256": "cc5ab5db5f8b795224fbb62300f711c875e578adbe1bb04a24755b6f9d9fa573",
+      "origin": "COD0OPSFIN_20243050000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243050000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 5000393,
+      "sha256": "3dd0c6f7f849e16baa407c9b33e77e3d3afcda33455c4493d8e53c2226883ee8",
+      "origin": "COD0OPSFIN_20243050000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243060000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 618083,
+      "sha256": "359e8158fb5e76046b0cd53f75b516a3d8a3278b1c98548e198410b7d5396a47",
+      "origin": "COD0OPSFIN_20243060000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243060000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4988847,
+      "sha256": "a3602531a2808ad6844b54733a7dfe542b78724caa258f9de18bb1df2205c3c5",
+      "origin": "COD0OPSFIN_20243060000_01D_30S_CLK.CLK.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243070000_01D_05M_ORB.SP3.gz",
+      "kind": "CODE Final GNSS SP3 orbit",
+      "bytes": 617779,
+      "sha256": "cf03f12ff6a3073e8b7293a43ae3db7ab4dafcd3346da11d6326fa36687b1c52",
+      "origin": "COD0OPSFIN_20243070000_01D_05M_ORB.SP3.gz"
+    },
+    {
+      "path": "data/gnss/products/final/COD/OPS/2024/COD0OPSFIN_20243070000_01D_30S_CLK.CLK.gz",
+      "kind": "CODE Final GNSS CLK clock",
+      "bytes": 4925668,
+      "sha256": "7020995de6237a25d0e0bb2cb5ef46d71391c8fc142b839b9b2dd6228304b3a1",
+      "origin": "COD0OPSFIN_20243070000_01D_30S_CLK.CLK.gz"
     }
   ],
   "duplicate_copies_not_stored": [

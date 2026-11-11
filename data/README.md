@@ -3,7 +3,8 @@
 Raw uploaded files are retained byte-for-byte, compressed where originally supplied.
 `input-manifest.json` lists newly archived input files, sizes, SHA-256 hashes, roles,
 and duplicate aliases. Navigation has its own detailed manifest under
-`gnss/navigation/2024/manifest.json`.
+`gnss/navigation/2024/manifest.json`. Final product metadata and checksums are also listed in
+[`gnss/products/final/manifest.json`](gnss/products/final/manifest.json).
 
 | Input | Location | Coverage |
 |---|---|---|
