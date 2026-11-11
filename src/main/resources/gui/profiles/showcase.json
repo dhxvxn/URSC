@@ -1,0 +1,39 @@
+{
+ "_about": "Startup defaults of the GUI: the tested Sentinel-3A two-month window (docs/reports/two-month-forecast-analytics). Every value can be changed in the Run tab; 'Reset' returns here, 'Generic' returns to the library defaults.",
+ "runName": "Sentinel-3A tested window",
+ "cutoffUtc": "2024-09-03T05:59:42",
+ "window": {
+  "startDate": "2024-09-03",
+  "endDate": "2024-11-02",
+  "cutoffTimeUtc": "05:59:42",
+  "stepDays": 1
+ },
+ "spacecraft": {
+  "objectName": "SENTINEL-3A",
+  "objectId": "2016-011A",
+  "massKg": 1130.0,
+  "dragAreaM2": 8.0,
+  "srpAreaM2": 8.0,
+  "cd": 2.2,
+  "cr": 1.3
+ },
+ "integrator": {
+  "absTol": 1e-10,
+  "relTol": 1e-13,
+  "maxStepSeconds": 30.0
+ },
+ "weather": {
+  "forecastAp": 5.0
+ },
+ "od": {
+  "arcHours": 6.0,
+  "samplingSeconds": 300.0,
+  "pseudorangeSigma": 5.0,
+  "maxIterations": 12
+ },
+ "forecast": {
+  "spanDays": 7.0,
+  "outputStepSeconds": 60.0,
+  "covariance": false
+ }
+}

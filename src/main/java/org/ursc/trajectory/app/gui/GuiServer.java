@@ -69,6 +69,7 @@ public final class GuiServer implements AutoCloseable {
     private volatile Job current;
     private volatile boolean sweeping;
     private volatile boolean sweepCancel;
+    private volatile String indexing;
 
     /** Running job state. */
     private static final class Job {
@@ -191,6 +192,7 @@ public final class GuiServer implements AutoCloseable {
                 final Job j = current;
                 m.put("running", j == null ? null : Map.of("id", j.id, "stage", j.stage, "fraction", j.fraction));
                 m.put("search", search.status());
+                m.put("indexing", indexing);
                 json(ex, 200, m);
                 return;
             }
@@ -202,6 +204,8 @@ public final class GuiServer implements AutoCloseable {
                 return;
             case "config":
                 if (p.length > 1 && "default".equals(p[1])) {
+                    json(ex, 200, showcaseDefaults());
+                } else if (p.length > 1 && "generic".equals(p[1])) {
                     json(ex, 200, Json.parseObject(new RunConfig().toJson()));
                 } else if (p.length > 1 && "validate".equals(p[1])) {
                     final List<String> warn = new ArrayList<>();
@@ -239,6 +243,12 @@ public final class GuiServer implements AutoCloseable {
                 return;
             case "sweep":
                 startSweep(ex);
+                return;
+            case "window":
+                startWindow(ex);
+                return;
+            case "windows":
+                windowsApi(ex, p, method);
                 return;
             case "shutdown":
                 json(ex, 200, Map.of("ok", true));
@@ -479,7 +489,7 @@ public final class GuiServer implements AutoCloseable {
                 final Map<String, Object> cfg = Json.parseObject(Files.readString(d.resolve("config.json")));
                 final Path rf = d.resolve("reference.json");
                 final Map<String, Object> ref = Files.isRegularFile(rf) ? Json.parseObject(Files.readString(rf)) : null;
-                text(ex, "text/html; charset=utf-8", RunReport.build(res, cfg, Json.parseObject(new RunConfig().toJson()),
+                text(ex, "text/html; charset=utf-8", RunReport.build(res, cfg, showcaseDefaults(),
                         trajectory(d), ref, passes(d)), null);
                 return;
             }
@@ -932,6 +942,255 @@ public final class GuiServer implements AutoCloseable {
         json(ex, 202, Map.of("ids", ids));
     }
 
+    // ---- startup defaults, project data, window runs ----
+
+    /** Startup defaults: the library defaults overlaid with the bundled showcase profile (tested window). */
+    @SuppressWarnings("unchecked")
+    Map<String, Object> showcaseDefaults() throws IOException {
+        final Map<String, Object> base = Json.parseObject(new RunConfig().toJson());
+        try (InputStream in = GuiServer.class.getResourceAsStream("/gui/profiles/showcase.json")) {
+            if (in != null) {
+                final Map<String, Object> prof = Json.parseObject(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                prof.remove("_about");
+                merge(base, prof);
+            }
+        }
+        return base;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void merge(final Map<String, Object> into, final Map<String, Object> from) {
+        for (final Map.Entry<String, Object> e : from.entrySet()) {
+            final Object cur = into.get(e.getKey());
+            if (cur instanceof Map && e.getValue() instanceof Map) {
+                merge((Map<String, Object>) cur, (Map<String, Object>) e.getValue());
+            } else if (into.containsKey(e.getKey())) {
+                into.put(e.getKey(), e.getValue());
+            }
+        }
+    }
+
+    /**
+     * Adds folders to the catalog in the background (first start with project data next to the
+     * program). Progress is reported through the status route and SSE events.
+     */
+    public void registerInBackground(final List<String> folders) {
+        final Thread t = new Thread(() -> {
+            final List<DataCatalog.Entry> added = new ArrayList<>();
+            for (final String f : folders) {
+                indexing = f;
+                broadcast(Map.of("type", "indexing", "folder", f));
+                try {
+                    added.addAll(catalog.add(List.of(f)));
+                } catch (final Exception e) {
+                    broadcast(Map.of("type", "error", "message", "Could not index " + f + ": " + e.getMessage()));
+                }
+            }
+            indexing = null;
+            final List<Map<String, String>> names = new ArrayList<>();
+            for (final DataCatalog.Entry e : added) {
+                names.add(Map.of("name", e.name, "kind", e.kind.name()));
+            }
+            broadcast(Map.of("type", "catalog", "added", names));
+        }, "ursc-index");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    public boolean catalogEmpty() {
+        return catalog.entries().isEmpty();
+    }
+
+    private Path windowsDir() throws IOException {
+        return Files.createDirectories(workspace.resolve("windows"));
+    }
+
+    private synchronized void saveWindow(final Map<String, Object> w) throws IOException {
+        Files.writeString(windowsDir().resolve(w.get("id") + ".json"), Json.write(w));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void windowsApi(final HttpExchange ex, final String[] p, final String method) throws IOException {
+        final Path dir = windowsDir();
+        if (p.length == 1) {
+            final List<Map<String, Object>> out = new ArrayList<>();
+            try (Stream<Path> s = Files.list(dir)) {
+                for (final Path f : (Iterable<Path>) s.filter(x -> x.toString().endsWith(".json"))::iterator) {
+                    final Map<String, Object> w = Json.parseObject(Files.readString(f));
+                    w.remove("days");
+                    out.add(w);
+                }
+            }
+            out.sort((a, b) -> String.valueOf(b.get("id")).compareTo(String.valueOf(a.get("id"))));
+            json(ex, 200, Map.of("windows", out));
+            return;
+        }
+        final String id = p[1];
+        if (!id.matches("[0-9A-Za-z\\-]+")) {
+            json(ex, 400, Map.of("error", "bad window id"));
+            return;
+        }
+        final Path f = dir.resolve(id + ".json");
+        if ("DELETE".equals(method)) {
+            Files.deleteIfExists(f);
+            json(ex, 200, Map.of("ok", true));
+            return;
+        }
+        if (!Files.isRegularFile(f)) {
+            json(ex, 404, Map.of("error", "no such window run"));
+            return;
+        }
+        json(ex, 200, Json.parseObject(Files.readString(f)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void startWindow(final HttpExchange ex) throws IOException {
+        if (current != null || sweeping) {
+            json(ex, 409, Map.of("error", "a run is already in progress"));
+            return;
+        }
+        final List<String> warn = new ArrayList<>();
+        final RunConfig base = RunConfig.fromJson(body(ex), warn);
+        final java.time.LocalDate a;
+        final java.time.LocalDate b;
+        final java.time.LocalTime tod;
+        try {
+            a = java.time.LocalDate.parse(base.window.startDate.trim());
+            b = java.time.LocalDate.parse(base.window.endDate.trim());
+            tod = java.time.LocalTime.parse(base.window.cutoffTimeUtc.trim());
+        } catch (final RuntimeException e) {
+            json(ex, 400, Map.of("error", "set the window's first date, last date (yyyy-mm-dd) and cutoff time (hh:mm:ss)"));
+            return;
+        }
+        final int step = Math.max(1, base.window.stepDays);
+        final List<java.time.LocalDate> days = new ArrayList<>();
+        for (java.time.LocalDate d = a; !d.isAfter(b); d = d.plusDays(step)) {
+            days.add(d);
+        }
+        if (days.isEmpty() || days.size() > 400) {
+            json(ex, 400, Map.of("error", "the window must hold 1 to 400 cutoffs (has " + days.size() + ")"));
+            return;
+        }
+        final String todText = tod.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+        final Map<String, Object> w = new LinkedHashMap<>();
+        w.put("id", "W" + runs.newId());
+        w.put("name", base.runName.isBlank() ? "window" : base.runName);
+        w.put("created", java.time.LocalDateTime.now().toString());
+        w.put("startDate", a.toString());
+        w.put("endDate", b.toString());
+        w.put("cutoffTimeUtc", todText);
+        w.put("stepDays", step);
+        w.put("count", days.size());
+        w.put("done", 0);
+        w.put("finished", false);
+        w.put("cancelled", false);
+        w.put("settings", Json.parseObject(base.toJson()));
+        final List<Map<String, Object>> rows = new ArrayList<>();
+        w.put("days", rows);
+        saveWindow(w);
+        sweeping = true;
+        sweepCancel = false;
+        jobs.submit(() -> {
+            String satellite = null;
+            try {
+                for (int i = 0; i < days.size() && !sweepCancel; i++) {
+                    final String cutoff = days.get(i) + "T" + todText;
+                    final RunConfig c = RunConfig.fromJson(base.toJson(), new ArrayList<>());
+                    c.cutoffUtc = cutoff;
+                    c.runName = w.get("name") + " " + days.get(i);
+                    final Map<String, List<String>> s = catalog.suggest(TimeUtil.parseUtc(cutoff), c.od.arcHours,
+                            c.forecast.spanDays, c.products.mode == RunConfig.ProductMode.RECONSTRUCTION, satellite);
+                    if (satellite == null && !s.get("satellite").isEmpty()) {
+                        satellite = s.get("satellite").get(0); // keep one spacecraft for the whole window
+                    }
+                    c.inputs.gnssrd = s.get("gnssrd");
+                    c.inputs.gpsProducts = s.get("gpsProducts");
+                    c.inputs.poeorb = s.get("poeorb");
+                    c.inputs.proqua = c.spacecraft.shape == RunConfig.ShapeModel.CANNONBALL ? new ArrayList<>() : s.get("proqua");
+                    if (c.inputs.eopFile.isBlank() && !s.get("eopFile").isEmpty()) {
+                        c.inputs.eopFile = s.get("eopFile").get(0);
+                    }
+                    if (c.inputs.spaceWeatherFile.isBlank() && !s.get("spaceWeatherFile").isEmpty()) {
+                        c.inputs.spaceWeatherFile = s.get("spaceWeatherFile").get(0);
+                    }
+                    final Map<String, Object> row = new LinkedHashMap<>();
+                    row.put("date", days.get(i).toString());
+                    row.put("cutoffUtc", cutoff);
+                    final List<String> errs = Runs.validate(c);
+                    if (!errs.isEmpty()) {
+                        row.put("status", "NO_DATA");
+                        row.put("note", String.join("; ", errs));
+                    } else {
+                        final Job job = new Job(runs.newId());
+                        current = job;
+                        broadcast(Map.of("type", "window-progress", "window", w.get("id"), "index", i, "count", days.size(),
+                                "date", days.get(i).toString(), "id", job.id));
+                        execute(job, c, warn);
+                        row.put("runId", job.id);
+                        windowRow(runs.dir(job.id), row);
+                    }
+                    synchronized (this) {
+                        rows.add(row);
+                        w.put("done", rows.size());
+                    }
+                    saveWindow(w);
+                    broadcast(Map.of("type", "window-day", "window", w.get("id"), "index", i, "count", days.size(), "row", row));
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+                broadcast(Map.of("type", "error", "message", "Window run stopped: " + e));
+            } finally {
+                sweeping = false;
+                w.put("finished", true);
+                w.put("cancelled", sweepCancel);
+                try {
+                    saveWindow(w);
+                } catch (final IOException ignored) {
+                    // reported below
+                }
+                broadcast(Map.of("type", "window-done", "window", w.get("id"), "cancelled", sweepCancel));
+            }
+        });
+        json(ex, 202, Map.of("id", w.get("id"), "count", days.size()));
+    }
+
+    /** Summary of one window day from the saved run files. */
+    @SuppressWarnings("unchecked")
+    private static void windowRow(final Path d, final Map<String, Object> row) throws IOException {
+        final Map<String, Object> res = Json.parseObject(Files.readString(d.resolve("result.json")));
+        row.put("status", res.get("status"));
+        row.put("label", res.get("label"));
+        row.put("flags", res.get("flags"));
+        row.put("elapsedSeconds", res.get("elapsedSeconds"));
+        row.put("errors", res.get("errors"));
+        if (res.get("productUsage") instanceof Map) {
+            row.put("products", new ArrayList<>(((Map<String, Object>) res.get("productUsage")).keySet()));
+        }
+        if (res.get("od") instanceof Map) {
+            final Map<String, Object> od = (Map<String, Object>) res.get("od");
+            row.put("fixes", od.get("observations"));
+            row.put("postFitRms", od.get("postFitRms"));
+            row.put("varianceFactor", od.get("varianceFactor"));
+            row.put("converged", od.get("converged"));
+        }
+        final Path rf = d.resolve("reference.json");
+        final Map<String, Object> traj = trajectory(d);
+        if (Files.isRegularFile(rf) && traj != null) {
+            final Map<String, Object> ref = Json.parseObject(Files.readString(rf));
+            final List<Double> t = RunReport.nums(traj.get("t"));
+            final List<Double> idx = RunReport.nums(ref.get("runIndex"));
+            final List<Double> e = RunReport.nums(ref.get("err3d"));
+            for (int k = 0; k < idx.size(); k++) {
+                final double tk = t.get(idx.get(k).intValue());
+                for (final Object[] h : new Object[][] {{"errCutoff", 0.0}, {"err1d", 86400.0}, {"err7d", 604800.0}}) {
+                    if (Math.abs(tk - (Double) h[1]) < 1.0) {
+                        row.put((String) h[0], e.get(k));
+                    }
+                }
+            }
+        }
+    }
+
     private static void raw(final HttpExchange ex, final Path f, final String type, final String download)
             throws IOException {
         if (!Files.isRegularFile(f)) {
@@ -949,7 +1208,7 @@ public final class GuiServer implements AutoCloseable {
     }
 
     private void staticFile(final HttpExchange ex, final String path) throws IOException {
-        String p = "/".equals(path) ? "/index.html" : path;
+        String p = path.endsWith("/") ? path + "index.html" : path;
         if (p.contains("..") || p.contains("//")) {
             json(ex, 400, Map.of("error", "bad path"));
             return;
@@ -987,6 +1246,18 @@ public final class GuiServer implements AutoCloseable {
         }
         if (p.endsWith(".svg")) {
             return "image/svg+xml";
+        }
+        if (p.endsWith(".png")) {
+            return "image/png";
+        }
+        if (p.endsWith(".jpg") || p.endsWith(".jpeg")) {
+            return "image/jpeg";
+        }
+        if (p.endsWith(".mp4")) {
+            return "video/mp4";
+        }
+        if (p.endsWith(".webm")) {
+            return "video/webm";
         }
         if (p.endsWith(".md") || p.endsWith(".txt")) {
             return "text/plain; charset=utf-8";

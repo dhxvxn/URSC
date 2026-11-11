@@ -79,6 +79,36 @@ public final class RinexNavReader {
             return new Data(out);
         }
 
+        /**
+         * One data set holding every message of {@code parts} (e.g. consecutive daily files),
+         * duplicates (same PRN and Toe) kept once, so the nearest-Toe selection spans file
+         * boundaries instead of extrapolating an older file's last messages.
+         */
+        public static Data merge(final List<Data> parts) {
+            final Map<Integer, List<GpsBroadcastEphemeris>> out = new TreeMap<>();
+            for (final Data d : parts) {
+                for (final Map.Entry<Integer, List<GpsBroadcastEphemeris>> e : d.byPrn.entrySet()) {
+                    final List<GpsBroadcastEphemeris> list = out.computeIfAbsent(e.getKey(), k -> new java.util.ArrayList<>());
+                    for (final GpsBroadcastEphemeris eph : e.getValue()) {
+                        boolean dup = false;
+                        for (final GpsBroadcastEphemeris x : list) {
+                            if (Math.abs(x.getToe().durationFrom(eph.getToe())) < 1.0) {
+                                dup = true;
+                                break;
+                            }
+                        }
+                        if (!dup) {
+                            list.add(eph);
+                        }
+                    }
+                }
+            }
+            for (final List<GpsBroadcastEphemeris> l : out.values()) {
+                l.sort((x, y) -> x.getToe().compareTo(y.getToe()));
+            }
+            return new Data(out);
+        }
+
         /** Earliest and latest Toe present, or {@code null} if empty. */
         public AbsoluteDate[] toeSpan() {
             AbsoluteDate lo = null;

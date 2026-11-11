@@ -74,6 +74,8 @@ public final class ProductLoader {
         final Loaded out = new Loaded();
         final Map<String, Path> sp3 = new LinkedHashMap<>();
         final Map<String, Path> clk = new LinkedHashMap<>();
+        final List<RinexNavReader.Data> navParts = new java.util.ArrayList<>();
+        final List<String> navNames = new java.util.ArrayList<>();
         for (final Path f : files) {
             final Kind kind = sniff(f);
             if (kind == Kind.NAVIGATION) {
@@ -82,7 +84,8 @@ public final class ProductLoader {
                     if (nav.messageCount() == 0) {
                         out.problems.add(f.getFileName() + ": navigation file has no GPS LNAV messages");
                     } else {
-                        out.sources.add(new BroadcastSource(nav, "broadcast " + f.getFileName()));
+                        navParts.add(nav);
+                        navNames.add(f.getFileName().toString());
                     }
                 } catch (final IOException | RuntimeException e) {
                     out.problems.add(f.getFileName() + ": unreadable navigation file (" + e.getMessage() + ")");
@@ -100,6 +103,12 @@ public final class ProductLoader {
             }
             final String key = name.productClass() + "|" + name.provider() + "|" + name.start();
             (kind == Kind.SP3 ? sp3 : clk).put(key, f);
+        }
+        if (!navParts.isEmpty()) {
+            // all broadcast files form ONE source: otherwise the first file (e.g. the previous
+            // day) would serve epochs with its old messages while a newer message exists
+            out.sources.add(new BroadcastSource(RinexNavReader.Data.merge(navParts),
+                    "broadcast " + String.join(" + ", navNames)));
         }
         for (final Map.Entry<String, Path> e : sp3.entrySet()) {
             final Path orbitFile = e.getValue();

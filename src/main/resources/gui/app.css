@@ -143,3 +143,15 @@ td.changed { background: color-mix(in srgb, var(--warn) 14%, transparent); }
 .flagbox b { color: var(--warn); }
 table.stations input { width: 100%; min-width: 60px; }
 tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--panel2); }
+.globe .modelsel { position: absolute; right: 10px; bottom: 10px; gap: 6px; }
+.globe .modelsel select { background: rgba(10, 18, 30, .8); color: #dfe8f5; border: 1px solid #2c3e57; border-radius: 6px; padding: 4px 6px; font-size: 12px; }
+
+/* window runs */
+.tiles-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.tile { flex: 1 1 130px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.tile .v { font-size: 22px; font-weight: 700; }
+.tile .l { font-size: 12px; color: var(--muted); }
+.tile.ok .v { color: var(--ok); } .tile.bad .v { color: var(--bad); } .tile.warn .v { color: var(--warn); }
+
+.guide-link { color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px; font-size: 13px; }
+.guide-link:hover { border-color: var(--accent); color: var(--accent); }

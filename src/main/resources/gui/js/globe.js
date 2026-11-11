@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
+import { MODELS } from './spacecraft.js';
 
 const RE = 6378.137; // km, globe unit
 // ECEF (x, y, z-north) -> three.js (y-up, right-handed)
@@ -16,11 +17,16 @@ export class Globe {
     this.az = 0.6; this.el = 0.35; this.dist = 4.2;
     this.earth = new THREE.Group();
     this.scene.add(this.earth);
-    this.earth.add(new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64),
+    this.earth.add(new THREE.Mesh(new THREE.SphereGeometry(1, 192, 128),
       new THREE.MeshPhongMaterial({ color: 0x1d4a78, emissive: 0x06101c, shininess: 12, specular: 0x223344 })));
+    this.scene.add(this.starfield());
     this.earth.add(this.graticule());
     this.sun = new THREE.DirectionalLight(0xffffff, 1.6);
     this.scene.add(this.sun, new THREE.AmbientLight(0x8899aa, 0.22));
+    // soft light from the camera so the spacecraft model stays readable on the night side
+    this.fill = new THREE.PointLight(0xffffff, 0.0, 0, 0);
+    this.camera.add(this.fill);
+    this.scene.add(this.camera);
     this.pathAll = null; this.pathPast = null; this.ref = null;
     this.marker = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffcc33 }));
     this.scene.add(this.marker);
@@ -32,12 +38,48 @@ export class Globe {
     this.showEll = false; this.ellScale = 0;
     this.stations = new THREE.Group();
     this.scene.add(this.stations);
+    // spacecraft model (enlarged so it is visible), follow camera
+    this.craft = null; this.craftKey = null; this.follow = false;
+    this.faz = 1.15; this.fel = 0.08; this.fdist = 0.034;
     this.view = 'ecef';
     this.controls();
     new ResizeObserver(() => this.resize()).observe(container);
     this.resize();
     this.pending = false;
     this.render();
+  }
+
+  starfield() {
+    const pos = [];
+    let seed = 7;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < 2500; i++) {
+      const u = rnd() * 2 - 1, a = rnd() * 2 * Math.PI, r = 60;
+      const s = Math.sqrt(1 - u * u);
+      pos.push(r * s * Math.cos(a), r * u, r * s * Math.sin(a));
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    return new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xbfd2ff, size: 1.2, sizeAttenuation: false, transparent: true, opacity: 0.7 }));
+  }
+
+  /** key: 'sentinel3' | 'generic' | 'none'. */
+  setModel(key) {
+    if (this.craft) { this.scene.remove(this.craft); this.craft = null; }
+    this.craftKey = key;
+    if (key && MODELS[key]) {
+      this.craft = MODELS[key].build();
+      this.craft.matrixAutoUpdate = false;
+      this.scene.add(this.craft);
+    }
+    this.setTime(this.time ?? 0);
+  }
+
+  /** Camera rides with the satellite (drag to look around it, wheel to zoom). */
+  setFollow(on) {
+    this.follow = on;
+    if (!on) this.place();
+    this.setTime(this.time ?? 0);
   }
 
   graticule() {
@@ -171,6 +213,7 @@ export class Globe {
       this.earth.rotation.set(0, 0, 0);
     }
     this.marker.position.copy(v3(x / RE, y / RE, z / RE));
+    this.orientCraft(i, n);
     const sig = t.sigmaRtn && t.sigmaRtn[i];
     this.ell.visible = !!(this.showEll && sig && this.ellScale > 0);
     if (this.ell.visible) {
@@ -186,27 +229,82 @@ export class Globe {
     }
     this.stations.rotation.set(0, this.view === 'inertial' ? era : 0, 0);
     this.sun.position.copy(v3(sx, sy, sz).multiplyScalar(10));
-    if (this.pathPast) this.pathPast.geometry.setDrawRange(0, i + 1);
     this.render();
+  }
+
+  /** Nadir-pointing attitude, flying along the velocity; scale depends on the camera mode. */
+  orientCraft(i, n) {
+    const p = this.marker.position.clone();
+    const R = p.clone().normalize();
+    const V = this.pointAt(Math.min(n - 1, i + 1)).sub(this.pointAt(Math.max(0, i - 1)));
+    V.sub(R.clone().multiplyScalar(V.dot(R))).normalize();
+    const Z = R.clone().negate();            // nadir
+    const Y = new THREE.Vector3().crossVectors(Z, V);
+    this.frame = { p, R, X: V, Y, Z };
+    this.marker.visible = !this.craft || !this.follow;
+    this.marker.scale.setScalar(this.craft ? 0.45 : 1);
+    if (this.craft) {
+      const span = MODELS[this.craftKey].span;
+      const s = (this.follow ? 0.0075 : 0.09) / span; // globe units per metre (enlarged)
+      this.craft.matrix.makeBasis(V.clone().multiplyScalar(s), Y.clone().multiplyScalar(s), Z.clone().multiplyScalar(s)).setPosition(p);
+      this.craft.matrixWorldNeedsUpdate = true;
+    }
+    this.fill.intensity = this.follow ? 0.9 : 0.35;
+    // following: show only the last orbit of track, not days of it
+    if (this.pathAll) this.pathAll.visible = !this.follow;
+    if (this.ref) this.ref.visible = !this.follow;
+    if (this.pathPast) {
+      const k = this.follow ? Math.max(0, i - 110) : 0;
+      this.pathPast.geometry.setDrawRange(k, i + 1 - k);
+    }
+    if (this.follow) this.placeFollow();
+  }
+
+  placeFollow() {
+    const f = this.frame;
+    if (!f) return;
+    const back = f.X.clone().negate(), side = f.Y;
+    const off = back.multiplyScalar(Math.cos(this.faz)).add(side.clone().multiplyScalar(Math.sin(this.faz)))
+      .multiplyScalar(Math.cos(this.fel) * this.fdist).add(f.R.clone().multiplyScalar(Math.sin(this.fel) * this.fdist));
+    this.camera.near = 0.0004; this.camera.far = 80; this.camera.updateProjectionMatrix();
+    this.camera.position.copy(f.p).add(off);
+    this.camera.up.copy(f.R);
+    this.camera.lookAt(f.p.clone().add(f.R.clone().multiplyScalar(-0.004)));
   }
 
   controls() {
     const c = this.renderer.domElement;
     let drag = null;
-    c.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY, this.az, this.el]; c.setPointerCapture(e.pointerId); });
+    c.addEventListener('pointerdown', (e) => { drag = this.follow ? [e.clientX, e.clientY, this.faz, this.fel] : [e.clientX, e.clientY, this.az, this.el]; c.setPointerCapture(e.pointerId); });
     c.addEventListener('pointermove', (e) => {
       if (!drag) return;
+      if (this.follow) {
+        this.faz = drag[2] - (e.clientX - drag[0]) * 0.006;
+        this.fel = Math.max(-1.2, Math.min(1.45, drag[3] + (e.clientY - drag[1]) * 0.006));
+        this.placeFollow(); this.render();
+        return;
+      }
       this.az = drag[2] - (e.clientX - drag[0]) * 0.006;
       this.el = Math.max(-1.45, Math.min(1.45, drag[3] + (e.clientY - drag[1]) * 0.006));
       this.place();
     });
     c.addEventListener('pointerup', () => { drag = null; });
-    c.addEventListener('wheel', (e) => { e.preventDefault(); this.dist = Math.max(1.4, Math.min(14, this.dist * (e.deltaY > 0 ? 1.1 : 0.9))); this.place(); }, { passive: false });
-    c.addEventListener('dblclick', () => { this.az = 0.6; this.el = 0.35; this.dist = 4.2; this.place(); });
+    c.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (this.follow) { this.fdist = Math.max(0.008, Math.min(0.4, this.fdist * (e.deltaY > 0 ? 1.1 : 0.9))); this.placeFollow(); this.render(); return; }
+      this.dist = Math.max(1.4, Math.min(14, this.dist * (e.deltaY > 0 ? 1.1 : 0.9))); this.place();
+    }, { passive: false });
+    c.addEventListener('dblclick', () => {
+      if (this.follow) { this.faz = 1.15; this.fel = 0.08; this.fdist = 0.034; this.placeFollow(); this.render(); return; }
+      this.az = 0.6; this.el = 0.35; this.dist = 4.2; this.place();
+    });
     this.place();
   }
 
   place() {
+    if (this.follow) { this.placeFollow(); this.render(); return; }
+    this.camera.near = 0.01; this.camera.far = 100; this.camera.updateProjectionMatrix();
+    this.camera.up.set(0, 1, 0);
     this.camera.position.set(this.dist * Math.cos(this.el) * Math.sin(this.az), this.dist * Math.sin(this.el), this.dist * Math.cos(this.el) * Math.cos(this.az));
     this.camera.lookAt(0, 0, 0);
     this.render();

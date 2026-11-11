@@ -1,6 +1,7 @@
 {
  "groups": [
   "Mandatory inputs",
+  "Test window",
   "Initial state",
   "GPS products & mode",
   "Orbit determination",
@@ -75,6 +76,56 @@
      "PROPAGATE",
      "Propagate from a state"
     ]
+   ]
+  },
+  {
+   "key": "window.startDate",
+   "group": "Test window",
+   "label": "First cutoff date",
+   "type": "date",
+   "unit": "UTC",
+   "what": "First day of a window run. A window run repeats orbit determination and a forecast once per day, each day with its own cutoff and its own input files from the catalog.",
+   "how": "The tested Sentinel-3A window starts on 2024-09-03. Press 'Run whole window' to process every day up to the last date; press '▶ Run' for the single cutoff above.",
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "window.endDate",
+   "group": "Test window",
+   "label": "Last cutoff date",
+   "type": "date",
+   "unit": "UTC",
+   "what": "Last day of the window run (inclusive).",
+   "how": "The tested window ends on 2024-11-02 (61 daily cutoffs). Each day needs observations and a GPS product in the catalog; days without data are listed as 'no data' and skipped.",
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "window.cutoffTimeUtc",
+   "group": "Test window",
+   "label": "Cutoff time of day",
+   "type": "text",
+   "unit": "UTC hh:mm:ss",
+   "what": "Time of day of every cutoff in the window.",
+   "how": "05:59:42 UTC is 06:00:00 GPS time in 2024 (GPS runs 18 s ahead of UTC); the tested window used it, so the six-hour arc covers GPS 00:00-06:00 of each day.",
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "window.stepDays",
+   "group": "Test window",
+   "label": "Days between cutoffs",
+   "type": "int",
+   "unit": "days",
+   "min": 1,
+   "max": 30,
+   "what": "Spacing of the cutoffs in the window run.",
+   "how": "1 = every day (the tested set). Use 7 for a quick weekly overview: about 9 runs instead of 61.",
+   "workflows": [
+    "OD_FORECAST"
    ]
   },
   {

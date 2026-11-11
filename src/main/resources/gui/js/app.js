@@ -4,6 +4,7 @@ import { renderData } from './data.js';
 import { renderRun } from './run.js';
 import { renderResults, openRun } from './results.js';
 import { renderHistory } from './history.js';
+import { renderWindow } from './windowview.js';
 import { renderHelp, search } from './help.js';
 
 /** Shared application state and a tiny event bus. */
@@ -75,6 +76,7 @@ async function main() {
   renderRun(document.getElementById('tab-run'));
   renderResults(document.getElementById('tab-results'));
   renderHistory(document.getElementById('tab-history'));
+  renderWindow(document.getElementById('tab-window'));
   renderHelp(document.getElementById('tab-help'));
 
   events(async (evt) => {
@@ -82,9 +84,19 @@ async function main() {
     state.emit('event', evt);
     if (evt.type === 'catalog') {
       const n = evt.added.length;
-      toast(n + ' new file' + (n > 1 ? 's' : '') + ' found in watched folders: ' + evt.added.map((e) => e.name).slice(0, 3).join(', ')
+      if (n) toast(n + ' file' + (n > 1 ? 's' : '') + ' added to the catalog: ' + evt.added.map((e) => e.name).slice(0, 3).join(', ')
         + (n > 3 ? '…' : ''), 'ok', 8000);
       await refreshCatalog();
+    } else if (evt.type === 'indexing') {
+      toast('Indexing project data: ' + evt.folder + ' (first start; this takes a minute)', 'ok', 8000);
+    } else if (evt.type === 'window-progress') {
+      state.window = evt.window;
+    } else if (evt.type === 'window-done') {
+      state.window = null;
+      await refreshRuns();
+      toast('Window run finished' + (evt.cancelled ? ' (cancelled)' : ''), 'ok', 9000);
+    } else if (evt.type === 'done' && state.window) {
+      await refreshRuns();
     } else if (evt.type === 'done' && state.sweep && state.sweep.includes(evt.id)) {
       await refreshRuns();
       toast('Sweep run ' + evt.id + ': ' + evt.status, evt.status === 'SUCCESS' ? 'ok' : 'bad');

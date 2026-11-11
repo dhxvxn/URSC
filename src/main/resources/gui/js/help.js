@@ -15,7 +15,9 @@ export function renderHelp(root) {
   root.append(el('h2', {}, 'Help'),
     el('div', { class: 'card' }, form, providers, results),
     el('div', { class: 'helpgrid' },
-      el('div', { class: 'card helpnav' }, el('b', {}, 'Guides'), ...PAGES.map(([f, t]) => el('button', { onclick: () => show(f) }, t))),
+      el('div', { class: 'card helpnav' }, el('b', {}, 'Guides'),
+        el('a', { class: 'btn primary', href: 'guide/', target: '_blank', rel: 'noopener', style: 'text-align:center;text-decoration:none' }, 'Interactive feature guide ↗'),
+        ...PAGES.map(([f, t]) => el('button', { onclick: () => show(f) }, t))),
       page));
   show('getting-started');
   api('status').then((s) => {

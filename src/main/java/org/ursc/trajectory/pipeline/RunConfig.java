@@ -64,6 +64,22 @@ public final class RunConfig {
     public Eop eop = new Eop();
     public Integrator integrator = new Integrator();
     public InitialState initialState = new InitialState();
+    public Window window = new Window();
+
+    /**
+     * Window run (GUI): one OD + forecast per day from {@code startDate} to {@code endDate}, each
+     * with its cutoff at {@code cutoffTimeUtc} and its own inputs picked from the data catalog.
+     */
+    public static final class Window {
+        /** First cutoff date, UTC, yyyy-MM-dd; blank = no window. */
+        public String startDate = "";
+        /** Last cutoff date, UTC, yyyy-MM-dd. */
+        public String endDate = "";
+        /** Cutoff time of day, UTC, HH:mm:ss. */
+        public String cutoffTimeUtc = "06:00:00";
+        /** Days between consecutive cutoffs. */
+        public int stepDays = 1;
+    }
 
     /** Input files and folders (each entry may be a file or a folder, scanned recursively). */
     public static final class Inputs {

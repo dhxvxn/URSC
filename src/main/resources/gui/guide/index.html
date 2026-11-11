@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>URSC Feature Guide</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>URSC feature guide</h1>
+    <p class="lede">URSC determines the orbit of a low-Earth-orbit satellite from its own GPS measurements and predicts where it will be over the next days. It runs as a local web application on one computer, with no internet connection. This guide walks through every feature: what it does, why it is needed, and how to use it.</p>
+    <div class="facts">
+      <span class="fact">Test satellite <b>Sentinel-3A</b></span>
+      <span class="fact">Tested window <b>3 Sep – 2 Nov 2024</b>, <b>61</b> daily cutoffs</span>
+      <span class="fact">Cutoff <b>05:59:42 UTC</b> = 06:00:00 GPS</span>
+      <span class="fact">Output <b>CCSDS OEM 2.0</b></span>
+      <span class="fact">Runs <b>offline</b>, Java 17+</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="block" id="walkthrough" aria-labelledby="wt-h">
+    <div class="head">
+      <h2 id="wt-h">Ten-minute demo walkthrough</h2>
+      <p>A presentation order for showing the project. Step through with the buttons or the arrow keys; click a screenshot to enlarge it.</p>
+    </div>
+    <div class="stepper">
+      <ol class="steps" id="steps">
+        <li><button type="button" data-step="0"><span class="n">01</span><span>Start URSC</span></button></li>
+        <li><button type="button" data-step="1"><span class="n">02</span><span>The data catalog</span></button></li>
+        <li><button type="button" data-step="2"><span class="n">03</span><span>Run setup with tested defaults</span></button></li>
+        <li><button type="button" data-step="3"><span class="n">04</span><span>Explain any setting with ⓘ</span></button></li>
+        <li><button type="button" data-step="4"><span class="n">05</span><span>Perturbation switches</span></button></li>
+        <li><button type="button" data-step="5"><span class="n">06</span><span>One forecast on the globe</span></button></li>
+        <li><button type="button" data-step="6"><span class="n">07</span><span>Ride along with Sentinel-3A</span></button></li>
+        <li><button type="button" data-step="7"><span class="n">08</span><span>The two-month window</span></button></li>
+        <li><button type="button" data-step="8"><span class="n">09</span><span>Compare modelling choices</span></button></li>
+        <li><button type="button" data-step="9"><span class="n">10</span><span>Outputs and help</span></button></li>
+      </ol>
+      <div class="stage" id="stage" aria-live="polite">
+        <div class="step-pane" data-pane="0">
+          <h3>Start URSC</h3>
+          <p>One command starts a small web server on this computer only and opens the browser. On first start the project's data folders are catalogued automatically.</p>
+          <p><code>java -jar target\leo-trajectory-0.1.0.jar gui</code></p>
+          <p class="say">Say: “Everything runs locally. No data leaves the machine, which is what an air-gapped mission facility needs.”</p>
+          <figure data-zoom><img src="img/01-data.png" alt="Data tab listing catalogued GNSS observations, broadcast navigation, attitude and reference orbit files"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="1">
+          <h3>The data catalog</h3>
+          <p>Every input file is recognised by its content: GNSSRD measurements, GPS broadcast navigation, IGS precise orbits and clocks, POEORB reference orbits, PROQUA attitude, Earth orientation and space weather. Coverage and a SHA-256 checksum are recorded for each.</p>
+          <p class="say">Say: “The program decides which files belong to which forecast. Watched folders pick up new files as they arrive.”</p>
+          <figure data-zoom><img src="img/01-data.png" alt="Catalogued files with kind, coverage and size"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="2">
+          <h3>Run setup with tested defaults</h3>
+          <p>The Run tab opens with the settings of the tested window: Sentinel-3A, cutoff 2024-09-03 05:59:42 UTC, six-hour measurement arc, seven-day forecast, 1,130 kg, 8 m² drag and radiation areas. The inputs for that cutoff are already selected from the catalog.</p>
+          <p class="say">Say: “Only three things are mandatory: the measurements, a GPS orbit product and the cutoff time. Everything else has a documented default.”</p>
+          <figure data-zoom><img src="img/02-run.png" alt="Run tab with mandatory inputs and the tested window settings"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="3">
+          <h3>Explain any setting with ⓘ</h3>
+          <p>Each of the 85 settings has an ⓘ button: what the setting is, how to choose it, and its default. Changed values are marked and can be reset one by one.</p>
+          <p class="say">Say: “A new operator can learn the trade-offs without leaving the screen.”</p>
+          <figure data-zoom><img src="img/03-info.png" alt="Information popover explaining the density model choice"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="4">
+          <h3>Perturbation switches</h3>
+          <p>Every force can be switched on or off, and each has its own model choice: gravity field degree and order, atmospheric density model, solar radiation pressure, Sun and Moon, tides, relativity, Earth radiation and empirical accelerations.</p>
+          <p class="say">Say: “This makes the tool a research instrument: you can see what each force contributes.”</p>
+          <figure data-zoom><img src="img/04-perturbations.png" alt="Perturbation settings with on/off switches and model selectors"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="5">
+          <h3>One forecast on the globe</h3>
+          <p>Press Run. The summary shows how many GPS fixes were used, the orbit-fit quality and any warnings. The 3D globe and the 2D map show the predicted ground track; the slider and play button animate it.</p>
+          <p class="say">Say: “Seventy-two position fixes over six hours, fitted to about two metres, then propagated seven days ahead.”</p>
+          <figure data-zoom><img src="img/06-results.png" alt="Results summary with globe and ground track"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="6">
+          <h3>Ride along with Sentinel-3A</h3>
+          <p>Follow satellite puts the camera next to the spacecraft. Sentinel-3A is drawn as its own build (main body, single solar wing, altimeter dish, camera fan); other satellites get a generic model.</p>
+          <p class="say">Say: “The model flies nadir-pointing along the predicted velocity, exactly as the propagated states say.”</p>
+          <figure data-zoom><img src="img/07-follow.png" alt="Camera following the Sentinel-3 model above the Earth"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="7">
+          <h3>The two-month window</h3>
+          <p>Run whole window repeats the forecast for every day from 3 September to 2 November 2024, each with its own inputs. The Window tab lists every day with its status, fit quality, warnings and, where a reference orbit exists, the forecast error.</p>
+          <p class="say">Say: “This is the test campaign of the project, reproduced from the interface.”</p>
+          <figure data-zoom><img src="img/05-window.png" alt="Window tab with tiles, trend charts and per-day table"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="8">
+          <h3>Compare modelling choices</h3>
+          <p>Sweep repeats one case while varying a single setting; Compare plots each run's difference from a base run in radial, along-track and cross-track components.</p>
+          <p class="say">Say: “Changing only the density model moves the seven-day prediction by a few hundred metres, almost entirely along-track.”</p>
+          <figure data-zoom><img src="img/11-compare.png" alt="Comparison of two runs with RTN difference plots"></figure>
+        </div>
+        <div class="step-pane hidden" data-pane="9">
+          <h3>Outputs and help</h3>
+          <p>Each run writes a CCSDS OEM file and offers KML, CZML, a printable report and its log. Help search answers questions from the bundled documentation, offline, with the source of every passage.</p>
+          <p class="say">Say: “The OEM file is the deliverable; the rest helps people check it.”</p>
+          <figure data-zoom><img src="img/13-report.png" alt="Printable run report"></figure>
+        </div>
+        <div class="nav">
+          <button type="button" class="btn" id="prev">← Previous</button>
+          <button type="button" class="btn primary" id="next">Next →</button>
+          <span class="count" id="count">Step 1 of 10</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="defaults" aria-labelledby="def-h">
+    <div class="head">
+      <h2 id="def-h">Startup defaults: the tested window</h2>
+      <p>These values are loaded when URSC starts. Every one can be changed in the Run tab. <b>Reset</b> returns to them; <b>Generic</b> loads the plain library defaults (a 1,000 kg cannonball and no window).</p>
+    </div>
+    <div class="tablewrap">
+      <table class="vals">
+        <thead><tr><th>Setting</th><th>Default</th><th>Why this value</th></tr></thead>
+        <tbody>
+          <tr><td>UTC cutoff</td><td class="mono">2024-09-03 05:59:42</td><td>First day of the tested window; equals 06:00:00 GPS time</td></tr>
+          <tr><td>Window</td><td class="mono">2024-09-03 → 2024-11-02, every 1 day</td><td>The 61 cutoffs of the test campaign</td></tr>
+          <tr><td>Measurement arc / sampling</td><td class="mono">6 h / 300 s</td><td>73 position fixes per cutoff, as tested</td></tr>
+          <tr><td>Pseudorange sigma / max iterations</td><td class="mono">5 m / 12</td><td>Weights the fixes; bounds the orbit fit</td></tr>
+          <tr><td>Forecast span / output step</td><td class="mono">7 days / 60 s</td><td>Scored at +1 and +7 days in the test</td></tr>
+          <tr><td>Spacecraft</td><td class="mono">SENTINEL-3A, 1,130 kg, 8 m², Cd 2.2, Cr 1.3</td><td>Frozen baseline of the test</td></tr>
+          <tr><td>Gravity / density model</td><td class="mono">EGM96 70×70 / NRLMSISE-00</td><td>Most accurate combination at one day in the study</td></tr>
+          <tr><td>Integrator</td><td class="mono">Dormand–Prince 5(4), 1e-10 abs, 1e-13 rel, ≤ 30 s</td><td>As tested</td></tr>
+          <tr><td>After the cutoff</td><td class="mono">weather and EOP persisted, Ap = 5</td><td>Cutoff-safe: nothing from the future is used</td></tr>
+          <tr><td>GPS products</td><td class="mono">Final → Rapid → Ultra-rapid → broadcast, Forecast mode</td><td>Best product actually available at the cutoff</td></tr>
+          <tr><td>Covariance propagation</td><td class="mono">off</td><td>Not part of the tested protocol; switch on for uncertainty plots</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="features" aria-labelledby="ft-h">
+    <div class="head">
+      <h2 id="ft-h">All features</h2>
+      <p>Grouped by where they live in the interface. Type to filter.</p>
+    </div>
+    <div class="filter">
+      <label for="q" class="hidden">Filter features</label>
+      <input id="q" type="search" placeholder="Filter features, e.g. drag, OEM, offline, window" autocomplete="off">
+      <span class="count" id="shown"></span>
+    </div>
+    <div class="catalogue">
+      <nav class="index" id="index" aria-label="Feature groups">
+        <a href="#g-start">Start and offline use</a>
+        <a href="#g-data">Data</a>
+        <a href="#g-run">Run setup</a>
+        <a href="#g-window">Windows and experiments</a>
+        <a href="#g-results">Results and visualisation</a>
+        <a href="#g-outputs">Outputs</a>
+        <a href="#g-help">History and help</a>
+      </nav>
+      <div id="groups">
+
+        <div class="group" id="g-start">
+          <h2>Start and offline use</h2>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Local web application</h3>
+              <div class="where"><span class="chip tab">start-up</span><span class="chip">command line</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>A web server on <code>127.0.0.1</code> serves the interface to the browser of the same computer. The address carries a per-start token.</dd>
+                <dt>Why</dt><dd>A browser interface needs no installation, and the loopback address plus the token keep other computers and other web pages out.</dd>
+                <dt>How</dt><dd><code>java -jar leo-trajectory-0.1.0.jar gui</code>. Options: <code>--port</code>, <code>--workspace</code>, <code>--data folder1;folder2</code>, <code>--no-browser</code>.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Works without internet</h3>
+              <div class="where"><span class="chip tab">all tabs</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>The 3D globe library, country borders, help documents, gravity field and search index are all inside the program. Tested: a full run with no network made zero requests outside the computer.</dd>
+                <dt>Why</dt><dd>Mission facilities often forbid internet access. New data arrives on approved media instead.</dd>
+                <dt>How</dt><dd>Nothing to do. Copy new data into a watched folder.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Self-contained bundles</h3>
+              <div class="where"><span class="chip">packaging</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Build scripts produce a native application and a portable folder, each with its own minimal Java runtime (about 23 MB), plus checksums.</dd>
+                <dt>Why</dt><dd>The target computer needs no Java installation and no administrator rights.</dd>
+                <dt>How</dt><dd><code>packaging/build-bundle.ps1</code> on Windows, <code>packaging/build-bundle.sh</code> on Linux or macOS; instructions in <code>packaging/README-OFFLINE.md</code>.</dd>
+              </dl>
+            </div>
+          </article>
+        </div>
+
+        <div class="group" id="g-data">
+          <h2>Data</h2>
+          <article class="feature">
+            <div class="txt">
+              <h3>Data catalog</h3>
+              <div class="where"><span class="chip tab">Data tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Add single files, several files, folders or several folders. Each file is classified by its content, with its time coverage, satellite, product class and SHA-256 checksum.</dd>
+                <dt>Why</dt><dd>Forecasts depend on picking the right files for the cutoff. The checksum records exactly which inputs produced a result.</dd>
+                <dt>How</dt><dd>Data → Add files or Add folder. Compressed <code>.gz</code>, <code>.Z</code> and <code>.tgz</code> archives are read directly.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/01-data.png" alt="Data catalog" loading="lazy"></figure>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Watched folders</h3>
+              <div class="where"><span class="chip tab">Data tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>A watched folder is indexed whenever new files land in it, and a notification appears. A run is never started automatically.</dd>
+                <dt>Why</dt><dd>Measurements and products keep arriving daily; operators decide when to run.</dd>
+                <dt>How</dt><dd>Data → Watch folder.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Project data on first start</h3>
+              <div class="where"><span class="chip tab">start-up</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>When the workspace is empty and the program runs from the project folder, the repository's <code>data</code> folder and the tested Earth orientation and space-weather files are catalogued in the background (about 45 s for 1.8 GB).</dd>
+                <dt>Why</dt><dd>The tested window is ready to run the moment the interface opens.</dd>
+                <dt>How</dt><dd>Automatic. Use <code>--data</code> to name other folders, or <code>--no-project-data</code> to skip.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Demo dataset</h3>
+              <div class="where"><span class="chip tab">Data tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Writes a simulated satellite, GNSS measurements, IGS products and a reference orbit for 15 January 2025.</dd>
+                <dt>Why</dt><dd>Lets anyone try the full workflow without real mission data.</dd>
+                <dt>How</dt><dd>Data → Create demo dataset, then cutoff 2025-01-15 06:00:00 and Auto-select.</dd>
+              </dl>
+            </div>
+          </article>
+        </div>
+
+        <div class="group" id="g-run">
+          <h2>Run setup</h2>
+          <article class="feature">
+            <div class="txt">
+              <h3>Three mandatory inputs</h3>
+              <div class="where"><span class="chip tab">Run tab</span><span class="chip">Mandatory inputs</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>GNSSRD measurements, one GPS orbit and clock product, and the UTC cutoff. Every other setting has a default, and the run lists each default it used.</dd>
+                <dt>Why</dt><dd>A forecast can always be made from the minimum, and nothing is assumed silently.</dd>
+                <dt>How</dt><dd>Auto-select from catalog fills the inputs for the cutoff, for one spacecraft at a time.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/02-run.png" alt="Run setup" loading="lazy"></figure>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Two workflows</h3>
+              <div class="where"><span class="chip tab">Run tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd><b>OD + Forecast</b> computes GPS position fixes, fits an orbit to them and predicts it. <b>Propagate from a state</b> starts from a typed position and velocity, an OEM file or a POEORB epoch.</dd>
+                <dt>Why</dt><dd>Operations need the full chain; analysis often starts from a known state.</dd>
+                <dt>How</dt><dd>Workflow switch at the top of the Run tab.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>GPS product priority and forecast honesty</h3>
+              <div class="where"><span class="chip tab">Run tab</span><span class="chip">GPS products &amp; mode</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>IGS Final, then Rapid, then Ultra-rapid, then broadcast navigation. In <b>Forecast</b> mode a product counts only if it was published before the cutoff; <b>Reconstruction</b> mode uses the best product present and is labelled retrospective. A tier can be forced for comparisons.</dd>
+                <dt>Why</dt><dd>A forecast that secretly used data published later would look better than it can be in operations.</dd>
+                <dt>How</dt><dd>Product mode, eligibility rule and forced tier settings. The results list which product served each epoch and why others were excluded.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Every setting explained</h3>
+              <div class="where"><span class="chip tab">Run tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>85 settings in groups, each with an ⓘ note (what it is, how to choose it, default), a changed marker and its own reset. Settings are validated as you type.</dd>
+                <dt>Why</dt><dd>Makes the trade-offs visible and prevents runs with impossible settings.</dd>
+                <dt>How</dt><dd>Click ⓘ beside any label.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/03-info.png" alt="Setting information" loading="lazy"></figure>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Perturbations and their models</h3>
+              <div class="where"><span class="chip tab">Run tab</span><span class="chip">Perturbations</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Earth gravity (degree and order up to 70), drag with NRLMSISE-00, JB2008, Harris–Priester or exponential density, solar radiation pressure with eclipses, Sun and Moon (analytic or DE440), solid and ocean tides, relativity including Lense–Thirring, Earth albedo and infrared, and constant empirical accelerations.</dd>
+                <dt>Why</dt><dd>Each force can be studied on its own, and models can be compared.</dd>
+                <dt>How</dt><dd>Switch each one on or off and choose its model.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/04-perturbations.png" alt="Perturbation settings" loading="lazy"></figure>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Spacecraft, environment and integrator</h3>
+              <div class="where"><span class="chip tab">Run tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Cannonball or box-wing shape (with PROQUA measured attitude), mass, areas, Cd and Cr (optionally estimated); space weather and Earth orientation, persisted after the cutoff in forecasts; integrator tolerances and step limits.</dd>
+                <dt>Why</dt><dd>These dominate forecast error for a low orbit: drag area and density in particular.</dd>
+                <dt>How</dt><dd>Spacecraft, Optional data &amp; environment, and Integrator groups.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Presets, Reset and Generic</h3>
+              <div class="where"><span class="chip tab">Run tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Save the whole form as a named preset, load, export or import it. Reset returns to the tested-window defaults; Generic loads the plain library defaults.</dd>
+                <dt>Why</dt><dd>Repeatable studies, and an easy way back to known settings.</dd>
+                <dt>How</dt><dd>Buttons at the top of the Run tab.</dd>
+              </dl>
+            </div>
+          </article>
+        </div>
+
+        <div class="group" id="g-window">
+          <h2>Windows and experiments</h2>
+          <article class="feature">
+            <div class="txt">
+              <h3>Window run</h3>
+              <div class="where"><span class="chip tab">Run tab</span><span class="chip tab">Window tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>One OD + forecast per day over a date range, each day with its own cutoff and its own inputs from the catalog. The Window tab shows summary tiles, trends across the window and a per-day table; rows open in Results.</dd>
+                <dt>Why</dt><dd>One forecast proves little. A campaign over many days shows how reliable the method is.</dd>
+                <dt>How</dt><dd>Run → Test window → Run whole window. Days without data are listed as no data and skipped.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/05-window.png" alt="Window tab" loading="lazy"></figure>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Sweep</h3>
+              <div class="where"><span class="chip tab">Run tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Repeats the current case while varying one setting over up to 12 values, then opens the comparison.</dd>
+                <dt>Why</dt><dd>Answers questions such as “how much does the density model matter?” directly.</dd>
+                <dt>How</dt><dd>Run → Sweep…, choose the setting and its values.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/12-sweep.png" alt="Sweep dialog" loading="lazy"></figure>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Compare runs</h3>
+              <div class="where"><span class="chip tab">History tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Lists the settings that differ and plots each run's position difference from the first, split into radial, along-track and cross-track.</dd>
+                <dt>Why</dt><dd>Shows where a modelling change acts: drag shows up along-track.</dd>
+                <dt>How</dt><dd>Tick two or more runs in History and press Compare.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/11-compare.png" alt="Run comparison" loading="lazy"></figure>
+          </article>
+        </div>
+
+        <div class="group" id="g-results">
+          <h2>Results and visualisation</h2>
+          <article class="feature">
+            <div class="txt">
+              <h3>Run summary and provenance</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Status, number of fixes, fit quality (post-fit RMS, variance factor), GPS products used and rejected, defaults used, warnings and run time.</dd>
+                <dt>Why</dt><dd>A forecast is only useful if its basis can be checked.</dd>
+                <dt>How</dt><dd>Opens after each run, or pick any run from the list.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/06-results.png" alt="Run summary" loading="lazy"></figure>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Manoeuvre and quality flags</h3>
+              <div class="where"><span class="chip tab">Results tab</span><span class="chip tab">Window tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Warns when the orbit-fit residuals are much larger than the measurement noise, grow towards one end of the arc, or jump abruptly.</dd>
+                <dt>Why</dt><dd>A thruster burn or bad data inside the arc spoils the forecast; the operator must know.</dd>
+                <dt>How</dt><dd>Shown at the top of the summary, in the OEM header and in the report.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>3D globe, time slider and playback</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Earth-fixed or inertial view with country borders, sunlight, the predicted orbit and the satellite. The slider and play button (60× to 3,600×) animate the forecast.</dd>
+                <dt>Why</dt><dd>Makes a list of numbers into something anyone can follow.</dd>
+                <dt>How</dt><dd>Drag to rotate, scroll to zoom, double-click to reset.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/06-results.png" alt="Globe" loading="lazy"></figure>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Spacecraft models and follow camera</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Sentinel-3A and 3B are drawn as a Sentinel-3 build; any other satellite as a generic one. The model points at nadir and flies along the predicted velocity. Follow satellite rides with it; the model is enlarged to be visible.</dd>
+                <dt>Why</dt><dd>Shows attitude and motion as well as position.</dd>
+                <dt>How</dt><dd>Model selector and Follow satellite at the bottom right of the globe.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/08-generic.png" alt="Generic satellite model" loading="lazy"></figure>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>2D ground track</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Map of the ground track with night shading and the sub-solar point, plus latitude, longitude and altitude at the current time.</dd>
+                <dt>Why</dt><dd>The quickest way to see where the satellite is over the Earth.</dd>
+                <dt>How</dt><dd>Beside the globe; follows the time slider.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Diagnostics plots</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Altitude, satellites in view and PDOP, GPS fix residuals (accepted and rejected), orbit-fit residuals, formal uncertainty and the per-epoch fix table.</dd>
+                <dt>Why</dt><dd>Shows why a run is good or bad.</dd>
+                <dt>How</dt><dd>Plots section of Results; hover for values.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/09-plots.png" alt="Diagnostics plots" loading="lazy"></figure>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Reference orbit overlay and error</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>When a POEORB precise orbit covers the forecast, it is drawn in purple and the error is plotted as 3D, radial, along-track and cross-track.</dd>
+                <dt>Why</dt><dd>Measures forecast accuracy. The reference is display-only and never feeds a run.</dd>
+                <dt>How</dt><dd>Add POEORB files to the catalog; Auto-select picks them.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Uncertainty: covariance plot and ellipsoid</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>With covariance on, the fit's formal uncertainty is propagated and shown as radial, along-track and cross-track 1σ and as an enlarged ellipsoid on the globe.</dd>
+                <dt>Why</dt><dd>A position without its uncertainty cannot be used for decisions.</dd>
+                <dt>How</dt><dd>Forecast &amp; output → Covariance on; tick 1σ ellipsoid under the globe.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Ground-station passes</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Stations with latitude, longitude, height and elevation mask. Lists each pass's start, end, duration and maximum elevation; click to jump to it.</dd>
+                <dt>Why</dt><dd>Contact planning is what a predicted orbit is used for.</dd>
+                <dt>How</dt><dd>Results → Ground-station passes → Add station.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/10-passes.png" alt="Ground-station passes" loading="lazy"></figure>
+          </article>
+        </div>
+
+        <div class="group" id="g-outputs">
+          <h2>Outputs</h2>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>CCSDS OEM file</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Every trajectory is written as CCSDS Orbit Ephemeris Message 2.0 (text form) in EME2000, GCRF or ITRF, with covariance blocks when available and the full provenance in comments. Validated with an independent Orekit reader.</dd>
+                <dt>Why</dt><dd>The international standard format other flight-dynamics tools read.</dd>
+                <dt>How</dt><dd>Download OEM.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Report, KML, CZML and log</h3>
+              <div class="where"><span class="chip tab">Results tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>A printable report with summary, flags, plots, passes, inputs and all settings (changed ones highlighted); KML for Google Earth; CZML for Cesium; the full run log.</dd>
+                <dt>Why</dt><dd>For review, archiving and sharing with people who do not run URSC.</dd>
+                <dt>How</dt><dd>Buttons beside Download OEM; print the report to PDF.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/13-report.png" alt="Run report" loading="lazy"></figure>
+          </article>
+        </div>
+
+        <div class="group" id="g-help">
+          <h2>History and help</h2>
+          <article class="feature noimg">
+            <div class="txt">
+              <h3>Run history</h3>
+              <div class="where"><span class="chip tab">History tab</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Every run is kept with its settings, input checksums, outputs and log. Open, re-use settings or delete.</dd>
+                <dt>Why</dt><dd>Any result can be reproduced and audited later.</dd>
+                <dt>How</dt><dd>History tab.</dd>
+              </dl>
+            </div>
+          </article>
+          <article class="feature">
+            <div class="txt">
+              <h3>Help search</h3>
+              <div class="where"><span class="chip tab">Help tab</span><span class="chip">search box</span></div>
+              <dl class="wwh">
+                <dt>What</dt><dd>Searches the bundled documentation and settings notes offline and answers with the passages it used and their sources. A local Ollama model or an API-key model can be connected later through the same interface.</dd>
+                <dt>Why</dt><dd>Answers questions without internet access or a second person.</dd>
+                <dt>How</dt><dd>Type a question in the search box at the top right.</dd>
+              </dl>
+            </div>
+            <figure data-zoom><img src="img/14-help.png" alt="Help search answer" loading="lazy"></figure>
+          </article>
+        </div>
+        <p class="empty hidden" id="none">No feature matches this filter.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="wrap">URSC LEO orbit determination and prediction. Screenshots taken from the program running the tested Sentinel-3A window.</footer>
+
+<dialog class="zoom" id="zoom" aria-label="Enlarged screenshot">
+  <button type="button" class="btn close" id="zoom-close">Close</button>
+  <img id="zoom-img" alt="">
+</dialog>
+<script src="guide.js"></script>
+</body>
+</html>

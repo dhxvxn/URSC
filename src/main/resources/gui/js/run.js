@@ -1,6 +1,6 @@
 import { api, apiUrl } from './api.js';
 import { el, toast, browse, infoPopover, modal, shortUtc } from './ui.js';
-import { state, refreshCatalog } from './app.js';
+import { state, refreshCatalog, showTab } from './app.js';
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const get = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
@@ -48,7 +48,8 @@ export function renderRun(root) {
         el('button', { class: 'btn', onclick: async () => { if (!presetSel.value || !confirm('Delete preset ' + presetSel.value + '?')) return; await api('presets/' + encodeURIComponent(presetSel.value), { method: 'DELETE' }); refreshPresets(); } }, 'Delete'),
         el('button', { class: 'btn', onclick: exportCfg }, 'Export'),
         el('button', { class: 'btn', onclick: importCfg }, 'Import'),
-        el('button', { class: 'btn', title: 'Reset every setting to its default', onclick: () => { if (confirm('Reset all settings to defaults?')) loadConfig({}); } }, 'Reset'))),
+        el('button', { class: 'btn', title: 'Reset every setting to the startup defaults (the tested Sentinel-3A window)', onclick: () => { if (confirm('Reset all settings to the startup defaults (tested window)?')) { loadConfig({}); autoSelect(null); } } }, 'Reset'),
+        el('button', { class: 'btn', title: 'Generic library defaults: cannonball spacecraft, no window', onclick: async () => { if (confirm('Load the generic defaults (cannonball 1000 kg, no window)?')) { loadConfig(await api('config/generic')); } } }, 'Generic'))),
     groupsBox,
     el('div', { class: 'card' },
       el('div', { class: 'row' }, runBtn, sweepBtn, cancelBtn, readyLine), errorsBox, progress));
@@ -128,6 +129,9 @@ export function renderRun(root) {
         input = el('input', { type: 'number', step: p.type === 'int' ? 1 : 'any', min: p.min, max: p.max, value: val,
           onchange: (e) => { const n = p.type === 'int' ? parseInt(e.target.value, 10) : parseFloat(e.target.value); if (!Number.isNaN(n)) setv(n); } });
         break;
+      case 'date':
+        input = el('input', { type: 'date', value: val || '', onchange: (e) => setv(e.target.value) });
+        break;
       case 'datetime':
         input = el('input', { type: 'datetime-local', step: 1, value: (val || '').replace(/Z$/, '').slice(0, 19),
           onchange: (e) => setv(e.target.value) });
@@ -183,7 +187,7 @@ export function renderRun(root) {
       const ps = state.params.params.filter((p) => p.group === g && p.key !== 'workflow' && visible(p));
       if (!ps.length) continue;
       const nChanged = ps.filter((p) => !p.mandatory && JSON.stringify(get(cfg, p.key)) !== JSON.stringify(get(state.defaults, p.key))).length;
-      const first = g === 'Mandatory inputs' || g === 'Initial state';
+      const first = g === 'Mandatory inputs' || g === 'Initial state' || g === 'Test window';
       const det = el('details', { class: 'group', open: openState[g] ?? first },
         el('summary', {}, g, el('span', { class: 'count' }, ps.length + ' settings' + (nChanged ? ' · ' + nChanged + ' changed' : ''))),
         el('div', { class: 'fields' }, ...ps.map(field)));
@@ -194,6 +198,11 @@ export function renderRun(root) {
         det.querySelector('.fields').prepend(el('div', { class: 'field wide' }, el('div', { class: 'row' },
           el('button', { class: 'btn', type: 'button', onclick: () => autoSelect(null) }, '✨ Auto-select from catalog'), satSel,
           el('span', { class: 'muted small' }, 'Fills observations (one spacecraft), GPS products, POEORB, attitude, EOP, weather and DE files that cover the cutoff.'))));
+      }
+      if (g === 'Test window') {
+        det.querySelector('.fields').append(el('div', { class: 'field wide' }, el('div', { class: 'row' },
+          el('button', { class: 'btn primary', type: 'button', onclick: runWindow }, '▶ Run whole window'),
+          el('span', { class: 'muted small' }, windowText()))));
       }
       groupsBox.append(det);
     }
@@ -229,6 +238,30 @@ export function renderRun(root) {
       toast(e.message, 'bad', 9000);
     }
   });
+  function windowDays() {
+    const a = Date.parse(cfg.window.startDate), b = Date.parse(cfg.window.endDate), s = Math.max(1, cfg.window.stepDays || 1);
+    return Number.isNaN(a) || Number.isNaN(b) || b < a ? 0 : Math.floor((b - a) / 86400e3 / s) + 1;
+  }
+  function windowText() {
+    const n = windowDays();
+    return n ? n + ' cutoffs at ' + cfg.window.cutoffTimeUtc + ' UTC, each with its own inputs from the catalog; about ' + Math.max(1, Math.round(n * (cfg.forecast.covariance ? 3.4 : 2.0))) + ' min with the current settings.'
+      : 'Set the first and last cutoff dates.';
+  }
+  async function runWindow() {
+    const n = windowDays();
+    if (!n) { toast('Set the window dates first', 'warn'); return; }
+    if (!confirm('Run ' + n + ' cutoffs from ' + cfg.window.startDate + ' to ' + cfg.window.endDate + '? Each day is a full OD + forecast; progress shows in the Window tab.')) return;
+    try {
+      const r = await api('window', { method: 'POST', body: cfg });
+      state.window = r.id;
+      runBtn.disabled = true; sweepBtn.disabled = true;
+      cancelBtn.classList.remove('hidden');
+      progress.classList.remove('hidden');
+      progress.querySelector('.log').textContent = '';
+      toast('Window run started: ' + r.count + ' cutoffs');
+      showTab('window');
+    } catch (e) { toast(e.message, 'bad', 9000); }
+  }
   sweepBtn.addEventListener('click', sweepDialog);
   async function sweepDialog() {
     const candidates = state.params.params.filter((p) => ['enum', 'bool', 'number', 'int'].includes(p.type) && p.key !== 'workflow');
@@ -280,6 +313,13 @@ export function renderRun(root) {
       return;
     }
     if (evt.type === 'sweep') { sweepBtn.disabled = false; validate(); return; }
+    if (evt.type === 'window-progress') {
+      state.job = evt.id;
+      progress.classList.remove('hidden');
+      progress.querySelector('.log').textContent += '— window cutoff ' + (evt.index + 1) + ' of ' + evt.count + ': ' + evt.date + '\n';
+      return;
+    }
+    if (evt.type === 'window-done') { state.job = null; sweepBtn.disabled = false; cancelBtn.classList.add('hidden'); validate(); return; }
     if (evt.id !== state.job) return;
     if (evt.type === 'progress') {
       progress.querySelector('.job-bar div').style.width = Math.round(evt.fraction * 100) + '%';
@@ -295,7 +335,12 @@ export function renderRun(root) {
   });
   state.on('config', changed);
   state.on('demo', (evt) => { if (!cfg.cutoffUtc) { cfg.cutoffUtc = evt.cutoffUtc; changed(); } });
-  state.on('catalog', refreshCatalogSelects);
+  state.on('catalog', () => {
+    refreshCatalogSelects();
+    if (cfg.workflow === 'OD_FORECAST' && !cfg.inputs.gnssrd.length && state.catalog.entries.length) autoSelect(null);
+  });
   refreshPresets();
   changed();
+  // startup: fill the default cutoff's inputs from the catalog (project data is indexed on first start)
+  if (cfg.workflow === 'OD_FORECAST' && !cfg.inputs.gnssrd.length && state.catalog.entries.length) autoSelect(null);
 }

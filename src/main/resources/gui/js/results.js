@@ -5,6 +5,7 @@ import { Globe } from './globe.js';
 import { GroundMap } from './map2d.js';
 import { lineChart } from './charts.js';
 import { loadConfig } from './run.js';
+import { MODELS, modelFor } from './spacecraft.js';
 
 let borders = null;
 let globe = null, map = null;
@@ -25,13 +26,21 @@ const ellBox = el('input', { type: 'checkbox' });
 const ellLabel = el('span', { class: 'small muted' });
 const ellToggle = el('label', { class: 'small', title: 'Formal 1σ position uncertainty, enlarged so it is visible at globe scale' }, ellBox, ' 1σ ellipsoid ', ellLabel);
 const passesCard = el('div', { class: 'card' });
+const modelSel = el('select', { title: 'Spacecraft model drawn on the globe (enlarged so it is visible)' },
+  el('option', { value: 'auto' }, 'Model: automatic'),
+  ...Object.entries(MODELS).map(([k, m]) => el('option', { value: k }, 'Model: ' + m.label)),
+  el('option', { value: 'none' }, 'Model: dot only'));
+const followBtn = el('button', { title: 'Camera rides with the satellite; drag to look around it, scroll to zoom' }, '🛰 Follow satellite');
 let stations = [];
 
 export function renderResults(root) {
   const globeBox = el('div', { class: 'globe' }, overlayText,
     el('div', { class: 'viewsel toggle' },
       el('button', { class: 'on', onclick: (e) => setView('ecef', e.target) }, 'Earth-fixed'),
-      el('button', { onclick: (e) => setView('inertial', e.target) }, 'Inertial')));
+      el('button', { onclick: (e) => setView('inertial', e.target) }, 'Inertial')),
+    el('div', { class: 'modelsel row' }, modelSel, el('div', { class: 'toggle' }, followBtn)));
+  modelSel.addEventListener('change', applyModel);
+  followBtn.addEventListener('click', () => { const on = !followBtn.classList.contains('on'); followBtn.classList.toggle('on', on); globe.setFollow(on); });
   const mapCanvas = el('canvas', { class: 'map2d' });
   vizCard.append(
     el('div', { class: 'viz' }, globeBox, el('div', {}, mapCanvas,
@@ -65,6 +74,17 @@ export function renderResults(root) {
   };
   state.on('runs', fill);
   fill();
+}
+
+function objectName() {
+  return (cur && (cur.result.objectName || (cur.config.spacecraft && cur.config.spacecraft.objectName))) || '';
+}
+
+function applyModel() {
+  const v = modelSel.value;
+  const key = v === 'auto' ? modelFor(objectName()) : v;
+  globe.setModel(key === 'none' ? null : key);
+  modelSel.options[0].textContent = 'Model: automatic (' + (MODELS[modelFor(objectName())].label) + ')';
 }
 
 function setView(v, btn) {
@@ -119,6 +139,7 @@ export async function openRun(id) {
     slider.max = cur.traj.t.length - 1;
     globe.setTrajectory(cur.traj, cur.ref && cur.ref.track);
     map.setTrajectory(cur.traj, cur.ref && cur.ref.track);
+    applyModel();
     ellToggle.classList.toggle('hidden', !cur.traj.sigmaRtn);
     if (!cur.traj.sigmaRtn) ellBox.checked = false;
     ellBox.dispatchEvent(new Event('change'));
