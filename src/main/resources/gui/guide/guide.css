@@ -115,3 +115,21 @@ footer { color: var(--muted); font-size: 13px; padding: 28px 0 40px; }
 @media (prefers-reduced-motion: no-preference) {
   .stage figure img { transition: opacity 0.2s; }
 }
+
+/* RAG explainer */
+.rag-flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+.rag-node { flex: 1 1 140px; min-width: 120px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 3px; align-content: center; font-weight: 600; font-size: 14px; }
+.rag-node.accent { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.rag-node small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.rag-arrow { align-self: center; color: var(--muted); font-size: 18px; }
+.rag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.rag-grid .card2 { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.rag-grid h3 { margin: 0 0 8px; }
+.rag-grid ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.provs { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.prov .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge2 { font-size: 11px; font-weight: 600; border-radius: 999px; padding: 2px 8px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.badge2.on { color: var(--accent); border-color: var(--accent); }
+.small { font-size: 13px; }
+@media (max-width: 860px) { .rag-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .rag-flow { flex-direction: column; } .rag-arrow { transform: rotate(90deg); justify-self: center; } }

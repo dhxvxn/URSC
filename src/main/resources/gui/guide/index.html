@@ -158,6 +158,46 @@
     <figure data-zoom><img src="img/05b-window-trends.png" alt="Window trends: orbit-fit post-fit RMS, GPS fixes and error against POEORB across the 61 cutoffs"></figure>
   </section>
 
+  <section class="block" id="rag" aria-labelledby="rag-h">
+    <div class="head">
+      <h2 id="rag-h">Help answers: retrieval-augmented generation (RAG), offline</h2>
+      <p>The Help tab answers questions in plain language. Instead of guessing, it <b>retrieves</b> the most relevant passages from the program's own documentation and then writes an answer from them, citing each source. Nothing leaves the computer, so it is safe on an air-gapped network — and a chatbot that only answers from verified documentation, and shows its sources, is what a mission setting needs.</p>
+    </div>
+
+    <div class="rag-flow" role="img" aria-label="Pipeline: your question, retrieve with BM25 over bundled docs settings and your notes, top passages, generate an answer offline Ollama or cloud, cited answer">
+      <div class="rag-node">Your question</div>
+      <span class="rag-arrow">→</span>
+      <div class="rag-node accent">Retrieve · BM25<small>bundled docs · every setting · your notes</small></div>
+      <span class="rag-arrow">→</span>
+      <div class="rag-node">Top passages</div>
+      <span class="rag-arrow">→</span>
+      <div class="rag-node accent">Generate the answer<small>offline · Ollama · cloud</small></div>
+      <span class="rag-arrow">→</span>
+      <div class="rag-node">Cited answer</div>
+    </div>
+
+    <div class="rag-grid">
+      <div class="card2">
+        <h3>How it works, step by step</h3>
+        <ol>
+          <li><b>Index (once, at start).</b> The bundled help pages, every setting's explanation from the parameter registry, the project documentation and any Markdown or text notes you drop in <code>&lt;workspace&gt;/knowledge</code> are split at their headings into ~1,200-character passages and indexed with <b>Okapi BM25</b> — a classic ranking that scores passages by how well their words match a query. Fully offline.</li>
+          <li><b>Retrieve.</b> Your question is matched against that index; the best passages are ranked, with words in a passage's title weighted double and very common words ignored.</li>
+          <li><b>Augment &amp; generate.</b> Those retrieved passages — <b>and only those</b> — are handed to the first available answer provider, which writes the answer.</li>
+          <li><b>Cite.</b> Every answer lists the passages it used and their source, so you can check it against the documentation.</li>
+        </ol>
+      </div>
+      <div class="card2">
+        <h3>Answer providers (tried in order)</h3>
+        <ul class="provs">
+          <li class="prov"><div class="top"><b>Offline extractive</b><span class="badge2 on">default · always on</span></div><div class="muted small">No model, no network: it selects the sentences from the top passages that best cover your question and cites each one. This is what runs out of the box.</div></li>
+          <li class="prov"><div class="top"><b>Local model (Ollama)</b><span class="badge2">optional · offline</span></div><div class="muted small">A local LLM can phrase the answer from the same retrieved passages — still on the computer, no internet. Wired into the interface and configuration; disabled in this release.</div></li>
+          <li class="prov"><div class="top"><b>Cloud model (API key)</b><span class="badge2">optional · online</span></div><div class="muted small">Claude or any OpenAI-compatible endpoint, for networks that do allow internet. Off by default, never used on an air-gapped network; the key is read from an environment variable and never written to disk.</div></li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted small">Grow its knowledge without code: drop your own Markdown notes into the workspace <code>knowledge</code> folder and press re-index. The retrieval step always stays offline, whichever provider writes the answer.</p>
+  </section>
+
   <section class="block" id="features" aria-labelledby="ft-h">
     <div class="head">
       <h2 id="ft-h">All features</h2>
@@ -540,12 +580,12 @@
           </article>
           <article class="feature">
             <div class="txt">
-              <h3>Help search</h3>
+              <h3>Help search (retrieval-augmented, RAG)</h3>
               <div class="where"><span class="chip tab">Help tab</span><span class="chip">search box</span></div>
               <dl class="wwh">
-                <dt>What</dt><dd>Searches the bundled documentation and settings notes offline and answers with the passages it used and their sources. A local Ollama model or an API-key model can be connected later through the same interface.</dd>
-                <dt>Why</dt><dd>Answers questions without internet access or a second person.</dd>
-                <dt>How</dt><dd>Type a question in the search box at the top right.</dd>
+                <dt>What</dt><dd>Retrieves the most relevant passages from the bundled documentation, every setting's explanation and your own notes with offline BM25 ranking, then writes a plain-language answer from them and cites each source. A local Ollama model or an API-key model can phrase the answer through the same interface. See <a href="#rag">how RAG works</a> above.</dd>
+                <dt>Why</dt><dd>Answers questions without internet access or a second person, and only from verified documentation — so it cannot invent facts, and every claim shows its source.</dd>
+                <dt>How</dt><dd>Type a question in the search box at the top right. Add Markdown notes to the workspace <code>knowledge</code> folder to extend it.</dd>
               </dl>
             </div>
             <figure data-zoom><img src="img/14-help.png" alt="Help search answer" loading="lazy"></figure>
