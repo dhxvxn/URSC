@@ -145,4 +145,19 @@ class DataCatalogTest {
         assertTrue(s.get("poeorb").stream().noneMatch(p -> p.contains("S3A_POEORB_20241001-02")), String.valueOf(s.get("poeorb")));
         assertTrue(s.get("poeorb").stream().anyMatch(p -> p.contains("truth_20241007-08")), String.valueOf(s.get("poeorb")));
     }
+
+    /** CODE high-rate clock headers place the file type in column 22 (not 21); still recognised. */
+    @Test
+    void recognisesRinexClockWithTheTypeCharacterShiftedOneColumn(@TempDir final Path tmp) throws Exception {
+        final Path data = Files.createDirectories(tmp.resolve("in"));
+        // exactly the layout CODE writes for COD0OPSFIN ... _30S_CLK: 'C' at index 21, not 20
+        final String clk = "3.04                 C                    M                      RINEX VERSION / TYPE\n"
+                + "CCRNXC V5.5          AIUB                 07-SEP-24 08:20        PGM / RUN BY / DATE\n"
+                + "                                                            END OF HEADER\n"
+                + "AS G01  2024 09 02 00 00  0.000000  1    1.0E-04\n";
+        Files.writeString(data.resolve("COD0OPSFIN_20242460000_01D_30S_CLK.CLK"), clk);
+        final DataCatalog cat = new DataCatalog(tmp.resolve("ws"));
+        cat.add(List.of(data.toString()));
+        assertEquals(Kind.IGS_CLOCK, byName(cat.entries(), "COD0OPSFIN").kind);
+    }
 }

@@ -319,7 +319,14 @@ public final class DataCatalog {
         for (int i = 0; i < Math.min(3, head.size()); i++) {
             final String l = head.get(i);
             if (l.contains("RINEX VERSION / TYPE") && l.length() > 20) {
-                return Character.toUpperCase(l.charAt(20)) == type;
+                // The file type sits in column 21 (index 20) by the standard, but some analysis
+                // centres (e.g. CODE high-rate clocks) shift it one column; accept either.
+                for (int c = 20; c <= 21 && c < l.length(); c++) {
+                    if (Character.toUpperCase(l.charAt(c)) == type) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
         return false;
