@@ -275,3 +275,8 @@ The [input-data table](data/README.md) also links the archived
 
 The [agreed estimation/prediction architecture](docs/MERGED_ARCHITECTURE.md) preserves
 the merged batch-OD, force-model and propagation engine for future implementation.
+
+
+## Complete available input archive
+
+The [input-data table](data/README.md) now includes Broadcast, Final, Rapid and Ultra-Rapid products, uploaded GNSSRD/PROQUA/POEORB inputs, supporting GNSS products and checksum manifests. Coverage varies by provider; incomplete downloads are quarantined and excluded from model input coverage.
