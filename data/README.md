@@ -8,6 +8,7 @@ and duplicate aliases. Navigation has its own detailed manifest under
 | Input | Location | Coverage |
 |---|---|---|
 | GPS broadcast navigation | `gnss/navigation/2024/` |63consecutive days:September1–November2,2024; selected window complete |
+| CODE Final GNSS orbits and clocks | [gnss/products/final/](gnss/products/final/README.md) | 62 daily SP3 + 62 daily CLK files; September 2-November 2, 2024; paired coverage complete |
 | Sentinel-3A GNSS observations | `gnss/observations/2024/` |61consecutive GPS days:September3–November2,2024; selected window complete |
 | Sentinel-3B GNSS observations | `gnss/observations/2024/` | October15–16,2024; one GNSSRD archive |
 | Sentinel-3A measured attitude | `attitude/2024/` | daily September17–October2 (15 files) and October15–16,2024; 16 PROQUA archives |

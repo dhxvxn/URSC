@@ -269,5 +269,9 @@ Previously uploaded observations, attitude and orbit-state fixtures are now arch
 with checksums. See the [input data inventory](data/README.md) and
 [machine-readable manifest](data/input-manifest.json).
 
+The [input-data table](data/README.md) also links the archived
+[CODE Final SP3 orbit and CLK clock products](data/gnss/products/final/README.md):
+124 files covering September 2-November 2, 2024, with per-file checksums.
+
 The [agreed estimation/prediction architecture](docs/MERGED_ARCHITECTURE.md) preserves
 the merged batch-OD, force-model and propagation engine for future implementation.
