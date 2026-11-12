@@ -1,0 +1,129 @@
+{
+  "runName": "Sentinel-3A tested window",
+  "workflow": "OD_FORECAST",
+  "cutoffUtc": "2024-09-03T05:59:42",
+  "inputs": {
+    "gnssrd": [],
+    "gpsProducts": [],
+    "poeorb": [],
+    "proqua": [],
+    "eopFile": "",
+    "spaceWeatherFile": "",
+    "de440File": "",
+    "gravityFile": ""
+  },
+  "products": {
+    "mode": "FORECAST",
+    "eligibility": "NOMINAL_LATENCY",
+    "tier": "AUTO"
+  },
+  "od": {
+    "arcHours": 6,
+    "samplingSeconds": 300,
+    "pseudorangeSigma": 5,
+    "covarianceWeighting": true,
+    "maxIterations": 12,
+    "minSatellites": 4,
+    "maxPdop": 6,
+    "maxSppRms": 30,
+    "estimateCd": false,
+    "estimateCr": false
+  },
+  "forecast": {
+    "spanDays": 7,
+    "outputStepSeconds": 60,
+    "frame": "EME2000",
+    "covariance": false,
+    "covarianceEveryNSteps": 60
+  },
+  "spacecraft": {
+    "objectName": "SENTINEL-3A",
+    "objectId": "2016-011A",
+    "massKg": 1130,
+    "shape": "CANNONBALL",
+    "dragAreaM2": 8,
+    "srpAreaM2": 8,
+    "cd": 2.2,
+    "cr": 1.3,
+    "attitude": "NOMINAL_YAW_STEERING",
+    "faceAreaX": 2,
+    "faceAreaY": 2,
+    "faceAreaZ": 2,
+    "wingAreaM2": 5,
+    "arrayCantDeg": 0
+  },
+  "forces": {
+    "gravity": {
+      "enabled": true,
+      "degree": 70,
+      "order": 70
+    },
+    "drag": {
+      "enabled": true
+    },
+    "dragModel": "NRLMSISE00",
+    "srp": {
+      "enabled": true
+    },
+    "sun": {
+      "enabled": true
+    },
+    "moon": {
+      "enabled": true
+    },
+    "thirdBodyEphemeris": "ANALYTIC",
+    "solidTides": {
+      "enabled": true
+    },
+    "oceanTides": {
+      "enabled": true
+    },
+    "relativity": {
+      "enabled": true
+    },
+    "lenseThirring": true,
+    "albedo": {
+      "enabled": true
+    },
+    "empirical": {
+      "enabled": false,
+      "radial": 0,
+      "transverse": 0,
+      "normal": 0
+    }
+  },
+  "weather": {
+    "f107": 150,
+    "f107a": 150,
+    "ap": 15,
+    "afterCutoff": "PERSIST",
+    "forecastAp": 5
+  },
+  "eop": {
+    "afterCutoff": "PERSIST"
+  },
+  "integrator": {
+    "absTol": 1e-10,
+    "relTol": 1e-13,
+    "maxStepSeconds": 30,
+    "minStepSeconds": 0.001
+  },
+  "initialState": {
+    "source": "TYPED",
+    "file": "",
+    "epochUtc": "",
+    "frame": "ITRF",
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "vx": 0,
+    "vy": 0,
+    "vz": 0
+  },
+  "window": {
+    "startDate": "2024-09-03",
+    "endDate": "2024-11-02",
+    "cutoffTimeUtc": "05:59:42",
+    "stepDays": 1
+  }
+}

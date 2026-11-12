@@ -252,6 +252,13 @@ back into the computation. Full detail, with pictures and a glossary, is in
 
 ## Documentation
 
+- **[Complete GUI screenshot and control guide](docs/gui-complete-guide/GUI_COMPLETE_GUIDE.md)** —
+  every tab, all 85 settings, all fixed parameter choices, conditional controls and dialogs,
+  with 50 current screenshots. Available as
+  [PDF](docs/gui-complete-guide/GUI_COMPLETE_GUIDE.pdf),
+  [editable Word](docs/gui-complete-guide/GUI_COMPLETE_GUIDE.docx), and
+  [complete offline package](docs/gui-complete-guide/GUI_COMPLETE_GUIDE_PACKAGE.zip?raw=true).
+
 - **[docs/REPORT.md](docs/REPORT.md)** — illustrated end-to-end report (problem → results) with a glossary.
 - **[docs/PRESENTATION.md](docs/PRESENTATION.md)** — a 60–120 minute speaker's script and demo guide.
 - **[docs/PROMPT_DEVELOPMENT_REPORT.md](docs/PROMPT_DEVELOPMENT_REPORT.md)** — the polished, reproducible prompt history (Codex + Claude) that built the project.
