@@ -21,6 +21,13 @@ explains the problem, the method, the features and the results, with a glossary 
 
 ---
 
+## Present the saved two-month results
+
+For a presentation without rerunning the campaign, use the
+[ready-to-run ZIP and Windows/Linux launch instructions](#ready-to-run-presentation-saved-results-without-rerunning).
+It opens the saved 61-date campaign with 427 attempted cases and 385 issued
+outputs. Java 17+ is required; Maven and raw input folders are not.
+
 ## Installation and running
 
 You need two free tools: a **Java Development Kit (JDK) 17 or newer** and **Apache Maven** (the
@@ -154,11 +161,22 @@ The Maven build must report `BUILD SUCCESS`; the JAR is written under `target/`.
 The scenario is a smoke check of execution, not a Sentinel-3A accuracy assessment.
 For later updates, commit or stash local edits before `git pull --ff-only`, then rebuild.
 
-### Presentation today: open saved results without rerunning
+### Ready-to-run presentation: saved results without rerunning
 
-For today, [download the ready-to-run presentation ZIP](packaging/presentation/URSC-saved-presentation.zip),
-extract it, and use its Windows or Linux launcher. Java 17+ is required; Maven
-and raw input folders are not required for that download.
+[Download the ready-to-run presentation ZIP](packaging/presentation/URSC-saved-presentation.zip?raw=true).
+
+1. Download and **extract the ZIP completely**.
+2. **Windows:** double-click `start-presentation.cmd` in the extracted folder.
+3. **Linux:** open a terminal in that folder and run `sh start-presentation.sh`.
+4. The browser opens on **Saved presentation** with the processed two-month results
+   already loaded. Select an experiment and date to inspect its saved output.
+
+**Requires Java 17 or newer. No Maven installation or raw input folders are needed
+for this ZIP.** Keep the terminal open while presenting; stop with Ctrl+C or Quit.
+If the browser does not open, copy the complete URL printed in the terminal.
+The ZIP includes the built JAR; it does not include Java itself.
+
+Alternatively, when running a JAR built from this checkout:
 
 ```text
 java -jar target/leo-trajectory-0.1.0.jar gui --presentation
@@ -179,8 +197,14 @@ The archive is bundled in the JAR and works offline. These are daily benchmark
 samples, not dense orbit tracks. Rejected dates and unscored endpoints remain
 visible, and retrospective products/replays are labelled. The archive is a
 read-only presentation snapshot, separate from new runs in your local History.
-After pulling this update, rebuild once with `mvn package` before your presentation;
-opening an old JAR will not load the new bundled archive.
+If building from source after pulling an update, run `mvn package` once to include
+the snapshot. **The downloadable presentation ZIP is already built and needs no
+build step.** Opening an older JAR will not load the new archive.
+
+Verification: the build passed **122 tests**, and the extracted presentation ZIP
+was checked in Chromium on Linux using a fresh workspace. Saved-result browsing
+triggered no orbit-computation requests. Windows launch instructions are provided;
+the Windows launcher has not been executed on Windows in this environment.
 
 ### What you should see
 
@@ -193,6 +217,8 @@ Open:  http://127.0.0.1:XXXXX/#t=<token>
 and opens your browser there automatically. If it does not open, copy that exact address
 (the token matters) into your browser. Everything is in that page:
 
+- **Saved presentation** — the bundled two-month results, recorded errors and OEM
+  downloads; opens by default without starting a calculation.
 - **Data** — the catalogue of input files (it recognises each file by its content).
 - **Run** — set up and launch an orbit determination + forecast (it opens on the tested
   Sentinel-3A window by default). Buttons: **▶ Run**, **⚖ Compare product tiers**.
@@ -204,8 +230,8 @@ and opens your browser there automatically. If it does not open, copy that exact
 Stop the program with **Ctrl+C** in the terminal, or the ⏻ button at the top-right of the page.
 
 > **Notes.** Run the `gui` command from the project folder so it finds the `data` directory.
-> The first launch spends about a minute cataloguing the ~950 bundled input files. For
-> air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
+> Normal startup may spend about a minute cataloguing the ~950 bundled input files. For
+> presentation mode skips that indexing. For air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
 > (Windows) builds a bundle that carries its own Java runtime — see
 > [`packaging/README-OFFLINE.md`](packaging/README-OFFLINE.md).
 
