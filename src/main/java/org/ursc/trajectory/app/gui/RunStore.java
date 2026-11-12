@@ -27,9 +27,17 @@ final class RunStore {
         this.root = Files.createDirectories(workspace.resolve("runs"));
     }
 
-    String newId() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
-                + "-" + Integer.toHexString((int) (Math.random() * 0xFFFF));
+    private final java.util.Set<String> issued = new java.util.HashSet<>();
+
+    /** A new run id, unique even when many are created in the same second (parallel window runs). */
+    synchronized String newId() {
+        while (true) {
+            final String id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+                    + "-" + Integer.toHexString((int) (Math.random() * 0xFFFF));
+            if (issued.add(id) && !Files.exists(root.resolve(id))) {
+                return id;
+            }
+        }
     }
 
     Path dir(final String id) {

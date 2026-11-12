@@ -78,6 +78,31 @@ public final class OrekitForecast {
         return out;
     }
 
+    /**
+     * Express the states (GCRF) also in the OEM output frame with Orekit's frames: position,
+     * velocity and covariance (through the frame transform's PV Jacobian).
+     */
+    public static void toOutputFrame(final List<RunResult.State> states, final RunConfig.OutputFrame frame,
+                                     final OrekitSession s) {
+        final org.orekit.frames.Frame target = frame == RunConfig.OutputFrame.ITRF ? s.itrf
+                : frame == RunConfig.OutputFrame.EME2000 ? s.eme2000 : s.gcrf;
+        for (final RunResult.State st : states) {
+            final AbsoluteDate t = OrekitDates.toOrekit(st.date);
+            final org.orekit.frames.Transform tr = s.gcrf.getTransformTo(target, t);
+            final org.orekit.utils.PVCoordinates pv = tr.transformPVCoordinates(new org.orekit.utils.PVCoordinates(
+                    OrekitDates.toOrekit(st.position), OrekitDates.toOrekit(st.velocity)));
+            st.outputFrame = frame.name();
+            st.outputPosition = OrekitDates.fromOrekit(pv.getPosition());
+            st.outputVelocity = OrekitDates.fromOrekit(pv.getVelocity());
+            if (st.covariance != null) {
+                final double[][] jac = new double[6][6];
+                tr.getJacobian(org.orekit.utils.CartesianDerivativesFilter.USE_PV, jac);
+                final RealMatrix j = MatrixUtils.createRealMatrix(jac);
+                st.outputCovariance = j.multiply(MatrixUtils.createRealMatrix(st.covariance)).multiplyTransposed(j).getData();
+            }
+        }
+    }
+
     /** Builds fresh force models (with the estimated coefficients) for one propagation leg. */
     public interface ForcesFactory {
         List<ForceModel> build();

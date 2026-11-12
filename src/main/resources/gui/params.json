@@ -129,6 +129,20 @@
    ]
   },
   {
+   "key": "window.parallelRuns",
+   "group": "Test window",
+   "label": "Parallel runs",
+   "type": "int",
+   "unit": "",
+   "what": "How many cut-offs of a window run are computed at the same time, each in its own process.",
+   "how": "0 picks automatically: one per spare processor core, limited by memory (about 3 GB per run). Use 1 on a small machine or to keep the computer responsive.",
+   "min": 0,
+   "max": 32,
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
    "key": "runName",
    "group": "Forecast & output",
    "label": "Run name",
@@ -407,6 +421,30 @@
    "unit": "",
    "what": "Uses the antenna position relative to the centre of mass from the GNSSRD header (ANTENNA: DELTA), rotated by the attitude, in the carrier-phase fit. Without it the orbit is that of the antenna, not the centre of mass.",
    "how": "Keep on. It shifts the orbit by up to about a metre (for Sentinel-3A, 3 m along track and 0.8 m radially).",
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "od.gpsAntennaPhaseCentre",
+   "group": "Orbit determination",
+   "label": "GPS antenna phase centres (ANTEX)",
+   "type": "bool",
+   "unit": "",
+   "what": "Corrects the GPS satellites' antenna phase-centre offsets and variations from the IGS ANTEX file (igs20), in each satellite's yaw-steering attitude (Orekit's GNSS attitude models). Applied only with IGS precise orbits, which refer to the satellite centre of mass; broadcast orbits already refer to the antenna.",
+   "how": "Keep on. The offsets are 0.7-1.4 m along the Earth-pointing axis; without them precise-product residuals stay at the decimetre level.",
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "od.phaseWindUp",
+   "group": "Orbit determination",
+   "label": "Carrier-phase wind-up",
+   "type": "bool",
+   "unit": "",
+   "what": "Corrects the carrier-phase wind-up: the apparent phase change caused by the rotation of the receiving antenna relative to the GPS transmitter (up to a cycle, 10.7 cm in the ionosphere-free phase).",
+   "how": "Keep on. Needs the ANTEX file for the GPS attitude models.",
    "workflows": [
     "OD_FORECAST"
    ]
@@ -1008,6 +1046,15 @@
    "kinds": [
     "DE_EPHEMERIS"
    ]
+  },
+  {
+   "key": "inputs.antexFile",
+   "group": "Optional data & environment",
+   "label": "ANTEX antenna file",
+   "type": "file",
+   "unit": "",
+   "what": "IGS ANTEX file with the GPS satellite antenna phase-centre offsets and variations and the satellite block types (for the yaw attitude). Blank uses data/antenna/igs20_gps.atx (the GPS part of igs20.atx).",
+   "how": "Keep blank when running from the project folder."
   },
   {
    "key": "inputs.gravityFile",

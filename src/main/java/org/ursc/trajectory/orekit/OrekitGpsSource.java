@@ -38,6 +38,14 @@ public interface OrekitGpsSource extends GnssOrbitClockSource {
         return clock(prn, OrekitDates.toOrekit(t));
     }
 
+    /**
+     * Whether the orbits refer to the satellite centre of mass (IGS precise products) rather
+     * than to the antenna phase centre (broadcast ephemerides).
+     */
+    default boolean centreOfMassOrbits() {
+        return false;
+    }
+
     /** The Earth-fixed frame the product is expressed in. */
     org.orekit.frames.Frame itrf();
 }

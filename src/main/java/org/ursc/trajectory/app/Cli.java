@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.ursc.trajectory.app.command.Command;
+import org.ursc.trajectory.app.command.RunCommand;
 import org.ursc.trajectory.app.command.CompareCommand;
 import org.ursc.trajectory.app.command.DecayCommand;
 import org.ursc.trajectory.app.command.DemoDataCommand;
@@ -20,11 +21,12 @@ import org.ursc.trajectory.app.command.ValidateCommand;
 import org.ursc.trajectory.app.term.Ansi;
 
 /**
- * Terminal entry point: dispatches to a subcommand. Zero external dependencies.
+ * Terminal entry point: dispatches to a subcommand. {@code gui} and {@code run} use the Orekit
+ * engine (the program's orbit determination and forecast); the older research commands marked
+ * "legacy" in the help still use the program's own in-house physics library.
  *
  * <pre>
  *   java -jar leo-trajectory-0.1.0.jar &lt;command&gt; [args]
- *   commands: propagate, decay, compare, tle, validate, fit, help, version
  * </pre>
  */
 public final class Cli {
@@ -32,8 +34,13 @@ public final class Cli {
     private static final String VERSION = "0.1.0";
 
     private static final Map<String, Command> COMMANDS = new LinkedHashMap<>();
+    /** Commands that run the Orekit engine (the others are legacy research tools). */
+    private static final java.util.Set<String> ENGINE = java.util.Set.of("gui", "run", "demo-data");
 
     static {
+        register(new GuiCommand());
+        register(new RunCommand());
+        register(new DemoDataCommand());
         register(new PropagateCommand());
         register(new DecayCommand());
         register(new CompareCommand());
@@ -44,8 +51,6 @@ public final class Cli {
         register(new ForecastCommand());
         register(new PredictCommand());
         register(new SppCommand());
-        register(new GuiCommand());
-        register(new DemoDataCommand());
     }
 
     private Cli() {
@@ -88,12 +93,23 @@ public final class Cli {
         System.out.println(Ansi.bold("GNSS Based Orbit Determination and Trajectory Prediction " + VERSION));
         System.out.println("usage: leoprop <command> [options]\n");
         System.out.println("commands:");
+        System.out.println(" (Orekit engine)");
         for (final Command c : COMMANDS.values()) {
-            System.out.printf("  %-11s %s%n", c.name(), c.description());
+            if (ENGINE.contains(c.name())) {
+                System.out.printf("  %-11s %s%n", c.name(), c.description());
+            }
+        }
+        System.out.println(" (legacy research tools, in-house physics library)");
+        for (final Command c : COMMANDS.values()) {
+            if (!ENGINE.contains(c.name())) {
+                System.out.printf("  %-11s %s%n", c.name(), c.description());
+            }
         }
         System.out.println("  help        show this help");
         System.out.println("  version     print the version");
         System.out.println("\nexamples:");
+        System.out.println("  leoprop gui");
+        System.out.println("  leoprop run ~/URSC-workspace/runs/<id>/config.json --out results");
         System.out.println("  leoprop propagate sample-scenario.properties --plot alt");
         System.out.println("  leoprop decay sample-scenario.properties --monte-carlo 20 --seed 1");
         System.out.println("  leoprop compare sample-scenario.properties "

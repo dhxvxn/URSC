@@ -28,8 +28,10 @@
   "forecastAp": 5.0
  },
  "od": {
-  "arcHours": 6.0,
+  "arcHours": 12.0,
   "samplingSeconds": 300.0,
+  "phaseRateSeconds": 60.0,
+  "estimateCd": true,
   "pseudorangeSigma": 5.0,
   "maxIterations": 12
  },

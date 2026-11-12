@@ -77,6 +77,8 @@ public final class RunConfig {
         public String cutoffTimeUtc = "06:00:00";
         /** Days between consecutive cutoffs. */
         public int stepDays = 1;
+        /** Cut-offs computed at the same time (separate processes); 0 = automatic (cores and memory). */
+        public int parallelRuns = 0;
     }
 
     /** Input files and folders (each entry may be a file or a folder, scanned recursively). */
@@ -95,6 +97,8 @@ public final class RunConfig {
         public String spaceWeatherFile = "";
         /** JPL DE440 binary ephemeris (lnxp1990.440); blank = data/ephemeris/lnxp1990.440. */
         public String de440File = "";
+        /** IGS ANTEX antenna file; blank = data/antenna/igs20_gps.atx. */
+        public String antexFile = "";
         /** Optional: ICGEM .gfc gravity field (else bundled EGM96). */
         public String gravityFile = "";
     }
@@ -131,6 +135,10 @@ public final class RunConfig {
         public double phaseSigma = 0.01;
         /** Apply the GPS antenna offset from the RINEX header (body frame, via the attitude). */
         public boolean antennaOffset = true;
+        /** GPS satellite antenna phase-centre offsets/variations (ANTEX) with precise products. */
+        public boolean gpsAntennaPhaseCentre = true;
+        /** Carrier-phase wind-up (needs the ANTEX file for the GPS satellite attitude models). */
+        public boolean phaseWindUp = true;
     }
 
     public static final class Forecast {

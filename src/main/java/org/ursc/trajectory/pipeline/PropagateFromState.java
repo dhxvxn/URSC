@@ -75,9 +75,11 @@ public final class PropagateFromState {
                 pl.stage("Propagating (Orekit)", 0.2);
                 final org.orekit.attitudes.AttitudeProvider att = OrekitDynamics.attitude(cfg, env, session);
                 final List<String> warnings = new java.util.ArrayList<>();
-                res.states.addAll(OrekitForecast.run(s0, null, List.of(),
+                final List<RunResult.State> st = OrekitForecast.run(s0, null, List.of(),
                         () -> OrekitDynamics.forces(cfg, env, session, cfg.spacecraft.cd, cfg.spacecraft.cr, warnings),
-                        att, s0.getDate(), s0.getDate().shiftedBy(cfg.forecast.spanDays * 86400.0), cfg, pl));
+                        att, s0.getDate(), s0.getDate().shiftedBy(cfg.forecast.spanDays * 86400.0), cfg, pl);
+                OrekitForecast.toOutputFrame(st, cfg.forecast.frame, session);
+                res.states.addAll(st);
                 res.warnings.addAll(new java.util.LinkedHashSet<>(warnings));
                 pl.stage("Done", 1.0);
                 res.status = RunResult.Status.SUCCESS;

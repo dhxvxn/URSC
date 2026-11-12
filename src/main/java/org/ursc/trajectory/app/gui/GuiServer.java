@@ -336,7 +336,6 @@ public final class GuiServer implements AutoCloseable {
     }
 
     private void execute(final Job job, final RunConfig cfg, final List<String> configWarnings) {
-        final List<String> log = new CopyOnWriteArrayList<>(configWarnings);
         final ProgressListener pl = new ProgressListener() {
             public void stage(final String name, final double fraction) {
                 job.stage = name;
@@ -345,7 +344,6 @@ public final class GuiServer implements AutoCloseable {
             }
 
             public void log(final String message) {
-                log.add(message);
                 broadcast(Map.of("type", "log", "id", job.id, "message", message));
             }
 
@@ -356,6 +354,39 @@ public final class GuiServer implements AutoCloseable {
         RunResult res = null;
         try {
             broadcast(Map.of("type", "started", "id", job.id));
+            res = runAndSave(runs, job.id, cfg, configWarnings, pl);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            broadcast(Map.of("type", "error", "message", "Run " + job.id + " could not be saved: " + e));
+        } finally {
+            current = null;
+            broadcast(Map.of("type", "done", "id", job.id, "status", res == null ? "ERROR" : res.status.name()));
+        }
+    }
+
+    /**
+     * Execute one run and save it (result, OEM, visualisation data, POEORB comparison, log) in the
+     * run store. Shared by the interactive runs and the window-run worker processes.
+     */
+    static RunResult runAndSave(final RunStore runs, final String id, final RunConfig cfg,
+                                final List<String> configWarnings, final ProgressListener progress) throws IOException {
+        final List<String> log = new CopyOnWriteArrayList<>(configWarnings);
+        final ProgressListener pl = new ProgressListener() {
+            public void stage(final String name, final double fraction) {
+                progress.stage(name, fraction);
+            }
+
+            public void log(final String message) {
+                log.add(message);
+                progress.log(message);
+            }
+
+            public boolean cancelled() {
+                return progress.cancelled();
+            }
+        };
+        RunResult res;
+        try {
             res = Runs.execute(cfg, pl);
         } catch (final Exception e) {
             res = new RunResult();
@@ -386,15 +417,8 @@ public final class GuiServer implements AutoCloseable {
             }
         }
         log.addAll(res.log);
-        try {
-            runs.save(job.id, cfg, res, traj, oem, log, ref);
-        } catch (final Exception e) {
-            e.printStackTrace();
-            broadcast(Map.of("type", "error", "message", "Run " + job.id + " could not be saved: " + e));
-        } finally {
-            current = null;
-            broadcast(Map.of("type", "done", "id", job.id, "status", res.status.name()));
-        }
+        runs.save(id, cfg, res, traj, oem, log, ref);
+        return res;
     }
 
     /** POEORB comparison for display: never fed back into the run. */
@@ -1147,8 +1171,16 @@ public final class GuiServer implements AutoCloseable {
         sweepCancel = false;
         jobs.submit(() -> {
             String satellite = null;
+            final int workers = windowWorkers(base);
+            final java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(workers);
+            final List<Process> running = new CopyOnWriteArrayList<>();
+            final Map<Integer, Map<String, Object>> byIndex = new java.util.TreeMap<>();
             try {
+                broadcast(Map.of("type", "log", "id", w.get("id"), "message",
+                        "Window run: " + days.size() + " cut-offs, " + workers + " in parallel"));
+                final List<java.util.concurrent.Future<?>> futures = new ArrayList<>();
                 for (int i = 0; i < days.size() && !sweepCancel; i++) {
+                    final int index = i;
                     final String cutoff = days.get(i) + "T" + todText;
                     final RunConfig c = RunConfig.fromJson(base.toJson(), new ArrayList<>());
                     c.cutoffUtc = cutoff;
@@ -1175,26 +1207,51 @@ public final class GuiServer implements AutoCloseable {
                     if (!errs.isEmpty()) {
                         row.put("status", "NO_DATA");
                         row.put("note", String.join("; ", errs));
-                    } else {
-                        final Job job = new Job(runs.newId());
-                        current = job;
-                        broadcast(Map.of("type", "window-progress", "window", w.get("id"), "index", i, "count", days.size(),
-                                "date", days.get(i).toString(), "id", job.id));
-                        execute(job, c, warn);
-                        row.put("runId", job.id);
-                        windowRow(runs.dir(job.id), row);
+                        windowDayDone(w, rows, byIndex, index, days.size(), row);
+                        continue;
                     }
-                    synchronized (this) {
-                        rows.add(row);
-                        w.put("done", rows.size());
+                    final String id = runs.newId();
+                    futures.add(pool.submit(() -> {
+                        if (sweepCancel) {
+                            return;
+                        }
+                        broadcast(Map.of("type", "window-progress", "window", w.get("id"), "index", index,
+                                "count", days.size(), "date", days.get(index).toString(), "id", id));
+                        try {
+                            if (workers > 1) {
+                                runInWorker(id, c, running);
+                            } else {
+                                final Job job = new Job(id);
+                                current = job;
+                                execute(job, c, warn);
+                            }
+                            row.put("runId", id);
+                            windowRow(runs.dir(id), row);
+                        } catch (final Exception e) {
+                            row.put("status", "ERROR");
+                            row.put("note", String.valueOf(e.getMessage()));
+                        }
+                        windowDayDone(w, rows, byIndex, index, days.size(), row);
+                    }));
+                }
+                for (final java.util.concurrent.Future<?> f : futures) {
+                    while (!f.isDone()) {
+                        if (sweepCancel) {
+                            running.forEach(Process::destroy);
+                        }
+                        try {
+                            f.get(1, java.util.concurrent.TimeUnit.SECONDS);
+                        } catch (final java.util.concurrent.TimeoutException ignored) {
+                            // keep waiting
+                        }
                     }
-                    saveWindow(w);
-                    broadcast(Map.of("type", "window-day", "window", w.get("id"), "index", i, "count", days.size(), "row", row));
                 }
             } catch (final Exception e) {
                 e.printStackTrace();
                 broadcast(Map.of("type", "error", "message", "Window run stopped: " + e));
             } finally {
+                pool.shutdownNow();
+                running.forEach(Process::destroy);
                 sweeping = false;
                 w.put("finished", true);
                 w.put("cancelled", sweepCancel);
@@ -1207,6 +1264,69 @@ public final class GuiServer implements AutoCloseable {
             }
         });
         json(ex, 202, Map.of("id", w.get("id"), "count", days.size()));
+    }
+
+    /** Record one finished window day (rows kept in date order) and tell the browser. */
+    private void windowDayDone(final Map<String, Object> w, final List<Map<String, Object>> rows,
+                               final Map<Integer, Map<String, Object>> byIndex, final int index, final int count,
+                               final Map<String, Object> row) {
+        synchronized (this) {
+            byIndex.put(index, row);
+            rows.clear();
+            rows.addAll(byIndex.values());
+            w.put("done", rows.size());
+            try {
+                saveWindow(w);
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+        broadcast(Map.of("type", "window-day", "window", w.get("id"), "index", index, "count", count, "row", row));
+    }
+
+    /**
+     * Parallel worker processes for a window run: the configured number, else one per spare core
+     * limited by memory (each worker runs one Orekit orbit determination, about 3 GB at most).
+     * Orekit's data context is process-wide, so parallel days run in separate JVMs.
+     */
+    static int windowWorkers(final RunConfig cfg) {
+        if (cfg.window.parallelRuns > 0) {
+            return cfg.window.parallelRuns;
+        }
+        final int cores = Runtime.getRuntime().availableProcessors();
+        long memGb = 8;
+        try {
+            final java.lang.management.OperatingSystemMXBean os = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+            if (os instanceof com.sun.management.OperatingSystemMXBean) {
+                memGb = ((com.sun.management.OperatingSystemMXBean) os).getTotalMemorySize() >> 30;
+            }
+        } catch (final RuntimeException | LinkageError ignored) {
+            // keep the default
+        }
+        return (int) Math.max(1, Math.min(Math.max(1, cores - 1), Math.max(1, (memGb - 2) / 3)));
+    }
+
+    /** Run one window day in a separate JVM ({@link WindowWorker}) that saves it in the run store. */
+    private void runInWorker(final String id, final RunConfig c, final List<Process> running) throws Exception {
+        final Path cfgFile = Files.createTempFile("window-run-", ".json");
+        Files.writeString(cfgFile, c.toJson());
+        final String java = ProcessHandle.current().info().command().orElse("java");
+        final ProcessBuilder pb = new ProcessBuilder(java, "-Xmx3g", "-Dfile.encoding=UTF-8", "-cp",
+                System.getProperty("java.class.path"), WindowWorker.class.getName(), workspace.toString(), id,
+                cfgFile.toString());
+        pb.redirectErrorStream(true);
+        pb.redirectOutput(ProcessBuilder.Redirect.appendTo(workspace.resolve("window-workers.log").toFile()));
+        final Process p = pb.start();
+        running.add(p);
+        try {
+            final int code = p.waitFor();
+            if (code != 0 && !Files.isRegularFile(runs.dir(id).resolve("result.json"))) {
+                throw new IOException("worker exited with code " + code + " (see window-workers.log)");
+            }
+        } finally {
+            running.remove(p);
+            Files.deleteIfExists(cfgFile);
+        }
     }
 
     /** Summary of one window day from the saved run files. */

@@ -322,40 +322,63 @@ Four computational stages convert raw GPS measurements into an evaluated forecas
 fit all the pseudoranges are found by **least squares** — minimising the sum of squared differences
 between measured and computed distances. As distance depends non-linearly on position, the solution
 is obtained iteratively (linearise, correct, repeat). Each epoch yields one position **fix** and
-associated quality indicators.
+associated quality indicators. In the current system these fixes only *start* the orbit
+determination (§9.3): three of them give an initial orbit (Gibbs' method) and a quick fit to all of
+them refines it.
 
 **9.2 Numerical integration.** The equation of motion (§7) specifies the acceleration at any state;
 the trajectory over time is required. No closed-form solution exists once drag and non-spherical
 gravity are included, so the orbit is integrated **numerically**, advancing the state in small time
-steps and re-evaluating every force at each step. The software uses the **Dormand–Prince 5(4)**
-method, a **Runge–Kutta** integrator that computes each step to both fifth- and fourth-order
-accuracy; the difference estimates the local error, which is used to **adapt the step size**
-automatically. Two **tolerances** (relative and absolute) set the permitted per-step error; tighter
-tolerances produce more, smaller steps — more accurate but slower. Integrating the summed forces
-directly in this way is **Cowell's method**. A faster semi-analytical **DSST** mean-element
-propagator is also available for very long runs.
+steps and re-evaluating every force at each step. The software uses Orekit's **Dormand–Prince 8(5,3)**
+method, a **Runge–Kutta** integrator that computes each step at two orders of accuracy; the difference
+estimates the local error, which is used to **adapt the step size** automatically. A **position
+tolerance** (1 mm by default) sets the permitted per-step error; a tighter tolerance produces more,
+smaller steps — more accurate but slower. Integrating the summed forces directly in this way is
+**Cowell's method**.
 
-**9.3 Batch least-squares orbit determination.** The position fixes do not lie on any single perfect
-orbit. Orbit determination finds the single physically consistent orbit that best fits them, as
-follows: (1) an initial state is assumed at the cut-off; (2) it is propagated (§9.2) and compared
-with the fixes, the differences being the **residuals**; (3) the sensitivity of each residual to
-each component of the initial state — the **Jacobian** — is computed by **finite differences**
-(perturb a component, re-propagate, difference), so the method is independent of the force model
-used; (4) a correction that most reduces the squared residuals is solved (**Gauss–Newton**), with
-parameter scaling and step-halving for stable convergence; (5) the process repeats until it
-converges. The fit quality is reported as the **post-fit RMS** (root-mean-square residual, in
-metres), and the **variance factor** compares the observed residual scatter with the assumed
-measurement noise (a value near one indicates a consistent noise assumption). Optionally the drag
-coefficient (and reflectivity) are estimated alongside the state, absorbing modelling error.
+**9.3 Batch least-squares orbit determination on carrier phase.** The orbit is fitted directly to the
+GPS measurements, not to position fixes. For every GPS satellite in view, every 60 s over a 12-hour arc,
+two measurements are formed from the dual-frequency data, both free of the first-order ionospheric
+delay (the **ionosphere-free combination**):
+
+- the **code** (pseudorange), noisy at about a metre;
+- the **carrier phase**, the count of radio-wave cycles, about a hundred times less noisy. It carries
+  an unknown whole number of cycles, the **ambiguity**, which is constant while the receiver keeps
+  lock.
+
+The unknowns are:
+
+- the initial orbit (position and velocity) and the **drag coefficient**;
+- one **receiver clock error** per epoch;
+- one **ambiguity** per continuous phase arc.
+
+Typically that is about 800 unknowns fitted to about 10 000 measurements. For each trial orbit,
+Orekit propagates the trajectory (§9.2) and computes the measurements. The computation includes the
+signal travel time, the Earth's rotation during it, the **Shapiro** relativistic delay, the GPS
+clock, the positions of both antennas, and the **phase wind-up** (§13b). The **residuals** are the
+measured minus computed values.
+
+The **Jacobian** (the sensitivity of every residual to every unknown) comes from Orekit's
+variational equations. **Gauss–Newton** iterations then reduce the weighted squared residuals until
+the corrections become negligible.
+
+Between solves the data are cleaned:
+
+- **cycle slips** (sudden jumps of whole cycles) split an arc;
+- **outliers** are removed;
+- code and phase are **re-weighted** by their actual scatter, so the **variance factor** (observed
+  versus assumed noise) is near one.
+
+The fit quality is reported as the **post-fit RMS** of the phase residuals, typically 6–7 cm.
 
 **9.4 Covariance propagation.** A single predicted position is incomplete without its uncertainty.
 The **covariance** is a matrix expressing the uncertainty of each state component and the
-correlations between them. Orbit determination yields a covariance at the cut-off; to report it
-along the forecast, the software propagates it with the **state-transition matrix** — the matrix
-relating a small change in the initial state to the change at a later time — again obtained by finite
-differences. The result is written into the OEM and can be displayed as an uncertainty ellipsoid or
+correlations between them. Orbit determination yields a covariance at the arc start. To report it
+along the forecast, the software propagates it with the **state-transition matrix** (the matrix
+relating a small change in the initial state to the change at a later time) and with the sensitivity
+to the estimated drag coefficient. Both are integrated by Orekit alongside the orbit. The result is written into the OEM and can be displayed as an uncertainty ellipsoid or
 as radial/along/cross (RTN) standard-deviation curves. Because covariance costs approximately one
-additional propagation per estimated parameter, it is optional and disabled in the fast default
+Covariance propagation costs extra computation, so it is optional and disabled in the fast default
 profile.
 
 ---
@@ -364,28 +387,44 @@ profile.
 
 ## 10. Software architecture
 
-The system is a single Java application with **no external runtime dependencies**; the numerical
-core is plain, auditable Java. It is organised in three layers.
+The system is a single Java application. Its flight-dynamics engine is **Orekit**, the open-source
+space flight-dynamics library (Apache 2.0). Orekit is packed into the same executable file, so the
+system still runs offline. It is organised in three layers.
 
 <div class="flow">
 <div class="node"><b>Input files</b><br><span class="sub">GNSSRD, broadcast, SP3+CLK, POEORB, PROQUA, EOP, weather, gravity</span></div>
 <div class="arrow">→</div>
 <div class="node accent"><b>Data catalogue</b><br><span class="sub">recognise by content · coverage, satellite, SHA-256 · select per run</span></div>
 <div class="arrow">→</div>
-<div class="node accent"><b>Engine</b><br><span class="sub">single-point positioning → batch orbit determination → propagation (forces §7–8)</span></div>
+<div class="node accent"><b>Orekit engine</b><br><span class="sub">GNSS file parsers → carrier-phase batch least squares → numerical propagation (forces §7–8)</span></div>
 <div class="arrow">→</div>
 <div class="node"><b>Outputs</b><br><span class="sub">CCSDS OEM (+covariance), KML, CZML, printable report, log, evaluation</span></div>
 </div>
 
 <p style="text-align:center;color:#5a6b7d;font-size:12.5px;margin-top:2px">A local web server on 127.0.0.1 serves the browser interface (run setup, 3-D globe, 2-D map, plots, comparisons) over the engine; no data leaves the computer.</p>
 
-**Layer 1 — the engine.** The numerical core: readers for every input format; single-point
-positioning; batch orbit determination; the switchable force models of Part IV; the Dormand–Prince
-integrator; and the CCSDS OEM writer. Representative packages: `gnss` and `gnss.products` (RINEX and
-SP3/CLK readers, the broadcast adapter, and the product resolver); `pipeline` (the run configuration,
-the orbit-determination/forecast pipeline, the propagate-from-state workflow, the reference
-comparison, and the process-wide environment); the force models and `propagation` (numerical and DSST
-propagators); `io` (OEM reader/writer, KML, CZML); and `frames` and time utilities.
+**Layer 1 — the engine (Orekit).** Every run executes on Orekit classes:
+
+- **Data:** a fresh Orekit data context per run, holding the leap seconds, Earth orientation,
+  gravity field, ocean tides, DE440 ephemeris and the GPS antenna file.
+- **Input files:** the RINEX observation, SP3, clock and navigation parsers.
+- **Physics:** the IERS 2010 frames and time scales, the force models of Part IV, and the attitude
+  laws.
+- **Orbit determination:** the batch least-squares estimator with the GNSS code and phase
+  measurement models.
+- **Forecast:** the numerical propagator and its covariance.
+
+The program adds its own logic around Orekit:
+
+- the product-tier and cut-off rules (§6);
+- the single-point positions that start the fit;
+- data editing (cycle slips, outliers);
+- the cut-off-safe Earth-orientation and space-weather inputs;
+- a solver that exploits the sparse structure of the problem;
+- the OEM, KML and CZML writers.
+
+Representative packages: `orekit` (the engine), `pipeline` (run configuration and workflows),
+`gnss` (GNSS data handling), `data` (the catalogue) and `io` (file formats).
 
 **Layer 2 — the data catalogue.** The `data.DataCatalog` component scans input files, recognises each
 by its **content** rather than its name, records its time coverage, satellite, product class, and a
@@ -416,16 +455,16 @@ engine (illustrated below):
 <div class="node accent">CCSDS OEM + evaluation</div>
 </div>
 
-1. **Input selection** from the catalogue: the satellite's GPS observations over the arc (six hours
-   by default), the best available GPS products, and the POEORB reference (for evaluation only).
-   Orekit's parsers read the RINEX observations, the SP3 and clock products and the broadcast
-   navigation messages.
+1. **Input selection** from the catalogue: the satellite's GPS observations over the arc (twelve
+   hours by default for Sentinel-3A), the best available GPS products, the GPS antenna file, and the
+   POEORB reference (for evaluation only). Orekit's parsers read the RINEX observations, the SP3 and
+   clock products and the broadcast navigation messages.
 2. **Starting orbit.** Single-point code positions every 300 s (§9.1) give an initial orbit through
    Orekit's Gibbs method and a quick Orekit batch fit. They only start the next step.
 3. **Orbit determination.** An Orekit batch least-squares fit uses the undifferenced
-   ionosphere-free **code and carrier phase** of every GPS satellite in view, every 30 s. It
+   ionosphere-free **code and carrier phase** of every GPS satellite in view, every 60 s. It
    estimates:
-   * the orbit;
+   * the orbit and the drag coefficient;
    * one receiver clock per epoch;
    * one float ambiguity per continuous phase arc.
 
@@ -712,12 +751,14 @@ underlying library shares process-wide frame and ephemeris state that must first
 - **Real-time product availability.** A genuine forecast at the cut-off can use only broadcast
   navigation and the predicted portion of ultra-rapid products; Final and Rapid products become
   available one to two weeks later and are used in Reconstruction mode.
-- **Seven-day drift.** Forecast error grows chiefly through atmospheric drag, which depends on
-  unpredictable solar activity; a drift of about 20 km over seven days is expected at this altitude
-  without updated space-weather input (§8, §14).
-- **Simplifications.** Without an IERS EOP file, UT1 = UTC and polar motion are zero (a metre-level
-  effect); Sun and Moon positions use analytical series unless a DE440 file is supplied. Both are
-  clearly marked and adequate here.
+- **Forecast drift.** Forecast error grows chiefly through atmospheric drag, which depends on
+  unpredictable solar activity. Estimating the drag coefficient (§13b) reduces it, but several
+  kilometres over seven days remain near solar maximum without forecast space-weather input.
+- **Strictly dynamic orbit.** The orbit is fitted with the physical force model only, without
+  empirical accelerations, and the ambiguities are not fixed to integers. Phase residuals of about
+  6 cm remain, against the 1–2 cm of operational precise orbit determination.
+- **Ocean tides** use the eight main FES2004 constituents to degree 4. The receiving antenna's
+  phase-centre variations are not modelled.
 - **Rendering.** Media were produced on hardware without a graphics processor, so the satellite model
   is enlarged and some captures are time-lapsed; on ordinary hardware the globe animates smoothly.
 - **Licensing.** The NRLMSIS 2.0 and DTM2020 atmosphere models are not included for licensing reasons;
@@ -737,6 +778,16 @@ java -jar target/leo-trajectory-0.1.0.jar gui   # start the browser interface
 The program prints a local address of the form `http://127.0.0.1:…`, which opens automatically. On
 the Run tab, selecting **Run** (or **Compare product tiers**) computes a case; the Results and Window
 tabs present the output. The bundled two-month Sentinel-3A dataset is available immediately.
+
+A window run computes several cut-offs at the same time, each in its own process: by default, one
+per spare processor core, limited by memory. A saved run configuration can also be executed without
+the interface:
+
+```bash
+java -jar target/leo-trajectory-0.1.0.jar run <config.json> --out results
+```
+
+The JPL DE440 ephemeris and the GPS antenna file are taken from `data/ephemeris/` and `data/antenna/`.
 
 ---
 
@@ -952,6 +1003,33 @@ text-ranking method used for retrieval.
 
 **Manoeuvre flag** — a warning raised when orbit-determination residuals jump, possibly indicating a
 thruster firing.
+
+
+**Carrier phase** — the measured count of cycles of the GPS radio wave (19 and 24 cm wavelengths on
+L1 and L2), about a hundred times less noisy than the code; it carries an unknown whole number of
+cycles, the ambiguity.
+
+**Ambiguity** — the unknown whole number of cycles in a carrier-phase measurement; constant while the
+receiver keeps lock, so one value is estimated per continuous phase arc.
+
+**Cycle slip** — a sudden jump of a whole number of cycles in the carrier phase when the receiver
+briefly loses lock; it starts a new ambiguity.
+
+**Ionosphere-free combination** — a weighted difference of the L1 and L2 measurements that removes
+the first-order delay of the signal in the ionosphere.
+
+**Phase centre / ANTEX** — the point of an antenna to which its measurements refer; the IGS ANTEX
+file gives each GPS satellite antenna's offset from the satellite's centre of mass and its variations
+with direction.
+
+**Phase wind-up** — the change in measured carrier phase caused by the transmitting and receiving
+antennas rotating relative to each other (the signal is circularly polarised).
+
+**Drag coefficient (Cd)** — the dimensionless factor scaling the drag force for a given area and air
+density; estimating it absorbs part of the density-model error.
+
+**Orekit** — an open-source flight-dynamics library (orbits, frames, time, force models, propagation,
+orbit determination), used here as the engine of every run.
 
 ---
 

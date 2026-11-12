@@ -269,6 +269,18 @@ public final class OdForecastPipeline {
                         + "mass is not applied");
             }
         }
+        cs.windUp = cfg.od.phaseWindUp;
+        if (cfg.od.gpsAntennaPhaseCentre || cfg.od.phaseWindUp) {
+            cs.gpsAntennas = org.ursc.trajectory.orekit.GpsAntennas.load(Environment.antex(cfg), session);
+            if (cs.gpsAntennas == null) {
+                res.warnings.add("No ANTEX antenna file found (data/antenna/igs20_gps.atx); GPS antenna phase "
+                        + "centres and phase wind-up are not modelled");
+            }
+        }
+        if (!cfg.od.gpsAntennaPhaseCentre && cs.gpsAntennas != null) {
+            // keep the GPS attitude for wind-up, drop the phase-centre offsets
+            cs.gpsAntennas = cs.gpsAntennas.withoutPhaseCentres();
+        }
         final GnssProductResolver cpResolver = resolver(cfg, cutoff, sources);
         final OrekitCarrierPhaseOd.Result cp;
         try {
@@ -321,6 +333,7 @@ public final class OdForecastPipeline {
         final org.orekit.time.AbsoluteDate oEnd = oCut.shiftedBy(cfg.forecast.spanDays * 86400.0);
         final List<RunResult.State> states = OrekitForecast.run(s0, p0, params,
                 () -> OrekitDynamics.forces(cfg, env, session, cdUsed, cr, new ArrayList<>()), attitude, oCut, oEnd, cfg, pl);
+        OrekitForecast.toOutputFrame(states, cfg.forecast.frame, session);
         res.states.addAll(states);
         pl.stage("Done", 1.0);
         res.status = RunResult.Status.SUCCESS;

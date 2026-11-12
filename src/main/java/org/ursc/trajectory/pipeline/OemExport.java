@@ -49,7 +49,7 @@ public final class OemExport {
             oem.headerComments.add("Default used: " + d);
         }
         if (frame == RunConfig.OutputFrame.ITRF) {
-            oem.headerComments.add("ITRF realised with the supplied IERS Earth-orientation parameters");
+            oem.headerComments.add("ITRF (Orekit, IERS 2010 conventions) realised with the supplied IERS Earth-orientation parameters");
         }
         final Oem.Segment seg = new Oem.Segment();
         oem.segments.add(seg);
@@ -67,13 +67,18 @@ public final class OemExport {
         seg.dataComments.add("Position km, velocity km/s; covariance (formal, from the OD) km**2, km**2/s, km**2/s**2");
         int k = 0;
         for (final RunResult.State s : res.states) {
-            final FrameUtil.PV pv = FrameUtil.fromGcrf(s.position, s.velocity, frame, s.date);
+            // the run computed the output frame with Orekit; the program's own frames are only a
+            // fallback for results that lack it (older runs, other frames)
+            final boolean orekit = frame.name().equals(s.outputFrame) && s.outputPosition != null;
+            final FrameUtil.PV pv = orekit ? new FrameUtil.PV(s.outputPosition, s.outputVelocity)
+                    : FrameUtil.fromGcrf(s.position, s.velocity, frame, s.date);
             final String epoch = TimeUtil.formatUtc(s.date);
             seg.states.add(new Oem.StateLine(epoch, new double[] {pv.r.getX(), pv.r.getY(), pv.r.getZ(),
                     pv.v.getX(), pv.v.getY(), pv.v.getZ()}));
             if (s.covariance != null && k % Math.max(1, cfg.forecast.covarianceEveryNSteps) == 0) {
                 seg.covariances.add(new Oem.CovarianceBlock(epoch, frame.name(),
-                        FrameUtil.cov6FromGcrf(s.covariance, frame, s.date)));
+                        orekit && s.outputCovariance != null ? s.outputCovariance
+                                : FrameUtil.cov6FromGcrf(s.covariance, frame, s.date)));
             }
             k++;
         }

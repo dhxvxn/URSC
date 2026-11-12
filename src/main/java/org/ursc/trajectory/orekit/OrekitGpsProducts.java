@@ -253,6 +253,11 @@ public final class OrekitGpsProducts {
         }
 
         @Override
+        public boolean centreOfMassOrbits() {
+            return true;
+        }
+
+        @Override
         public double clock(final int prn, final AbsoluteDate t) {
             final ClockSeries s = clocks.get(prn);
             final double raw = s == null ? Double.NaN : s.at(seconds(t));

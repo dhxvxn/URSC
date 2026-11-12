@@ -107,18 +107,27 @@ public final class Environment implements AutoCloseable {
      * The JPL DE440 file of a run: the configured one, else {@code data/ephemeris/lnxp1990.440}
      * in the working folder or next to the program; null if none exists.
      */
+    public static Path antex(final RunConfig cfg) {
+        return dataFile(cfg.inputs.antexFile, "antenna", "igs20_gps.atx");
+    }
+
     public static Path de440(final RunConfig cfg) {
-        if (cfg.inputs.de440File != null && !cfg.inputs.de440File.isBlank()) {
-            final Path p = Paths.get(cfg.inputs.de440File);
+        return dataFile(cfg.inputs.de440File, "ephemeris", "lnxp1990.440");
+    }
+
+    /** A configured file, else data/{@code folder}/{@code name} in the working folder or next to the program. */
+    private static Path dataFile(final String configured, final String folder, final String name) {
+        if (configured != null && !configured.isBlank()) {
+            final Path p = Paths.get(configured);
             return Files.isRegularFile(p) ? p : null;
         }
         final List<Path> candidates = new ArrayList<>();
-        candidates.add(Paths.get("data", "ephemeris", "lnxp1990.440"));
+        candidates.add(Paths.get("data", folder, name));
         try {
             final Path jar = Paths.get(Environment.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             Path d = jar.getParent();
             for (int i = 0; i < 3 && d != null; i++, d = d.getParent()) {
-                candidates.add(d.resolve("data").resolve("ephemeris").resolve("lnxp1990.440"));
+                candidates.add(d.resolve("data").resolve(folder).resolve(name));
             }
         } catch (final Exception ignored) {
             // no code-source location

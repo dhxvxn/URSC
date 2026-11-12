@@ -30,6 +30,7 @@ cp "$JAR" "$DIST/input/ursc.jar"
 # the Orekit engine needs the JPL DE440 ephemeris; it is looked up next to the jar
 mkdir -p "$DIST/input/data/ephemeris"
 cp data/ephemeris/lnxp1990.440 "$DIST/input/data/ephemeris/"
+mkdir -p "$DIST/input/data/antenna"; cp data/antenna/igs20_gps.atx "$DIST/input/data/antenna/"
 
 # 1) minimal private Java runtime
 jlink --add-modules "$MODULES" --strip-debug --no-header-files --no-man-pages \
@@ -52,6 +53,7 @@ cp -r "$DIST/runtime" "$P/runtime"
 cp "$DIST/input/ursc.jar" "$P/lib/ursc.jar"
 mkdir -p "$P/data/ephemeris"
 cp data/ephemeris/lnxp1990.440 "$P/data/ephemeris/"
+mkdir -p "$P/data/antenna"; cp data/antenna/igs20_gps.atx "$P/data/antenna/"
 cat > "$P/ursc-gui.sh" <<'SH'
 #!/usr/bin/env sh
 # Starts the URSC GUI on this computer only (127.0.0.1) and opens the browser.

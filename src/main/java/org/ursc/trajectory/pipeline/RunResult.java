@@ -104,6 +104,14 @@ public final class RunResult {
         public final Vector3D velocity;
         /** 6x6 GCRF covariance (m, m/s) or null. */
         public final double[][] covariance;
+        /**
+         * The same state in the OEM output frame, computed with Orekit's frames during the run
+         * ({@link #outputFrame} names it); null when not computed.
+         */
+        public String outputFrame;
+        public Vector3D outputPosition;
+        public Vector3D outputVelocity;
+        public double[][] outputCovariance;
 
         public State(final AbsoluteDate date, final Vector3D position, final Vector3D velocity,
                      final double[][] covariance) {

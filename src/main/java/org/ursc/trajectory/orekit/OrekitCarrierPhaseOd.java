@@ -83,6 +83,13 @@ public final class OrekitCarrierPhaseOd {
         public boolean shapiro = true;
         /** Antenna phase centre minus centre of mass, body frame (m). */
         public Vector3D antennaBody = Vector3D.ZERO;
+        /**
+         * GPS satellite antennas (ANTEX): ionosphere-free phase-centre offsets and variations for
+         * centre-of-mass (precise) orbits, and the satellites' yaw attitude; null = not modelled.
+         */
+        public GpsAntennas gpsAntennas;
+        /** Apply carrier-phase wind-up (needs {@link #gpsAntennas} for the GPS attitude). */
+        public boolean windUp = true;
     }
 
     /** GPS orbit/clock source for an epoch, given the satellites in view. */
@@ -363,11 +370,13 @@ public final class OrekitCarrierPhaseOd {
         }
         final ShapiroOneWayGNSSRangeModifier shapiroRange = new ShapiroOneWayGNSSRangeModifier(Constants.EIGEN5C_EARTH_MU);
         final ShapiroOneWayGNSSPhaseModifier shapiroPhase = new ShapiroOneWayGNSSPhaseModifier(Constants.EIGEN5C_EARTH_MU);
-        final boolean antenna = s.antennaBody.getNorm() > 0.0;
-        final OnBoardAntennaOneWayGNSSRangeModifier antRange = antenna
-                ? new OnBoardAntennaOneWayGNSSRangeModifier(s.antennaBody, Vector3D.ZERO, gpsAttitude) : null;
-        final OnBoardAntennaOneWayGNSSPhaseModifier antPhase = antenna
-                ? new OnBoardAntennaOneWayGNSSPhaseModifier(s.antennaBody, Vector3D.ZERO, gpsAttitude) : null;
+        // antenna phase centres: LEO receiver offset (body frame) and, for centre-of-mass (precise)
+        // GPS orbits, the satellite's ionosphere-free ANTEX pattern in its yaw-steering attitude
+        final org.orekit.gnss.antenna.FrequencyPattern rcvPattern = new org.orekit.gnss.antenna.FrequencyPattern(
+                s.antennaBody, org.orekit.gnss.antenna.FrequencyPattern.ZERO_CORRECTION.getPhaseCenterVariationFunction());
+        final Map<String, OnBoardAntennaOneWayGNSSRangeModifier> rangeAnt = new HashMap<>();
+        final Map<String, OnBoardAntennaOneWayGNSSPhaseModifier> phaseAnt = new HashMap<>();
+        final Map<Arc, PhaseWindUpModifier> windUp = new IdentityHashMap<>();
         final java.util.Set<Arc> usedArcs = java.util.Collections.newSetFromMap(new IdentityHashMap<>());
         for (final Arc a : arcs) {
             if (usedPhase(a, use) >= 3) {
@@ -385,13 +394,22 @@ public final class OrekitCarrierPhaseOd {
             final AbsoluteDate t = dates.get(o.epoch);
             final OrekitGpsSource src = sourceAt.get(o.epoch);
             final QuadraticClockModel rc = remoteClock(src, o.prn, t);
+            final boolean com = s.gpsAntennas != null && src.centreOfMassOrbits();
+            final org.orekit.gnss.antenna.FrequencyPattern txPattern = com ? s.gpsAntennas.ionosphereFreePattern(o.prn, t) : null;
+            final AttitudeProvider txAttitude = s.gpsAntennas == null ? null : s.gpsAntennas.attitude(o.prn, t);
+            final String key = o.prn + (txPattern != null ? "c" : "a") + System.identityHashCode(txAttitude);
+            final boolean anyAntenna = s.antennaBody.getNorm() > 0.0 || txPattern != null;
+            final org.orekit.gnss.antenna.FrequencyPattern tx = txPattern != null ? txPattern
+                    : org.orekit.gnss.antenna.FrequencyPattern.ZERO_CORRECTION;
+            final AttitudeProvider txAtt = txAttitude != null ? txAttitude : gpsAttitude;
             if (o.codeOk) {
                 o.range = new OneWayGNSSRange(src.provider(o.prn), rc, t, o.code, s.sigmaCode, 1.0, receiver);
                 if (s.shapiro) {
                     o.range.addModifier(shapiroRange);
                 }
-                if (antRange != null) {
-                    o.range.addModifier(antRange);
+                if (anyAntenna) {
+                    o.range.addModifier(rangeAnt.computeIfAbsent(key,
+                            k -> new OnBoardAntennaOneWayGNSSRangeModifier(rcvPattern, tx, txAtt)));
                 }
                 out.add(o.range);
             }
@@ -401,8 +419,12 @@ public final class OrekitCarrierPhaseOd {
                 if (s.shapiro) {
                     o.carrier.addModifier(shapiroPhase);
                 }
-                if (antPhase != null) {
-                    o.carrier.addModifier(antPhase);
+                if (anyAntenna) {
+                    o.carrier.addModifier(phaseAnt.computeIfAbsent(key,
+                            k -> new OnBoardAntennaOneWayGNSSPhaseModifier(rcvPattern, tx, txAtt)));
+                }
+                if (s.windUp && txAttitude != null) {
+                    o.carrier.addModifier(windUp.computeIfAbsent(o.arc, a -> new PhaseWindUpModifier(txAttitude)));
                 }
                 out.add(o.carrier);
                 ambiguityOf.put(o.arc, o.carrier.getAmbiguityDriver());

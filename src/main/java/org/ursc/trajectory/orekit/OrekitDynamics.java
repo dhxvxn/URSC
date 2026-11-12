@@ -84,7 +84,7 @@ import org.ursc.trajectory.pipeline.RunConfig;
  *
  * <p>Body frame (all attitudes): the CPOD convention of the Sentinel-3 POD documents, +Z nadir,
  * X anti-velocity, Y = Z x X, the frame of the GNSS antenna offset in the observation header.
- * Nominal attitude is {@link LofOffset} from Orekit's VVLH frame rotated 180 deg about nadir.</p>
+ * Nominal attitude is Orekit's yaw-compensated geodetic nadir pointing ({@link #nominalAttitude}).</p>
  */
 public final class OrekitDynamics {
 
@@ -94,9 +94,15 @@ public final class OrekitDynamics {
     private OrekitDynamics() {
     }
 
-    /** Nominal geocentric-nadir attitude in the CPOD body convention. */
+    /**
+     * Nominal attitude: Orekit's geodetic {@link org.orekit.attitudes.NadirPointing} with
+     * {@link org.orekit.attitudes.YawCompensation} (the ground-track yaw that Sentinel-3 flies for
+     * its altimeter), in the CPOD body convention. Checked against the measured PROQUA
+     * quaternions of 15 Oct 2024: 0.005 deg mean, 0.014 deg maximum difference.
+     */
     public static AttitudeProvider nominalAttitude(final OrekitSession s) {
-        return new LofOffset(s.gcrf, LOFType.VVLH, RotationOrder.ZYX, Math.PI, 0.0, 0.0);
+        return new CpodBodyFrame(new org.orekit.attitudes.YawCompensation(s.gcrf,
+                new org.orekit.attitudes.NadirPointing(s.gcrf, s.earth)));
     }
 
     /**
@@ -207,10 +213,11 @@ public final class OrekitDynamics {
         for (final ForceModel fm : forces) {
             for (final ParameterDriver d : fm.getParametersDrivers()) {
                 final String n = d.getName();
-                if (drag && fm instanceof DragForce && (n.equals(DragSensitive.DRAG_COEFFICIENT)
-                        || n.equals(DragSensitive.GLOBAL_DRAG_FACTOR))
-                        || radiation && fm instanceof SolarRadiationPressure && (n.equals(RadiationSensitive.REFLECTION_COEFFICIENT)
-                        || n.equals(RadiationSensitive.GLOBAL_RADIATION_FACTOR))) {
+                // only the coefficient itself: Orekit also exposes a global scale factor, which is
+                // perfectly correlated with it (estimating both makes the problem singular)
+                if (drag && fm instanceof DragForce && n.equals(DragSensitive.DRAG_COEFFICIENT)
+                        || radiation && fm instanceof SolarRadiationPressure
+                        && n.equals(RadiationSensitive.REFLECTION_COEFFICIENT)) {
                     if (!out.contains(d)) {
                         out.add(d);
                     }
