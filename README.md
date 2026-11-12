@@ -230,8 +230,8 @@ and opens your browser there automatically. If it does not open, copy that exact
 Stop the program with **Ctrl+C** in the terminal, or the ⏻ button at the top-right of the page.
 
 > **Notes.** Run the `gui` command from the project folder so it finds the `data` directory.
-> Normal startup may spend about a minute cataloguing the ~950 bundled input files. For
-> presentation mode skips that indexing. For air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
+> Normal startup may spend about a minute cataloguing the ~950 bundled input files.
+> Presentation mode skips that indexing. For air-gapped machines, `packaging/build-bundle.sh` (Linux/macOS) or `packaging/build-bundle.ps1`
 > (Windows) builds a bundle that carries its own Java runtime — see
 > [`packaging/README-OFFLINE.md`](packaging/README-OFFLINE.md).
 
