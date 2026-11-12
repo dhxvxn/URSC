@@ -78,9 +78,9 @@ public final class RunResult {
         /** Post-fit residual norms (m) per observation, with their UTC times. */
         public final List<String> residualUtc = new ArrayList<>();
         public final List<Double> residualNorm = new ArrayList<>();
-        /** Measurements of the final fit: SPP_POSITIONS or CARRIER_PHASE. */
-        public String method = "SPP_POSITIONS";
-        /** Post-fit RMS of the SPP position fit (m); equals postFitRms for SPP-based runs. */
+        /** Measurements of the orbit determination (always undifferenced code + carrier phase). */
+        public String method = "CARRIER_PHASE";
+        /** Post-fit RMS of the starting-orbit fit to the code positions (m). */
         public double sppPostFitRms = Double.NaN;
         /** Carrier-phase fit diagnostics (NaN / 0 when not used). */
         public double codeRms = Double.NaN;

@@ -179,9 +179,9 @@ function drawSummary() {
   add('Output states', r.states + (r.hasCovariance ? ' (with covariance)' : ''));
   if (od) {
     if (od.method === 'CARRIER_PHASE') {
-      add('Orbit determination', 'code + carrier phase: ' + od.phaseObservations + ' phase and ' + od.codeObservations + ' code observations, ' + od.phaseArcs + ' phase arcs, ' + od.cycleSlips + ' cycle slips, ' + od.iterations + ' iterations, ' + (od.converged ? 'converged' : 'NOT converged'));
-      add('Post-fit RMS', 'phase ' + (od.phaseRms * 100).toFixed(1) + ' cm, code ' + od.codeRms.toFixed(2) + ' m (SPP position fit ' + od.sppPostFitRms.toFixed(2) + ' m)');
-      add('Change from SPP orbit', od.changeFromSpp.toFixed(2) + ' m at the arc start' + (od.antennaOffsetApplied ? ', antenna offset applied' : ', antenna offset not applied'));
+      add('Orbit determination', 'Orekit batch least squares on code + carrier phase: ' + od.phaseObservations + ' phase and ' + od.codeObservations + ' code observations, ' + od.phaseArcs + ' phase arcs, ' + od.cycleSlips + ' cycle slips, ' + od.iterations + ' iterations, ' + (od.converged ? 'converged' : 'NOT converged'));
+      add('Post-fit RMS', 'phase ' + (od.phaseRms * 100).toFixed(1) + ' cm, code ' + od.codeRms.toFixed(2) + ' m (starting orbit fit to code positions ' + od.sppPostFitRms.toFixed(2) + ' m)');
+      add('Change from starting orbit', od.changeFromSpp.toFixed(2) + ' m at the arc start' + (od.antennaOffsetApplied ? ', antenna offset applied' : ', antenna offset not applied'));
     } else {
       add('Orbit determination', od.observations + ' SPP fixes, ' + (od.weighted ? 'covariance-weighted' : 'unit-weighted') + ', ' + od.iterations + ' iterations, ' + (od.converged ? 'converged' : 'NOT converged'));
       add('Post-fit RMS', od.postFitRms.toFixed(3) + ' m (pre-fit ' + od.preFitRms.toFixed(1) + ' m)');
@@ -242,7 +242,7 @@ function drawPlots() {
   if (r.od && r.od.residualNorm && r.od.residualNorm.length) {
     const t0 = Date.parse(r.od.residualUtc[0].replace(/\.\d+$/, '') + 'Z');
     const x = r.od.residualUtc.map((s) => (Date.parse(s.replace(/\.\d+$/, '') + 'Z') - t0) / 3600e3);
-    charts.push([r.od.method === 'CARRIER_PHASE' ? 'SPP position fit residuals (seed orbit)' : 'OD post-fit residuals', { x, xLabel: 'h into arc', yUnit: 'm', yMin: 0, series: [{ name: '|residual|', y: r.od.residualNorm, color: '#ec6bb0', points: true }] }]);
+    charts.push([r.od.method === 'CARRIER_PHASE' ? 'Starting orbit: fit to code positions' : 'OD post-fit residuals', { x, xLabel: 'h into arc', yUnit: 'm', yMin: 0, series: [{ name: '|residual|', y: r.od.residualNorm, color: '#ec6bb0', points: true }] }]);
   }
   if (r.od && r.od.phaseResidualRms && r.od.phaseResidualRms.length) {
     const t0 = Date.parse(r.od.phaseResidualUtc[0].replace(/\.\d+$/, '') + 'Z');

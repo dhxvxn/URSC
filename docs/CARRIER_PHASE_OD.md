@@ -1,129 +1,156 @@
-# Carrier-phase orbit determination
+# Orbit determination: GNSS carrier phase on the Orekit engine
 
-The default orbit determination fits **single-point-positioning (SPP) position fixes**: each
-GNSSRD epoch is first turned into one 3-D point (metre-level noise), and the batch least-squares
-fit then finds the orbit through those points. Setting **`od.method = CARRIER_PHASE`** (Run tab →
-*Orbit determination* → *OD measurements* → *Code + carrier phase*) adds a second stage that fits
-the orbit **directly to the GPS measurements**, using the carrier phase, which is about a hundred
-times less noisy than the code.
+Every OD + forecast run determines the orbit in one way: an **Orekit batch least-squares fit
+to the undifferenced ionosphere-free GPS code and carrier phase** recorded by the satellite
+(the GNSSRD files). It then forecasts that orbit with the **Orekit numerical propagator**.
+Single-point positions (SPP) from the code are used only to start the orbit; they are not an
+orbit-determination method any more.
 
-Implementation: `estimation/CarrierPhaseOd.java`; wiring in `pipeline/OdForecastPipeline.java`;
-test `CarrierPhaseOdTest`.
+All physics on the run path is Orekit 13.1.2 (Apache 2.0), bundled into the single
+executable jar so the program still runs offline:
 
-## What the GNSSRD file provides
+| Step | Orekit classes |
+|---|---|
+| Data context (per run) | `LazyLoadedDataContext`, `DirectoryCrawler`, `EopHistoryLoader`, `ICGEMFormatReader`, `FESCnmSnmReader` |
+| GNSS observations | `RinexObservationParser` (RINEX 3.03 GNSSRD) |
+| GPS orbits / clocks | `SP3Parser` + SP3 ephemeris propagators, `RinexClockParser`, `RinexNavigationParser` + `GNSSPropagatorBuilder` / `GNSSPropagator` |
+| Frames, time | `FramesFactory`-equivalent `Frames` of the context (GCRF, EME2000, ITRF IERS 2010), `TimeScales` (UTC, GPS, UT1) |
+| Initial orbit | `IodGibbs`, then `BatchLSEstimator` with `Position` measurements |
+| **Orbit determination** | **`BatchLSEstimator`** with **`OneWayGNSSRange`** + **`OneWayGNSSPhase`**, `QuadraticClockModel`, `AmbiguityDriver`, `ShapiroOneWayGNSSRange/PhaseModifier`, `OnBoardAntennaOneWayGNSSRange/PhaseModifier` |
+| Dynamics | `NumericalPropagatorBuilder` / `NumericalPropagator`, `DormandPrince853Integrator`, `HolmesFeatherstoneAttractionModel`, `ThirdBodyAttraction` (DE440), `DragForce` + `NRLMSISE00` / `JB2008` / `HarrisPriester` / `SimpleExponentialAtmosphere`, `IsotropicDrag` / `BoxAndSolarArraySpacecraft`, `SolarRadiationPressure`, `KnockeRediffusedForceModel`, `SolidTides`, `OceanTides`, `Relativity`, `LenseThirringRelativity`, `ParametricAcceleration` |
+| Attitude | `LofOffset` (nominal), or measured PROQUA quaternions through an Orekit `AttitudeProvider` |
+| Forecast covariance | `MatricesHarvester` (state-transition and parameter Jacobians) |
 
-The Sentinel-3 GNSSRD archive holds a RINEX 3.03 GPS file at 1 Hz with, per satellite,
-`C1C L1C S1C C1W L1W S1W C2W L2W S2W`: code (C) and carrier phase (L) on L1 and L2, plus the
-loss-of-lock indicator (LLI) of every phase. The header gives the antenna position in the
-spacecraft frame (`ANTENNA: DELTA`, 2.881 / −0.190 / −0.794 m for Sentinel-3A). The reader now keeps the LLI
-flags and the antenna delta.
+Code: package `org.ursc.trajectory.orekit` (`OrekitSession`, `OrekitGpsProducts`,
+`OrekitDynamics`, `OrekitCarrierPhaseOd`, `OrekitForecast`, `SparseGaussNewtonOptimizer`)
+and `pipeline/OdForecastPipeline.java`. Tests: `OrekitCarrierPhaseOdTest`, `PipelineTest`.
 
-## Measurement model
+## Flow of a run
 
-Per GPS satellite *s* and epoch *t* (GPS time), with the ionosphere removed by the
-dual-frequency (ionosphere-free) combination:
+1. **Orekit data context.** The run opens a fresh `OrekitSession` with the following contents:
+   * the leap seconds, written from the program's own table (so Orekit and the rest of the
+     program share one UTC);
+   * the Earth orientation, sampled from the run's EOP file and held at its cut-off values
+     after the cut-off;
+   * the gravity field (bundled EGM96 to 70×70, or an ICGEM file);
+   * the FES2004 ocean-tide coefficients;
+   * the JPL DE440 ephemeris.
 
-```
-P_IF = ρ + c·δt_r(t) − c·δt_s + Δ_Shapiro + ε_P          (code, ~1 m noise)
-L_IF = ρ + c·δt_r(t) − c·δt_s + Δ_Shapiro + B_arc + ε_L  (phase, ~mm noise)
-```
+   Because the context is per run, nothing from one run's future can leak into another through
+   Orekit's caches.
+2. **Inputs.** The GNSSRD files are thinned to 10 s on the text (for slip detection), then
+   parsed by Orekit's RINEX parser. The GPS products are read by Orekit's SP3, RINEX-clock and
+   navigation parsers. The product tier and the cut-off-eligibility rules are unchanged:
+   * Final > Rapid > Ultra-rapid > Broadcast, per epoch;
+   * a product is used only if it was published by the cut-off;
+   * broadcast messages are used only with Toe ≤ cut-off.
+3. **Starting orbit.** Single-point positions from the code (every 300 s, PDOP and residual
+   gates) give three positions for Orekit's Gibbs initial orbit determination. A quick Orekit
+   batch fit to all the positions follows.
+4. **Orbit determination (carrier phase).** An Orekit `BatchLSEstimator` fits the orbit (and
+   optionally Cd/Cr) to every GPS satellite in view, every 30 s, using both measurement types:
+   * `OneWayGNSSRange` on the ionosphere-free code P_IF;
+   * `OneWayGNSSPhase` on the ionosphere-free phase L_IF (in metres, wavelength 1 m).
 
-* **ρ**: geometric range from the LEO **antenna** to the GPS satellite at transmit time. It uses
-  light-time iteration and the Sagnac (Earth-rotation) correction. The antenna position is the
-  centre of mass plus *(ANTENNA: DELTA − centre of mass)* in the body frame, rotated by the
-  attitude: nominal yaw steering, or the measured PROQUA attitude with the box-wing model.
-* **δt_s**: the GPS clock from the selected product. The tier order is the same as for SPP
-  (Final > Rapid > Ultra-rapid > Broadcast), cut-off-safe in Forecast mode.
-* **c·δt_r**: one receiver-clock parameter per epoch.
-* **B_arc**: one float ambiguity per continuous phase arc.
-* **Δ_Shapiro**: the relativistic path delay. There is no troposphere at LEO altitude.
+   The other estimated parameters are:
+   * one **receiver clock** per epoch;
+   * one **float ambiguity** per continuous phase arc.
 
-## Estimation
+   Orekit models the light time in the inertial frame (which includes the Sagnac effect), the
+   GPS clock with its relativistic term, the Shapiro delay, and the antenna offset rotated by
+   the attitude.
+5. **Forecast.** The estimated state is propagated by the Orekit numerical propagator to the
+   cut-off and over the forecast span. The formal covariance is propagated through Orekit's
+   state-transition matrix: P(t) = [Φ Ψ] P₀ [Φ Ψ]ᵀ.
 
-The fit runs as follows:
+## Data editing
 
-1. **Starting point.** The SPP-based batch solution seeds the fit.
-2. **Joint solve.** One Gauss–Newton solve estimates the state together with every clock and
-   ambiguity. Over a 6 h arc that is about 700 clocks and about 100 ambiguities. The orbit
-   partials come from finite-difference propagation through the full force model.
-3. **Cycle slips.** Arcs are split at:
-   * LLI flags;
-   * data gaps longer than 60 s;
-   * Melbourne–Wübbena jumps larger than 2.5 wide-lane cycles, checked on 10 s data;
-   * a change of GPS product;
-   * gross geometry-free jumps larger than 1 m.
+* **Arc breaks** happen at:
+  * loss-of-lock flags;
+  * gaps longer than 60 s;
+  * Melbourne–Wübbena jumps larger than 2.5 wide-lane cycles (on the 10 s data);
+  * a change of GPS product;
+  * geometry-free jumps larger than 1 m.
 
-   Equal L1/L2 slips are invisible to both combinations. They are found after each solve as
-   steps in the phase residuals.
+  At LEO speed the ionosphere alone moves the geometry-free combination by 10–30 cm in 10 s. A
+  tighter geometry-free test flagged 460 false slips in 6 h, so it is only a guard against gross
+  jumps.
+* **Residual-step slips.** After each Orekit solve, a step in an arc's phase residuals splits
+  that arc (this catches equal L1/L2 slips, which no combination shows). Observations beyond 4
+  a-posteriori sigmas are removed.
+* **Re-weighting.** A final solve re-weights code and phase with their post-fit scatter, so the
+  Orekit covariance and the variance factor (≈ 1) are realistic.
 
-   *Lesson from the real data:* at LEO speed the ionosphere alone changes the geometry-free
-   combination by 10–30 cm in 10 s. A classic 8 cm geometry-free threshold therefore flagged 460
-   false slips in 6 h; the current settings flag 3–4.
-4. **Outliers** beyond 4 a-posteriori sigmas are rejected.
-5. **Re-weighting.** A final variance-component step re-weights code and phase by their post-fit
-   scatter, so the formal covariance is realistic.
+## Two implementation details worth knowing
 
-The result replaces the SPP-based state at the arc epoch, and the forecast and covariance
-propagation proceed unchanged. If the carrier-phase fit fails or looks implausible, the run keeps
-the SPP solution and says so in the warnings. A failed fit means not converged or fewer than 100
-phase observations. An implausible one has a phase RMS above 1 m or moves the state more than
-200 m from the SPP solution.
+* **Spans.** Orekit 13.1.2's one-way GNSS measurements attribute their partial derivatives to
+  the *first* time span of a spanned parameter. Per-epoch clocks and per-arc ambiguities built
+  as spans of one driver therefore give a singular problem. The estimator instead uses:
+  * one Orekit `ObservableSatellite` per epoch (same propagator, its own clock driver);
+  * one `AmbiguityDriver` per arc, through a cache keyed by arc.
+* **Optimizer.** Every row of the Jacobian has about eight non-zeros (6 orbit, 1 clock, 1
+  ambiguity), but there are about 800 parameters. The dense JᵀJ product of the generic Gauss–Newton
+  optimizer dominated the run time. `SparseGaussNewtonOptimizer` (a Hipparchus
+  `LeastSquaresOptimizer` plugged into Orekit's `BatchLSEstimator`) forms the same normal
+  equations from the non-zeros only. The algorithm and convergence test are unchanged.
+
+## Antenna and centre of mass
+
+The GNSSRD header gives the antenna position in the spacecraft frame (`ANTENNA: DELTA`, for
+Sentinel-3A: 2.881, −0.190, −0.794 m). This is measured from the frame origin, **not** from
+the centre of mass. The antenna offset used is DELTA minus the centre of mass
+(`spacecraft.comBodyX/Y/Z`). The Sentinel-3A profile sets (1.489, 0.217, 0.009) m, the launch
+centre of gravity from the mission documentation. Without that correction the orbit is about
+1.9 m off along-track.
 
 ## Settings
 
 | Key | Default | Meaning |
 |---|---|---|
-| `od.method` | `SPP_POSITIONS` | `CARRIER_PHASE` enables the refinement |
-| `od.phaseRateSeconds` | 30 | estimator sampling (slip detection uses 10 s data) |
+| `od.arcHours` | 6 | data arc ending at the cut-off |
+| `od.phaseRateSeconds` | 30 | carrier-phase sampling (slip detection uses 10 s) |
 | `od.codeSigma`, `od.phaseSigma` | 1 m, 0.01 m | starting weights (re-estimated) |
 | `od.antennaOffset` | true | apply the header antenna offset |
+| `od.estimateCd`, `od.estimateCr` | false | estimate drag / radiation coefficients |
+| `od.samplingSeconds`, `od.maxPdop`, `od.maxSppRms`, `od.pseudorangeSigma` | 300 s, 6, 30 m, 5 m | code positions for the starting orbit only |
 | `spacecraft.comBodyX/Y/Z` | 0 (Sentinel-3A profile: 1.489, 0.217, 0.009 m) | centre of mass in the frame of `ANTENNA: DELTA` |
+| `integrator.positionToleranceM` | 1 mm | Orekit Dormand-Prince 8(5,3) tolerance |
 
-## Validation (Sentinel-3A, cut-off 2024-10-15 05:59:42 UTC, 6 h arc)
+## Validation
 
-Errors are 3-D position errors against the POEORB precise orbit, which is used for scoring only.
-*Broadcast* runs are in Forecast mode; *Final* runs use IGS Final (CODE) products in
-Reconstruction mode. Cd is fixed at 2.2 unless stated.
+Validation consists of a closed-loop simulation and the two-month Sentinel-3A campaign below.
 
-| Run | Post-fit RMS | at cut-off | +1 h | +6 h | +24 h |
-|---|---|---|---|---|---|
-| SPP positions, broadcast | 2.07 m (positions) | 0.71 m | 1.35 m | 4.11 m | 28.7 m |
-| **Carrier phase, broadcast** | 13.0 cm (phase) | 0.73 m | **0.72 m** | **3.62 m** | 29.6 m |
-| SPP positions, Final | 2.45 m | 0.65 m | 1.55 m | 4.46 m | 29.6 m |
-| **Carrier phase, Final** | 7.3 cm | 0.69 m | **0.77 m** | **3.79 m** | 30.4 m |
-| Carrier phase, Final, no antenna offset | 18.8 cm | 0.99 m | 1.69 m | 4.80 m | 31.1 m |
-| SPP positions, Final, Cd estimated | 2.44 m | 0.68 m | 1.15 m | 2.35 m | **3.44 m** |
-| Carrier phase, Final, Cd estimated | 7.3 cm | 0.80 m | 0.72 m | 2.62 m | 16.1 m |
+**Closed loop** (`OrekitCarrierPhaseOdTest`). The simulation uses:
+* simulated dual-frequency code (0.3 m) and phase (2 mm);
+* an independent light-time model;
+* a receiver clock and random ambiguities;
+* one wide-lane and one equal L1/L2 slip;
+* a 1.66 m antenna offset;
+* a start offset of 30 m and 3 cm/s.
 
-What this shows:
+The estimator recovers the orbit to 4.9 mm and 6 µm/s with a phase RMS of 1.9 mm, finds both
+slips, and has a variance factor of 1.07. `PipelineTest` runs the full pipeline the same way:
+4 mm at the cut-off and 7 mm after one day.
 
-* **The fit is working.**
-  * The phase fits at the centimetre-to-decimetre level.
-  * The formal position sigma drops from metres to 1–3 cm.
-  * The short-term orbit (+1 h) is about twice as accurate as with SPP.
-* **The antenna offset matters.**
-  * Applying it more than halves the phase residuals (18.8 → 7.3 cm).
-  * It needs the centre of mass: the header's DELTA is measured from the spacecraft-frame origin,
-    not from the centre of mass. Without that correction the orbit was 1.9 m off along-track.
-* **It does not yet improve multi-day forecasts.**
-  * Beyond a few hours the forecast error is set by drag modelling, not by the OD measurements.
-  * With Cd estimated, the SPP fit forecasts better than the carrier-phase fit (3.4 m vs 16 m at
-    24 h). A post-fit phase RMS of 7 cm with Final products is several times the expected
-    1–2 cm, so a remaining measurement-model error is being absorbed into the orbit and Cd.
+**Two months of Sentinel-3A** (3 Sep – 2 Nov 2024, 61 daily cut-offs at 05:59:42 UTC, the
+showcase settings, broadcast products in cut-off-safe forecast mode, scored against POEORB):
+see the [results](#two-month-results) below.
 
-**Recommendation.** Keep `SPP_POSITIONS` as the default for forecasting. Use `CARRIER_PHASE` for
-precise reconstruction of the arc and for short-term prediction, preferably with IGS Final or
-Rapid products. This is one cut-off; a full 61-day campaign comparison is the next validation step.
+## Two-month results
 
-## Known limitations / next steps
+RESULTS_PLACEHOLDER
 
-These are the remaining sources of systematic error:
+## Known limitations
 
-* **GPS satellite antenna phase-centre offsets and variations.** IGS SP3 orbits refer to the
-  satellite centre of mass. Correcting this needs the IGS ANTEX file. It is the most likely cause
-  of the remaining 7 cm residual.
-* **Phase wind-up.** Only its part common to all satellites is absorbed by the clock.
+These are the remaining sources of error:
+
+* **GPS satellite antenna phase-centre offsets and variations.** These need an IGS ANTEX file.
+  With precise products they leave centimetre-to-decimetre residuals.
+* **Phase wind-up.** Its part common to all satellites goes into the clocks.
 * **LEO antenna phase-centre variations.**
-* **Dynamics over the arc.** The orbit is fitted with a strictly dynamic model. Empirical
-  (reduced-dynamic) accelerations would absorb mismodelled forces over the arc.
-* **Float ambiguities.** Ambiguity resolution to integers is not attempted.
+* **Strictly dynamic arc.** There are no empirical accelerations, so drag mismodelling over
+  the 6 h arc shows in the residuals.
+* **Float ambiguities.** Ambiguities are not resolved to integers.
+* **Ocean tides.** These use the 8 main FES2004 constituents to degree 4.
+* **Forecasts beyond a few hours.** These are dominated by drag (space-weather) uncertainty,
+  not by the orbit-determination method.

@@ -79,10 +79,8 @@ public final class GnssProductResolver {
                 continue;
             }
             if (mode == Mode.FORECAST) {
-                if (s instanceof BroadcastSource) {
-                    final BroadcastSource b = (BroadcastSource) s;
-                    eligible.add(new BroadcastSource(b.data().availableBy(cutoff),
-                            b.description() + " [messages with Toe <= cutoff]"));
+                if (s.productClass() == GnssOrbitClockSource.ProductClass.BROADCAST) {
+                    eligible.add(s.availableBy(cutoff));
                     continue;
                 }
                 if (s.issueTime() == null) {

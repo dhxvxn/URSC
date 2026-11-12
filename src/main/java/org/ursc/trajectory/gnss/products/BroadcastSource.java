@@ -33,6 +33,11 @@ public final class BroadcastSource implements GnssOrbitClockSource {
         return description;
     }
 
+    @Override
+    public GnssOrbitClockSource availableBy(final AbsoluteDate cutoff) {
+        return new BroadcastSource(nav.availableBy(cutoff), description + " [messages with Toe <= cutoff]");
+    }
+
     /** Broadcast eligibility is enforced per message ({@link RinexNavReader.Data#availableBy}). */
     @Override
     public AbsoluteDate issueTime() {

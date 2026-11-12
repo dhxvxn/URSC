@@ -221,7 +221,7 @@
    "label": "Fitting arc",
    "type": "number",
    "unit": "h",
-   "what": "Length of the measurement window before the cutoff that the orbit is fitted to.",
+   "what": "Length of the GNSS data arc that ends at the cutoff and is fitted by the carrier-phase orbit determination.",
    "how": "4-12 h is typical for LEO. Longer arcs average out noise and constrain drag better, but a manoeuvre inside the arc spoils the fit and drag mismodelling grows with length. 6 h is a good default.",
    "min": 0.5,
    "max": 72,
@@ -233,11 +233,11 @@
   {
    "key": "od.samplingSeconds",
    "group": "Orbit determination",
-   "label": "Observation sampling",
+   "label": "Code-position sampling",
    "type": "number",
    "unit": "s",
-   "what": "Spacing of the GNSS epochs used for positioning and fitting.",
-   "how": "300 s is plenty for a 6 h arc and fast. 30-60 s adds more fixes (slightly less noise) at higher cost. Must divide evenly into the data rate.",
+   "what": "Spacing of the single-point code positions used only to start the orbit (Orekit Gibbs + a quick Orekit fit); the orbit itself is determined from code and carrier phase at the carrier-phase sampling.",
+   "how": "300 s is plenty for the starting orbit.",
    "min": 1,
    "max": 3600,
    "step": 1,
@@ -248,10 +248,10 @@
   {
    "key": "od.pseudorangeSigma",
    "group": "Orbit determination",
-   "label": "Pseudorange sigma",
+   "label": "Code-position sigma (start)",
    "type": "number",
    "unit": "m",
-   "what": "Assumed 1-sigma noise of the ionosphere-free code measurement; sets the weight of each fix and the size of the formal covariance.",
+   "what": "One-sigma pseudorange error for the covariance of the single-point positions that start the orbit.",
    "how": "2-5 m for dual-frequency code with broadcast orbits; 1-2 m with IGS products. Too small makes the covariance optimistic; the run reports a variance factor near 1 when this is right.",
    "min": 0.1,
    "max": 50,
@@ -266,8 +266,8 @@
    "label": "Covariance weighting",
    "type": "bool",
    "unit": "",
-   "what": "Weights each position fix by its geometry (PDOP) and the pseudorange sigma, instead of treating all fixes equally.",
-   "how": "Keep on: poor-geometry fixes then count less, which is both more accurate and gives a meaningful covariance.",
+   "what": "Weights each starting single-point position by its geometry (PDOP) and the code-position sigma.",
+   "how": "Keep on.",
    "workflows": [
     "OD_FORECAST"
    ]
@@ -278,8 +278,8 @@
    "label": "Max OD iterations",
    "type": "int",
    "unit": "",
-   "what": "Upper limit on Gauss-Newton iterations of the batch least-squares fit. A run that has not converged issues no forecast.",
-   "how": "Convergence normally takes 3-6 iterations; 12 leaves margin. Raising it rarely helps a fit that is not converging; check the data instead.",
+   "what": "Upper limit on Gauss-Newton iterations of each Orekit batch least-squares solve. A run whose carrier-phase solution is not usable issues no forecast.",
+   "how": "Each solve normally converges in 2-5 iterations.",
    "min": 1,
    "max": 50,
    "workflows": [
@@ -306,7 +306,7 @@
    "label": "Max PDOP",
    "type": "number",
    "unit": "",
-   "what": "Position dilution of precision limit; fixes with worse satellite geometry are rejected.",
+   "what": "Starting single-point positions with worse satellite geometry are not used to start the orbit.",
    "how": "4-6 is typical. Lower is stricter (fewer, better fixes).",
    "min": 1,
    "max": 50,
@@ -318,10 +318,10 @@
   {
    "key": "od.maxSppRms",
    "group": "Orbit determination",
-   "label": "Max SPP residual RMS",
+   "label": "Max code-position residual RMS",
    "type": "number",
    "unit": "m",
-   "what": "Rejects position fixes whose pseudorange residuals are larger than this, which usually means a bad measurement or satellite.",
+   "what": "Starting single-point positions with larger code residuals are not used.",
    "how": "10-30 m with broadcast orbits, 5-10 m with precise products.",
    "min": 1,
    "max": 500,
@@ -336,7 +336,7 @@
    "label": "Estimate drag coefficient",
    "type": "bool",
    "unit": "",
-   "what": "Solve for the drag coefficient Cd together with the orbit, instead of keeping it fixed.",
+   "what": "Solve for the drag coefficient Cd together with the orbit in the carrier-phase fit (an Orekit propagation parameter).",
    "how": "Helps when drag dominates the error (low orbits, high solar activity) and the arc is long enough (>= 6-12 h). On short arcs it can be poorly determined and absorb noise.",
    "workflows": [
     "OD_FORECAST"
@@ -348,30 +348,8 @@
    "label": "Estimate radiation coefficient",
    "type": "bool",
    "unit": "",
-   "what": "Solve for the solar radiation pressure coefficient Cr.",
+   "what": "Solve for the solar radiation pressure coefficient together with the orbit in the carrier-phase fit (an Orekit propagation parameter).",
    "how": "Usually weakly observable over a few hours; leave off unless the arc spans many orbits and SRP matters (high area-to-mass).",
-   "workflows": [
-    "OD_FORECAST"
-   ]
-  },
-  {
-   "key": "od.method",
-   "group": "Orbit determination",
-   "label": "OD measurements",
-   "type": "enum",
-   "unit": "",
-   "what": "What the orbit fit uses. SPP positions: fits the single-point position fixes (one 3-D point per epoch, metre-level noise). Carrier phase: starts from that solution and refits directly to the undifferenced ionosphere-free GPS code and carrier-phase measurements, estimating a receiver clock per epoch and a float ambiguity per continuous phase arc, with cycle-slip detection and the antenna offset.",
-   "how": "Carrier phase is far more precise (centimetre-level measurement noise instead of metres) and is the standard for precise LEO orbits; its accuracy is then limited by the GPS orbit/clock product, so pair it with IGS Final or Rapid products. It is slower (about a minute more per run). SPP positions is the fast, robust baseline.",
-   "options": [
-    [
-     "SPP_POSITIONS",
-     "SPP position fixes"
-    ],
-    [
-     "CARRIER_PHASE",
-     "Code + carrier phase"
-    ]
-   ],
    "workflows": [
     "OD_FORECAST"
    ]
@@ -872,25 +850,6 @@
    "how": "Keep on; tens of metres over a day."
   },
   {
-   "key": "forces.thirdBodyEphemeris",
-   "group": "Perturbations",
-   "label": "Sun/Moon ephemeris",
-   "type": "enum",
-   "unit": "",
-   "what": "Source of Sun and Moon positions for third-body forces, radiation pressure and the density model.",
-   "how": "Analytic (~0.01 deg) is the generic default. DE440 (add lnxp1990.440) is exact and slightly improves short-arc accuracy.",
-   "options": [
-    [
-     "ANALYTIC",
-     "Analytic series"
-    ],
-    [
-     "DE440",
-     "JPL DE440 file"
-    ]
-   ]
-  },
-  {
    "key": "forces.solidTides.enabled",
    "group": "Perturbations",
    "label": "Solid Earth tides",
@@ -1044,8 +1003,8 @@
    "label": "JPL DE440 file",
    "type": "file",
    "unit": "",
-   "what": "Planetary ephemeris for exact Sun/Moon positions.",
-   "how": "Needed only when Sun/Moon ephemeris = DE440.",
+   "what": "JPL DE440 planetary ephemeris for the Sun and Moon (required by the Orekit engine). Blank uses data/ephemeris/lnxp1990.440.",
+   "how": "Keep blank when running from the project folder.",
    "kinds": [
     "DE_EPHEMERIS"
    ]
@@ -1149,24 +1108,16 @@
    ]
   },
   {
-   "key": "integrator.absTol",
+   "key": "integrator.positionToleranceM",
    "group": "Integrator",
-   "label": "Absolute tolerance",
+   "label": "Position tolerance",
    "type": "number",
    "unit": "m",
-   "what": "Dormand-Prince 5(4) per-step position error target.",
-   "how": "1e-10 (default) is converged for metre-level work; 1e-8 runs faster with millimetre-level loss.",
-   "step": 1e-12
-  },
-  {
-   "key": "integrator.relTol",
-   "group": "Integrator",
-   "label": "Relative tolerance",
-   "type": "number",
-   "unit": "",
-   "what": "Per-step relative error target.",
-   "how": "1e-12 default; 1e-10 for speed.",
-   "step": 1e-13
+   "what": "Error allowed per integration step for the Orekit Dormand-Prince 8(5,3) integrator, as a position; Orekit derives the tolerances of every state component from it.",
+   "how": "1 mm is the usual precise-orbit setting. Smaller costs time without visible benefit (the maximum step usually limits the step); 1 cm is fine for quick looks.",
+   "step": 0.0001,
+   "min": 1e-06,
+   "max": 1
   },
   {
    "key": "integrator.maxStepSeconds",

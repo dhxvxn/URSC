@@ -15,6 +15,9 @@ Write-Host "modules: $modules"
 if (Test-Path $dist) { Remove-Item -Recurse -Force $dist }
 New-Item -ItemType Directory -Force (Join-Path $dist 'input') | Out-Null
 Copy-Item $jar.FullName (Join-Path $dist 'input\ursc.jar')
+# the Orekit engine needs the JPL DE440 ephemeris; it is looked up next to the jar
+New-Item -ItemType Directory -Force (Join-Path $dist 'input\data\ephemeris') | Out-Null
+Copy-Item 'data\ephemeris\lnxp1990.440' (Join-Path $dist 'input\data\ephemeris\')
 
 jlink --add-modules $modules --strip-debug --no-header-files --no-man-pages --compress=zip-6 --output (Join-Path $dist 'runtime')
 if ($LASTEXITCODE) { jlink --add-modules $modules --strip-debug --no-header-files --no-man-pages --compress=2 --output (Join-Path $dist 'runtime') }
@@ -31,6 +34,8 @@ $p = Join-Path $dist 'URSC-windows-portable'
 New-Item -ItemType Directory -Force (Join-Path $p 'lib') | Out-Null
 Copy-Item -Recurse (Join-Path $dist 'runtime') (Join-Path $p 'runtime')
 Copy-Item (Join-Path $dist 'input\ursc.jar') (Join-Path $p 'lib\ursc.jar')
+New-Item -ItemType Directory -Force (Join-Path $p 'data\ephemeris') | Out-Null
+Copy-Item 'data\ephemeris\lnxp1990.440' (Join-Path $p 'data\ephemeris\')
 Set-Content (Join-Path $p 'ursc-gui.cmd') "@echo off`r`nrem Starts the URSC GUI on this computer only (127.0.0.1) and opens the browser.`r`n`"%~dp0runtime\bin\java.exe`" -Dfile.encoding=UTF-8 -jar `"%~dp0lib\ursc.jar`" gui %*`r`n"
 Set-Content (Join-Path $p 'ursc.cmd') "@echo off`r`n`"%~dp0runtime\bin\java.exe`" -Dfile.encoding=UTF-8 -jar `"%~dp0lib\ursc.jar`" %*`r`n"
 Copy-Item packaging\README-OFFLINE.md $p

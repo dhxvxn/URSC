@@ -325,7 +325,7 @@
               <h3>Two workflows</h3>
               <div class="where"><span class="chip tab">Run tab</span></div>
               <dl class="wwh">
-                <dt>What</dt><dd><b>OD + Forecast</b> computes GPS position fixes, fits an orbit to them and predicts it. <b>Propagate from a state</b> starts from a typed position and velocity, an OEM file or a POEORB epoch.</dd>
+                <dt>What</dt><dd><b>OD + Forecast</b> determines the orbit with an Orekit batch least-squares fit to the GPS code and carrier phase (single-point positions only start the fit) and predicts it with the Orekit propagator. <b>Propagate from a state</b> starts from a typed position and velocity, an OEM file or a POEORB epoch.</dd>
                 <dt>Why</dt><dd>Operations need the full chain; analysis often starts from a known state.</dd>
                 <dt>How</dt><dd>Workflow switch at the top of the Run tab.</dd>
               </dl>

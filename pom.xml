@@ -11,21 +11,27 @@
 
     <name>GNSS Based Orbit Determination and Trajectory Prediction</name>
     <description>
-        A modular numerical orbit-propagation library for long-term prediction of
-        Low Earth Orbit (LEO) satellite trajectories. Every force model, integrator,
-        orbit representation and output is pluggable and configurable. Architecture
-        and physics are modelled on (but independent of) the Orekit library.
+        GNSS carrier-phase orbit determination and trajectory prediction for Low Earth
+        Orbit (LEO) satellites, built on the Orekit flight-dynamics library.
     </description>
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
+        <orekit.version>13.1.2</orekit.version>
     </properties>
 
     <dependencies>
-        <!-- Pure-Java library: no runtime dependencies on purpose, so the physics
-             core is fully self-contained and auditable. Tests use JUnit 5. -->
+        <!-- Orekit (Apache-2.0) is the orbit-determination and propagation engine of every
+             run: frames, time scales, force models, numerical propagator, GNSS measurement
+             models and the batch least-squares estimator. It is shaded into the single
+             executable jar so the program still runs on an air-gapped machine. -->
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>orekit</artifactId>
+            <version>${orekit.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -54,6 +60,34 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+            </plugin>
+            <plugin>
+                <!-- one self-contained executable jar (application + Orekit + Hipparchus) -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

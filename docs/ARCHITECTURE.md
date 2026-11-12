@@ -1,8 +1,27 @@
 # Architecture
 
-The library is plain Java 17 with **no runtime dependencies** (JUnit for tests
-only). Everything is built around a few small interfaces so new models plug in
-without touching the engine. Root package: `org.ursc.trajectory`.
+Java 17. **Every OD + forecast and propagation run executes on the Orekit engine**
+(Orekit 13.1.2 + Hipparchus 4.0.2, Apache 2.0, shaded into the executable jar): the
+package `orekit` builds the Orekit data context, GPS products, force models, attitude,
+carrier-phase batch least squares and forecast. The program's own packages below
+provide the GUI, the data catalogue, file formats (OEM, POEORB, CSV), the cutoff-safe
+EOP / space-weather providers that feed Orekit, the single-point positions used to
+start the orbit, and the stand-alone research CLI commands (`propagate`, `decay`,
+`compare`, `fit`, `backtest`, ...), which still use the earlier in-house physics
+library. Root package: `org.ursc.trajectory`.
+
+## Run engine (Orekit)
+
+| Class | Role (Orekit classes used) |
+|-------|----------------------------|
+| `orekit/OrekitSession` | per-run `LazyLoadedDataContext`: leap seconds, EOP (`EopHistoryLoader`), gravity (`ICGEMFormatReader`), FES2004 (`FESCnmSnmReader`), DE440 |
+| `orekit/OrekitGpsProducts` | `SP3Parser`, `RinexClockParser`, `RinexNavigationParser`, `GNSSPropagator` behind the product-tier resolver |
+| `pipeline/ObsLoader.loadWithOrekit` | `RinexObservationParser` for GNSSRD |
+| `orekit/OrekitDynamics` | force models, `LofOffset` attitude, `NumericalPropagatorBuilder` / `NumericalPropagator`, Dormand-Prince 8(5,3) |
+| `orekit/OrekitCarrierPhaseOd` | `BatchLSEstimator`, `OneWayGNSSRange`, `OneWayGNSSPhase`, `AmbiguityDriver`, Shapiro and on-board-antenna modifiers |
+| `orekit/SparseGaussNewtonOptimizer` | Hipparchus `LeastSquaresOptimizer` forming the normal equations from the sparse Jacobian rows |
+| `orekit/OrekitForecast` | forecast propagation, covariance through `MatricesHarvester` |
+| `pipeline/OdForecastPipeline`, `PropagateFromState` | the two run workflows |
 
 ## Package map
 
@@ -79,7 +98,7 @@ stored as classpath resources or generated `*Data.java`, never hand-typed:
 
 ## Design principles
 
-- **Zero runtime dependencies** — the physics core is fully auditable.
+- **One engine for every run** — Orekit, bundled, so the program still runs offline.
 - **Validated, not just compiling** — models are checked against published
   reference values (see [PHYSICS.md](PHYSICS.md)); `mvn test` is the gate.
 - **SI units, GCRF inertial frame** for all force-model accelerations.

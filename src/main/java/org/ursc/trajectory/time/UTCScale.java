@@ -27,6 +27,18 @@ public final class UTCScale implements TimeScale {
             30, 31, 32, 33, 34, 35, 36, 37
     };
 
+    /**
+     * The leap-second table as {year, month, day, TAI-UTC seconds} rows, oldest first (used to
+     * give Orekit exactly the same UTC as the rest of the program).
+     */
+    public static int[][] leapSecondTable() {
+        final int[][] t = new int[LEAP_DATES.length][];
+        for (int i = 0; i < t.length; i++) {
+            t[i] = new int[] {LEAP_DATES[i][0], LEAP_DATES[i][1], LEAP_DATES[i][2], LEAP_VALUES[i]};
+        }
+        return t;
+    }
+
     /** Threshold instants, as UTC seconds since the J2000 reference, for each entry. */
     private final double[] thresholdsUtcSeconds;
 

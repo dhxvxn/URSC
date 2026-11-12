@@ -12,9 +12,11 @@ ephemeris file.
 
 It runs entirely on **one computer with no internet connection** (suitable for secure,
 air-gapped facilities): the 3D globe, maps, documentation and search are all bundled inside the
-program. It has **no runtime dependencies** — the physics core is plain, auditable Java. A local
-web interface (opened in your browser) provides data management, run setup, a 3D globe and 2D
-ground-track map, diagnostic plots, product comparisons and downloads.
+program. The flight dynamics is built on **[Orekit](https://www.orekit.org)** (orbit
+determination, force models, numerical propagation, frames, time, GNSS file parsers), which is
+packed into the one executable jar together with the rest of the program. A local web interface
+(opened in your browser) provides data management, run setup, a 3D globe and 2D ground-track
+map, diagnostic plots, product comparisons and downloads.
 
 **New to the project? Read [`docs/REPORT.md`](docs/REPORT.md)** — a full illustrated report that
 explains the problem, the method, the features and the results, with a glossary of every term.
@@ -239,14 +241,16 @@ Stop the program with **Ctrl+C** in the terminal, or the ⏻ button at the top-r
 
 ## How it works (one paragraph)
 
-For a chosen cut-off time, the program takes the satellite's GPS observations over a short arc
-(6 hours by default), computes a position fix at each epoch by **single-point positioning**,
-fits a single consistent orbit to those fixes by **batch least-squares orbit determination**,
-and then **numerically propagates** that orbit forward (gravity field, atmospheric drag, solar
-radiation, Sun/Moon, tides, relativity) to produce the forecast. Where a precise reference orbit
-(**POEORB**) exists, it also reports the error against it — for display only; it is never fed
-back into the computation. Full detail, with pictures and a glossary, is in
-[`docs/REPORT.md`](docs/REPORT.md).
+For a chosen cut-off time, the program takes the satellite's GPS **code and carrier-phase**
+measurements over a short arc (6 hours by default) and determines the orbit with an **Orekit
+batch least-squares fit to the undifferenced ionosphere-free code and carrier phase** (one
+receiver clock per epoch, one float ambiguity per phase arc, cycle-slip detection, the antenna
+offset rotated by the attitude). Single-point code positions are used only to start that fit.
+The orbit is then **numerically propagated by Orekit** (gravity field, atmospheric drag, solar
+radiation, Sun/Moon, solid and ocean tides, relativity, Earth albedo) to produce the forecast
+with a formal covariance. Where a precise reference orbit (**POEORB**) exists, it also reports the
+error against it — for display only; it is never fed back into the computation. Full detail is in
+[`docs/CARRIER_PHASE_OD.md`](docs/CARRIER_PHASE_OD.md) and [`docs/REPORT.md`](docs/REPORT.md).
 
 ---
 
@@ -263,7 +267,7 @@ back into the computation. Full detail, with pictures and a glossary, is in
 - **[docs/PRESENTATION.md](docs/PRESENTATION.md)** — a 60–120 minute speaker's script and demo guide.
 - **[docs/PROMPT_DEVELOPMENT_REPORT.md](docs/PROMPT_DEVELOPMENT_REPORT.md)** — the polished, reproducible prompt history (Codex + Claude) that built the project.
 - **[docs/GNSS-OD-demo.mp4](docs/GNSS-OD-demo.mp4)** — a 43-second demonstration video (opens in GitHub's video player), with its narration in **[docs/VIDEO-NARRATION.md](docs/VIDEO-NARRATION.md)**.
-- **[docs/CARRIER_PHASE_OD.md](docs/CARRIER_PHASE_OD.md)** — the optional carrier-phase orbit determination (code + phase, cycle slips, antenna offset) and its validation against POEORB.
+- **[docs/CARRIER_PHASE_OD.md](docs/CARRIER_PHASE_OD.md)** — the orbit determination (Orekit, GNSS code + carrier phase), the Orekit classes used at each step, and the two-month validation against POEORB (before/after).
 - **[docs/USAGE.md](docs/USAGE.md)** — every CLI command and flag, and the scenario `.properties` reference.
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — package map and how to add a force model / atmosphere / integrator / propagator.
 - **[docs/PHYSICS.md](docs/PHYSICS.md)** — every model with its formula, references and accuracy caveats.
@@ -276,24 +280,25 @@ The in-app **Guide** (the *Guide* button in the interface, or
 
 ## What is implemented
 
-A merged pipeline **GPS observations → single-point positioning → batch orbit determination →
-numerical propagation → CCSDS OEM**, with:
+One pipeline, on the Orekit engine: **GNSSRD code + carrier phase → Orekit batch least-squares
+orbit determination → Orekit numerical propagation → CCSDS OEM**, with:
 
 - **GPS products**, in priority order **IGS Final → Rapid → Ultra-rapid → Broadcast**, chosen
   per satellite and per epoch; works in cut-off-safe *Forecast* mode or retrospective
   *Reconstruction* mode.
-- **Force models** (each independently on/off with a model choice): spherical-harmonic gravity
-  (EGM96 to degree/order 70), atmospheric drag (exponential / Harris-Priester / NRLMSISE-00 /
-  JB2008), solar radiation pressure with eclipse, Sun and Moon third bodies, solid and ocean
-  tides, general relativity (Schwarzschild + Lense-Thirring), Earth albedo/IR, empirical
-  acceleration.
-- **Integrators:** Dormand-Prince 5(4) adaptive (default) and RK4; a semi-analytical DSST
-  mean-element propagator for long runs.
-- **Two orbit-determination methods:** a fit to SPP position fixes (default), or a refinement on
-  undifferenced ionosphere-free **code + carrier phase** (receiver clock per epoch, float
-  ambiguity per phase arc, cycle-slip detection, attitude-based antenna offset) — see
+- **Force models** (Orekit, each independently on/off with a model choice): spherical-harmonic
+  gravity (Holmes-Featherstone, EGM96 to degree/order 70 or an ICGEM file), atmospheric drag
+  (NRLMSISE-00 / JB2008 / Harris-Priester / exponential, cut-off-safe space weather), solar
+  radiation pressure with eclipse, Sun and Moon (JPL DE440), solid tides (IERS 2010), ocean tides
+  (FES2004), general relativity (Schwarzschild + Lense-Thirring), Earth albedo/IR (Knocke),
+  empirical acceleration; cannonball or box-wing spacecraft.
+- **Integrator:** Orekit Dormand-Prince 8(5,3) with a position tolerance.
+- **Carrier-phase orbit determination** (the only OD method): Orekit `BatchLSEstimator` with
+  `OneWayGNSSRange` / `OneWayGNSSPhase` measurements, a receiver clock per epoch, a float
+  ambiguity per phase arc, cycle-slip detection, Shapiro and on-board-antenna modifiers — see
   [docs/CARRIER_PHASE_OD.md](docs/CARRIER_PHASE_OD.md).
-- **Formal covariance** propagated from the orbit-determination solution to the output epochs.
+- **Formal covariance** from the Orekit estimator, propagated to the output epochs through
+  Orekit's state-transition matrix.
 - **Outputs:** CCSDS OEM 2.0 (with covariance), KML, CZML, a printable HTML report, and a log —
   every run is reproducible from its stored configuration and input checksums.
 - **Offline web interface:** 3D globe (with a Sentinel-3A build and a generic build), interactive
@@ -308,7 +313,7 @@ Sentinel-3A two-month campaign.
 
 ## Verification
 
-`mvn test` runs the full suite (120+ tests, including a closed-loop carrier-phase OD test with injected cycle slips): loss-free orbit conversions, energy conservation,
+`mvn test` runs the full suite (120+ tests, including closed-loop tests of the Orekit carrier-phase OD and of the whole pipeline with injected cycle slips): loss-free orbit conversions, energy conservation,
 J2 nodal regression, the time-scale/leap-second table, NRLMSISE-00 against its official reference
 case, DSST agreement, batch-OD recovery of a known state and drag coefficient, POEORB parsing,
 CCSDS OEM round-trip, and the data-catalogue content recognition. The pipeline is additionally
@@ -326,9 +331,10 @@ Incomplete downloads are quarantined under `data/unconfirmed-downloads/` and are
 
 ---
 
-*Licence note: the NRLMSIS 2.0 and DTM2020 atmosphere models and their coefficient files are not
-included for licensing reasons; the shipped drag options are exponential, Harris-Priester,
-NRLMSISE-00 and JB2008.*
+*Licence notes: Orekit and Hipparchus are Apache License 2.0 and are bundled in the executable
+jar. The NRLMSIS 2.0 and DTM2020 atmosphere models and their coefficient files are not included
+for licensing reasons; the shipped drag options are exponential, Harris-Priester, NRLMSISE-00 and
+JB2008.*
 
 
 ## Input selection, forecasts and OEM output

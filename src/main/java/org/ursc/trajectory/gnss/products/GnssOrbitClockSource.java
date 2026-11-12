@@ -54,6 +54,15 @@ public interface GnssOrbitClockSource {
     /** Satellite clock offset (s) at {@code t}, including the relativistic correction. */
     double clockBias(int prn, AbsoluteDate t);
 
+    /**
+     * Broadcast products: the same source restricted to messages with Toe at or before
+     * {@code cutoff} (what a receiver could have had by then). Other products return themselves;
+     * their availability is decided by the issue time.
+     */
+    default GnssOrbitClockSource availableBy(final AbsoluteDate cutoff) {
+        return this;
+    }
+
     /** @return true if the value at {@code t} comes from a predicted (not observed) segment. */
     default boolean isPredicted(final AbsoluteDate t) {
         return false;

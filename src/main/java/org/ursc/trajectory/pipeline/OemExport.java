@@ -33,7 +33,7 @@ public final class OemExport {
         }
         if (res.od != null && "CARRIER_PHASE".equals(res.od.method)) {
             oem.headerComments.add(String.format(java.util.Locale.US,
-                    "OD: undifferenced iono-free code + carrier phase, %d phase / %d code obs, %d arcs, "
+                    "OD (Orekit batch least squares): undifferenced iono-free code + carrier phase, %d phase / %d code obs, %d arcs, "
                             + "post-fit phase RMS %.3f m, code RMS %.2f m, antenna offset %s",
                     res.od.phaseObservations, res.od.codeObservations, res.od.phaseArcs, res.od.phaseRms,
                     res.od.codeRms, res.od.antennaOffsetApplied ? "applied" : "not applied"));

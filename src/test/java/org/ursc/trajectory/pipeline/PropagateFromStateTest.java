@@ -34,11 +34,14 @@ class PropagateFromStateTest {
         final RunResult a = PropagateFromState.run(cfg, ProgressListener.NONE);
         assertEquals(RunResult.Status.SUCCESS, a.status, String.join("; ", a.errors));
         assertEquals(37, a.states.size()); // 6 h at 10 min, inclusive
-        // the first output state, expressed back in ITRF, is the typed state
+        // the first output state, expressed back in ITRF, is the typed state; the run converts with
+        // Orekit's IERS 2010 frames and this check with the program's own IAU 2006/2000B frames,
+        // which agree to a few millimetres (the 2000B nutation truncation)
         final RunResult.State s0 = a.states.get(0);
         final FrameUtil.PV itrf = FrameUtil.gcrfToItrf(s0.position, s0.velocity, s0.date);
-        assertTrue(itrf.r.distance(new Vector3D(482304.989602, 1077999.632437, -7091304.589548)) < 1e-6);
-        assertTrue(itrf.v.distance(new Vector3D(7497.731211, -93.447784, 495.577989)) < 1e-8);
+        assertTrue(itrf.r.distance(new Vector3D(482304.989602, 1077999.632437, -7091304.589548)) < 0.02,
+                "ITRF round trip " + itrf.r.distance(new Vector3D(482304.989602, 1077999.632437, -7091304.589548)));
+        assertTrue(itrf.v.distance(new Vector3D(7497.731211, -93.447784, 495.577989)) < 2e-5);
 
         // write it as an ITRF OEM and re-seed from its 3rd line
         final Path oemFile = dir.resolve("a.oem");
@@ -52,8 +55,11 @@ class PropagateFromStateTest {
         final RunResult b = PropagateFromState.run(cfg, ProgressListener.NONE);
         assertEquals(RunResult.Status.SUCCESS, b.status, String.join("; ", b.errors));
         // same physics: b's start equals a's 3rd state and b's end equals a's 4th state
-        assertTrue(b.states.get(0).position.distance(a.states.get(2).position) < 1e-5);
-        assertTrue(b.states.get(1).position.distance(a.states.get(3).position) < 1e-3,
+        assertTrue(b.states.get(0).position.distance(a.states.get(2).position) < 0.02,
+                "re-seed start differs by " + b.states.get(0).position.distance(a.states.get(2).position));
+        // (the OEM is written in ITRF with the program's frames and read back with Orekit's: the
+        // centimetre-level difference between the two frame implementations shows here)
+        assertTrue(b.states.get(1).position.distance(a.states.get(3).position) < 0.1,
                 "re-seeded propagation differs by " + b.states.get(1).position.distance(a.states.get(3).position));
     }
 }

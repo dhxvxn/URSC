@@ -246,7 +246,6 @@ export function renderRun(root) {
       if (lastSats.length > 1) toast('Observations of ' + lastSat + ' selected; also available for this cutoff: ' + lastSats.filter((x) => x !== lastSat).join(', ') + ' (switch with the Spacecraft selector)', 'warn', 9000);
       for (const k of ['gnssrd', 'gpsProducts', 'poeorb', 'proqua']) cfg.inputs[k] = s[k];
       for (const k of ['eopFile', 'spaceWeatherFile', 'de440File', 'gravityFile']) if (!cfg.inputs[k] && s[k].length) cfg.inputs[k] = s[k][0];
-      if (s.de440File.length && cfg.forces.thirdBodyEphemeris === 'ANALYTIC') cfg.forces.thirdBodyEphemeris = 'DE440';
       const n = s.gnssrd.length + s.gpsProducts.length;
       toast(n ? 'Selected ' + s.gnssrd.length + ' observation and ' + s.gpsProducts.length + ' GPS product file(s)' : 'No catalogued data covers this cutoff', n ? 'ok' : 'warn');
       changed();

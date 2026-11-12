@@ -15,9 +15,7 @@ import org.ursc.trajectory.gnss.GpsConstants;
 import org.ursc.trajectory.gnss.SppEngine;
 import org.ursc.trajectory.math.Constants;
 import org.ursc.trajectory.math.Vector3D;
-import org.ursc.trajectory.propagation.SampledPropagator;
 import org.ursc.trajectory.propagation.SpacecraftState;
-import org.ursc.trajectory.propagation.sampling.EphemerisCollector;
 import org.ursc.trajectory.time.AbsoluteDate;
 import org.ursc.trajectory.time.TimeScalesFactory;
 
@@ -92,42 +90,59 @@ public final class DemoDataset {
         // ---- spacecraft truth with the GUI defaults (generic cannonball, all forces, no optional data)
         pl.stage("Simulating the satellite orbit", 0.05);
         final RunConfig cfg = new RunConfig();
-        final List<SpacecraftState> truth;
-        try (Environment env = Environment.setUp(cfg, null)) {
+        final List<RunResult.State> truth;
+        try (Environment env = Environment.setUp(cfg, null);
+             org.ursc.trajectory.orekit.OrekitSession session = OdForecastPipeline.openSession(cfg, env,
+                     obsStart.shiftedBy(-86400.0), truthEnd.shiftedBy(86400.0))) {
             final double r = Constants.EARTH_EQUATORIAL_RADIUS + 790e3;
             final double v = Math.sqrt(Constants.EARTH_MU / r);
             final double inc = Math.toRadians(98.6);
             final double raan = Math.toRadians(40);
-            final Vector3D r0 = new Vector3D(r * Math.cos(raan), r * Math.sin(raan), 0);
-            final Vector3D v0 = new Vector3D(-v * Math.cos(inc) * Math.sin(raan), v * Math.cos(inc) * Math.cos(raan),
-                    v * Math.sin(inc));
-            final SpacecraftState s0 = OdForecastPipeline.state(obsStart,
-                    new double[] {r0.getX(), r0.getY(), r0.getZ(), v0.getX(), v0.getY(), v0.getZ()}, cfg.spacecraft.massKg);
-            final SampledPropagator prop = ForceModelBuilder.build(s0, cfg.spacecraft.cd, cfg.spacecraft.cr, cfg, env, false);
-            final EphemerisCollector col = new EphemerisCollector();
-            prop.setStepHandler(30.0, col);
-            prop.propagate(truthEnd);
-            truth = col.getStates();
+            final org.orekit.time.AbsoluteDate t0 = org.ursc.trajectory.orekit.OrekitDates.toOrekit(obsStart);
+            final org.orekit.propagation.SpacecraftState s0 = new org.orekit.propagation.SpacecraftState(
+                    new org.orekit.orbits.CartesianOrbit(new org.orekit.utils.PVCoordinates(
+                            new org.hipparchus.geometry.euclidean.threed.Vector3D(r * Math.cos(raan), r * Math.sin(raan), 0),
+                            new org.hipparchus.geometry.euclidean.threed.Vector3D(-v * Math.cos(inc) * Math.sin(raan),
+                                    v * Math.cos(inc) * Math.cos(raan), v * Math.sin(inc))),
+                            session.gcrf, t0, org.orekit.utils.Constants.EIGEN5C_EARTH_MU)).withMass(cfg.spacecraft.massKg);
+            final RunConfig c30 = RunConfig.fromJson(cfg.toJson(), new ArrayList<>());
+            c30.forecast.outputStepSeconds = 30.0;
+            truth = org.ursc.trajectory.orekit.OrekitForecast.run(s0, null, List.of(),
+                    () -> org.ursc.trajectory.orekit.OrekitDynamics.forces(c30, env, session, c30.spacecraft.cd,
+                            c30.spacecraft.cr, new ArrayList<>()),
+                    org.ursc.trajectory.orekit.OrekitDynamics.attitude(c30, env, session), t0,
+                    org.ursc.trajectory.orekit.OrekitDates.toOrekit(truthEnd), c30, ProgressListener.NONE);
         }
 
-        // ---- GNSS observations (RINEX 3.03, GPS time), 30 s, 1 m noise
+        // ---- GNSS observations (RINEX 3.03, GPS time), 30 s: dual-frequency code (1 m noise) and
+        //      carrier phase (2 mm noise, one random integer ambiguity per satellite and frequency)
         pl.stage("Writing GNSS observations", 0.55);
         final Path obs = dir.resolve(OBS_FILE);
         final Random rnd = new Random(20241016L);
         try (BufferedWriter w = Files.newBufferedWriter(obs)) {
             w.write(hdr("     3.03           OBSERVATION DATA    G: GPS", "RINEX VERSION / TYPE"));
             w.write(hdr("SIMULATED DEMO DATA - NOT A REAL SATELLITE", "COMMENT"));
+            w.write(hdr("DEMO                SIM                 20250115 000000 UTC", "PGM / RUN BY / DATE"));
             w.write(hdr("SIMSAT", "MARKER NAME"));
-            w.write(hdr("G    2 C1W C2W", "SYS / # / OBS TYPES"));
+            w.write(hdr("SPACEBORNE", "MARKER TYPE"));
+            w.write(hdr("SIM                 SIM", "OBSERVER / AGENCY"));
+            w.write(hdr("0                   SIMULATED           0", "REC # / TYPE / VERS"));
+            w.write(hdr("0                   SIMULATED", "ANT # / TYPE"));
+            w.write(hdr("        0.0000        0.0000        0.0000", "ANTENNA: DELTA H/E/N"));
+            w.write(hdr("G    4 C1W L1W C2W L2W", "SYS / # / OBS TYPES"));
             final double[] f0 = obsStart.getComponents(TimeScalesFactory.getGPS());
             w.write(hdr(String.format(Locale.US, "  %4d    %2d    %2d    %2d    %2d   %10.7f     GPS",
                     (int) f0[0], (int) f0[1], (int) f0[2], (int) f0[3], (int) f0[4], f0[5]), "TIME OF FIRST OBS"));
+            w.write(hdr("G L1W  0.00000", "SYS / PHASE SHIFT"));
+            w.write(hdr("G L2W  0.00000", "SYS / PHASE SHIFT"));
+            w.write(hdr("  0", "GLONASS SLOT / FRQ #"));
+            w.write(hdr("", "GLONASS COD/PHS/BIS"));
             w.write(hdr("", "END OF HEADER"));
             for (int k = 0; obsStart.shiftedBy(k * 30.0).compareTo(obsEnd) <= 0; k++) {
                 final AbsoluteDate tRx = obsStart.shiftedBy(k * 30.0);
-                final SpacecraftState s = truth.get(k);
+                final RunResult.State s = truth.get(k);
                 final Vector3D rcv = FramesFactory.getTransform(FramesFactory.getGCRF(), FramesFactory.getITRF(), tRx)
-                        .transformPosition(s.getPosition());
+                        .transformPosition(s.position);
                 final StringBuilder sats = new StringBuilder();
                 int n = 0;
                 for (int prn = 1; prn <= 24; prn++) {
@@ -141,8 +156,12 @@ public final class DemoDataset {
                         continue;
                     }
                     final double clockM = 1500.0 + 0.02 * tRx.durationFrom(obsStart);
-                    final double p = C * tau + clockM - C * e.clockBias(tRx.shiftedBy(-tau)) + rnd.nextGaussian();
-                    sats.append(String.format(Locale.US, "G%02d%14.3f  %14.3f  %n", prn, p, p));
+                    final double range = C * tau + clockM - C * e.clockBias(tRx.shiftedBy(-tau));
+                    final double p = range + rnd.nextGaussian();
+                    final double ph = range + 0.002 * rnd.nextGaussian();
+                    final double l1 = ph / (C / GpsConstants.F_L1) + 1000.0 * prn;
+                    final double l2 = ph / (C / GpsConstants.F_L2) - 700.0 * prn;
+                    sats.append(String.format(Locale.US, "G%02d%14.3f  %14.3f  %14.3f  %14.3f  %n", prn, p, l1, p, l2));
                     n++;
                 }
                 final double[] c = tRx.getComponents(TimeScalesFactory.getGPS());
@@ -173,18 +192,18 @@ public final class DemoDataset {
             w.write("<Notes>Simulated truth in POEORB layout for the comparison display</Notes>\n<Mission>SIMSAT</Mission>\n");
             w.write("<File_Type>AUX_POEORB</File_Type>\n<Validity_Period>\n");
             final AbsoluteDate e0 = TimeUtil.parseUtc(String.format(Locale.US, "%04d-%02d-%02dT00:00:00", YEAR, MONTH, DAY));
-            final AbsoluteDate e1 = truth.get(truth.size() - 1).getDate();
+            final AbsoluteDate e1 = truth.get(truth.size() - 1).date;
             w.write("<Validity_Start>UTC=" + TimeUtil.formatUtc(e0) + "</Validity_Start>\n");
             w.write("<Validity_Stop>UTC=" + TimeUtil.formatUtc(e1.shiftedBy(-30)) + "</Validity_Stop>\n</Validity_Period>\n");
             w.write("</Fixed_Header></Earth_Explorer_Header>\n<Data_Block type=\"xml\">\n<List_of_OSVs>\n");
             for (int k = 0; k < truth.size(); k += 2) { // 60 s spacing
-                final SpacecraftState s = truth.get(k);
-                if (s.getDate().isBefore(e0)) {
+                final RunResult.State s = truth.get(k);
+                if (s.date.isBefore(e0)) {
                     continue;
                 }
-                final FrameUtil.PV pv = FrameUtil.gcrfToItrf(s.getPosition(), s.getVelocity(), s.getDate());
-                final String utc = TimeUtil.formatUtc(s.getDate());
-                w.write("<OSV>\n<TAI>TAI=" + TimeUtil.formatUtc(s.getDate().shiftedBy(37)) + "</TAI>\n<UTC>UTC=" + utc
+                final FrameUtil.PV pv = FrameUtil.gcrfToItrf(s.position, s.velocity, s.date);
+                final String utc = TimeUtil.formatUtc(s.date);
+                w.write("<OSV>\n<TAI>TAI=" + TimeUtil.formatUtc(s.date.shiftedBy(37)) + "</TAI>\n<UTC>UTC=" + utc
                         + "</UTC>\n<UT1>UT1=" + utc + "</UT1>\n<Absolute_Orbit>+1</Absolute_Orbit>\n");
                 w.write(String.format(Locale.US, "<X unit=\"m\">%.6f</X>\n<Y unit=\"m\">%.6f</Y>\n<Z unit=\"m\">%.6f</Z>\n"
                         + "<VX unit=\"m/s\">%.6f</VX>\n<VY unit=\"m/s\">%.6f</VY>\n<VZ unit=\"m/s\">%.6f</VZ>\n<Quality>SIMULATED</Quality>\n</OSV>\n",
@@ -198,7 +217,8 @@ public final class DemoDataset {
         Files.writeString(readme, String.join("\n",
                 "Demo dataset - SIMULATED DATA, not from any real satellite or IGS analysis centre.",
                 "",
-                "Contents: GNSS observations of a simulated 790 km sun-synchronous satellite (30 s, 1 m noise,",
+                "Contents: dual-frequency GNSS code (1 m noise) and carrier phase (2 mm noise) of a simulated 790 km",
+                "sun-synchronous satellite (30 s,",
                 "14 January 22:00 to 15 January 08:00 GPS time), one synthetic 24-satellite GPS constellation",
                 "written as IGS-style Final/Rapid (SP3 + CLK, 15 January), Ultra-rapid (SP3 with clocks, observed 14th,",
                 "predicted 15th) and RINEX 3 broadcast navigation, plus a reference orbit in POEORB layout.",
@@ -209,7 +229,7 @@ public final class DemoDataset {
                 "predicted segment, with broadcast as fallback. Reconstruction mode uses the Final product.",
                 "",
                 "The satellite truth was generated with the GUI's default force model and NO optional data (zero",
-                "Earth orientation, constant space weather F10.7=150 / Ap=15, analytic Sun/Moon), so a default run",
+                "Earth orientation, constant space weather F10.7=150 / Ap=15, DE440 Sun/Moon), so a default run",
                 "recovers it to the noise level. If Auto-select also adds real EOP, space-weather or DE440 files from",
                 "your catalog, the forecast model no longer matches the simulation and drifts by tens of metres per",
                 "day (mostly drag): a useful illustration of model sensitivity. Remove those files to see the match.",
@@ -240,9 +260,34 @@ public final class DemoDataset {
             final double mjd = start.secondsSinceJ2000(TimeScalesFactory.getGPS()) / 86400.0 + 51544.5;
             w.write(String.format(Locale.US, "## %4d %15.8f %14.8f %5d %15.13f%n", (int) Math.floor(sinceEpoch / 604800.0),
                     sinceEpoch % 604800.0, 900.0, (int) Math.floor(mjd), mjd - Math.floor(mjd)));
-            w.write("+   24   G01G02G03G04G05G06G07G08G09G10G11G12G13G14G15G16G17\n");
+            // SP3-d header: 5 satellite-id lines and 5 accuracy lines (17 slots each), 2 x %c/%f/%i, 4 comments
+            final StringBuilder ids = new StringBuilder();
+            for (int prn = 1; prn <= 24; prn++) {
+                ids.append(String.format(Locale.US, "G%02d", prn));
+            }
+            while (ids.length() < 5 * 17 * 3) {
+                ids.append("  0");
+            }
+            for (int line = 0; line < 5; line++) {
+                w.write((line == 0 ? "+   24   " : "+        ") + ids.substring(line * 51, line * 51 + 51) + "\n");
+            }
+            for (int line = 0; line < 5; line++) {
+                final StringBuilder acc = new StringBuilder("++       ");
+                for (int k = 0; k < 17; k++) {
+                    acc.append(line * 17 + k < 24 ? "  2" : "  0");
+                }
+                w.write(acc + "\n");
+            }
             w.write("%c G  cc GPS ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc\n");
+            w.write("%c cc cc ccc ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc\n");
+            w.write("%f  1.2500000  1.025000000  0.00000000000  0.000000000000000\n");
+            w.write("%f  0.0000000  0.000000000  0.00000000000  0.000000000000000\n");
+            w.write("%i    0    0    0    0      0      0      0      0         0\n");
+            w.write("%i    0    0    0    0      0      0      0      0         0\n");
             w.write("/* SIMULATED DEMO PRODUCT - synthetic GPS constellation, not an IGS product\n");
+            w.write("/* written by the program's demo-dataset generator\n");
+            w.write("/* positions in km, clocks in microseconds\n");
+            w.write("/* do not use for real work\n");
             for (int k = 0; k < n; k++) {
                 final AbsoluteDate t = start.shiftedBy(k * 900.0);
                 final double[] e = t.getComponents(TimeScalesFactory.getGPS());
@@ -262,9 +307,21 @@ public final class DemoDataset {
     private static Path clk(final Path f, final AbsoluteDate start, final AbsoluteDate ref, final int n,
                             final double step) throws IOException {
         try (BufferedWriter w = Files.newBufferedWriter(f)) {
-            w.write(hdr("     3.04           C                   G", "RINEX VERSION / TYPE"));
+            w.write(hdr("     3.00           C                   G", "RINEX VERSION / TYPE"));
+            w.write(hdr("DEMO                SIM                 20250115 000000 UTC", "PGM / RUN BY / DATE"));
             w.write(hdr("SIMULATED DEMO PRODUCT - not an IGS product", "COMMENT"));
             w.write(hdr("GPS", "TIME SYSTEM ID"));
+            w.write(hdr("     1    AS", "# / TYPES OF DATA"));
+            w.write(hdr("SIM  Simulated demo analysis centre", "ANALYSIS CENTER"));
+            w.write(hdr("    24", "# OF SOLN SATS"));
+            final StringBuilder prnList = new StringBuilder();
+            for (int prn = 1; prn <= 24; prn++) {
+                prnList.append(String.format(Locale.US, "G%02d ", prn));
+                if (prn % 15 == 0 || prn == 24) {
+                    w.write(hdr(prnList.toString(), "PRN LIST"));
+                    prnList.setLength(0);
+                }
+            }
             w.write(hdr("", "END OF HEADER"));
             for (int k = 0; k < n; k++) {
                 final AbsoluteDate t = start.shiftedBy(k * step);
@@ -282,7 +339,9 @@ public final class DemoDataset {
     private static Path nav(final Path f, final AbsoluteDate ref) throws IOException {
         try (BufferedWriter w = Files.newBufferedWriter(f)) {
             w.write(hdr("     3.04           N: GNSS NAV DATA    G: GPS", "RINEX VERSION / TYPE"));
+            w.write(hdr("DEMO                SIM                 20250115 000000 UTC", "PGM / RUN BY / DATE"));
             w.write(hdr("SIMULATED DEMO NAVIGATION - synthetic constellation", "COMMENT"));
+            w.write(hdr("    18", "LEAP SECONDS"));
             w.write(hdr("", "END OF HEADER"));
             for (double dt = -86400.0; dt <= 86400.0; dt += 7200.0) {
                 for (int prn = 1; prn <= 24; prn++) {

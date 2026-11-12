@@ -48,7 +48,7 @@ public final class RinexObsReader {
             this(prn, typeIndex, values, null);
         }
 
-        SatRecord(final int prn, final Map<String, Integer> typeIndex, final double[] values, final int[] lli) {
+        public SatRecord(final int prn, final Map<String, Integer> typeIndex, final double[] values, final int[] lli) {
             this.prn = prn;
             this.typeIndex = typeIndex;
             this.values = values;
@@ -153,7 +153,7 @@ public final class RinexObsReader {
         private final double receiverClockOffset;
         private final List<SatRecord> satellites;
 
-        Epoch(final AbsoluteDate date, final double receiverClockOffset,
+        public Epoch(final AbsoluteDate date, final double receiverClockOffset,
               final List<SatRecord> satellites) {
             this.date = date;
             this.receiverClockOffset = receiverClockOffset;

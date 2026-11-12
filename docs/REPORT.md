@@ -405,27 +405,46 @@ products available at the cut-off are used, as in a real operation) or **Reconst
 
 ## 11. Processing pipeline
 
-For a chosen cut-off, the system executes the following chain (illustrated below):
+For a chosen cut-off, the system executes the following chain on the **Orekit** flight-dynamics
+engine (illustrated below):
 
 <div class="flow">
-<div class="node">GPS observations</div><div class="arrow">→</div>
-<div class="node accent">Single-point positioning</div><div class="arrow">→</div>
-<div class="node">~73 position fixes</div><div class="arrow">→</div>
-<div class="node accent">Batch orbit determination</div><div class="arrow">→</div>
-<div class="node">Numerical propagation (7 d)</div><div class="arrow">→</div>
+<div class="node">GPS code + carrier phase</div><div class="arrow">→</div>
+<div class="node">Starting orbit (code positions)</div><div class="arrow">→</div>
+<div class="node accent">Orekit batch least squares on carrier phase</div><div class="arrow">→</div>
+<div class="node">Orekit numerical propagation (7 d)</div><div class="arrow">→</div>
 <div class="node accent">CCSDS OEM + evaluation</div>
 </div>
 
 1. **Input selection** from the catalogue: the satellite's GPS observations over the arc (six hours
    by default), the best available GPS products, and the POEORB reference (for evaluation only).
-2. **Single-point positioning** at each epoch — approximately 73 fixes over a six-hour arc sampled
-   every 300 s (§9.1).
-3. **Orbit determination** — batch least squares fits one orbit to all fixes and reports the post-fit
-   RMS (§9.3).
-4. **Propagation** — the fitted orbit is integrated forward (seven days by default), applying the
-   forces of Part IV, with a position recorded every 60 s (§9.2).
-5. **Output** — a CCSDS OEM (optionally with covariance), KML, CZML, a printable report, and a log.
+   Orekit's parsers read the RINEX observations, the SP3 and clock products and the broadcast
+   navigation messages.
+2. **Starting orbit.** Single-point code positions every 300 s (§9.1) give an initial orbit through
+   Orekit's Gibbs method and a quick Orekit batch fit. They only start the next step.
+3. **Orbit determination.** An Orekit batch least-squares fit uses the undifferenced
+   ionosphere-free **code and carrier phase** of every GPS satellite in view, every 30 s. It
+   estimates:
+   * the orbit;
+   * one receiver clock per epoch;
+   * one float ambiguity per continuous phase arc.
+
+   It also handles cycle slips and the antenna offset (§9.3,
+   [CARRIER_PHASE_OD.md](CARRIER_PHASE_OD.md)).
+4. **Propagation.** The fitted orbit is integrated forward by the Orekit numerical propagator
+   (seven days by default), applying the forces of Part IV, with a position recorded every 60 s
+   (§9.2).
+5. **Output.** The run writes:
+   * a CCSDS OEM (optionally with the covariance from Orekit's state-transition matrix);
+   * KML and CZML files;
+   * a printable report;
+   * a log.
+
    Where a POEORB reference is present, the error against it is computed for display only.
+
+> Earlier versions of this system fitted the orbit to the single-point position fixes, with its own
+> physics library; the campaign of §13 was produced that way. §13a compares that method with the
+> carrier-phase orbit determination on the same 61 days.
 
 ## 12. Features and interface
 

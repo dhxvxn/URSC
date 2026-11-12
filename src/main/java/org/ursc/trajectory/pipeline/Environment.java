@@ -13,7 +13,6 @@ import org.ursc.trajectory.attitude.CompositeAttitude;
 import org.ursc.trajectory.attitude.NominalYawSteering;
 import org.ursc.trajectory.attitude.QuaternionFileAttitude;
 import org.ursc.trajectory.bodies.CelestialBodyFactory;
-import org.ursc.trajectory.bodies.De440Ephemeris;
 import org.ursc.trajectory.bodies.EphemerisSource;
 import org.ursc.trajectory.forces.drag.ConstantSpaceWeather;
 import org.ursc.trajectory.forces.drag.CssiSpaceWeatherProvider;
@@ -51,6 +50,8 @@ public final class Environment implements AutoCloseable {
     public int gravityDegree;
     public int gravityOrder;
     public AttitudeProvider attitude;
+    /** Earth orientation of the run (held at the cutoff in forecast mode); feeds the Orekit frames. */
+    public EopProvider eop = ConstantEop.ZERO;
     private final EphemerisSource previousEphemeris;
     private Path tempDir;
 
@@ -99,6 +100,35 @@ public final class Environment implements AutoCloseable {
             }
         }
         FramesFactory.setEopProvider(eop);
+        this.eop = eop;
+    }
+
+    /**
+     * The JPL DE440 file of a run: the configured one, else {@code data/ephemeris/lnxp1990.440}
+     * in the working folder or next to the program; null if none exists.
+     */
+    public static Path de440(final RunConfig cfg) {
+        if (cfg.inputs.de440File != null && !cfg.inputs.de440File.isBlank()) {
+            final Path p = Paths.get(cfg.inputs.de440File);
+            return Files.isRegularFile(p) ? p : null;
+        }
+        final List<Path> candidates = new ArrayList<>();
+        candidates.add(Paths.get("data", "ephemeris", "lnxp1990.440"));
+        try {
+            final Path jar = Paths.get(Environment.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            Path d = jar.getParent();
+            for (int i = 0; i < 3 && d != null; i++, d = d.getParent()) {
+                candidates.add(d.resolve("data").resolve("ephemeris").resolve("lnxp1990.440"));
+            }
+        } catch (final Exception ignored) {
+            // no code-source location
+        }
+        for (final Path p : candidates) {
+            if (Files.isRegularFile(p)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     private void weather(final RunConfig cfg, final AbsoluteDate cutoff) throws IOException {
@@ -139,19 +169,9 @@ public final class Environment implements AutoCloseable {
     }
 
     private void ephemeris(final RunConfig cfg) {
-        final boolean wantDe = cfg.forces.thirdBodyEphemeris == RunConfig.ThirdBodyEphemeris.DE440;
-        final String f = cfg.inputs.de440File;
-        if (wantDe && f != null && !f.isBlank()) {
-            CelestialBodyFactory.setEphemeris(new De440Ephemeris(Paths.get(f)));
-        } else {
-            CelestialBodyFactory.setEphemeris(null);
-            if (wantDe) {
-                warnings.add("DE440 selected but no DE440 file supplied; using the analytic Sun/Moon series");
-            }
-            if (cfg.forces.sun.enabled || cfg.forces.moon.enabled || cfg.forces.srp.enabled) {
-                defaultsUsed.add("Sun/Moon positions: analytic low-precision series (~0.01 deg)");
-            }
-        }
+        // the Orekit engine reads the Sun and Moon from DE440 (see OrekitSession); the program's
+        // own analytic series is only used by helper views (ground tracks, eclipses)
+        CelestialBodyFactory.setEphemeris(null);
     }
 
     private void gravity(final RunConfig cfg) throws IOException {

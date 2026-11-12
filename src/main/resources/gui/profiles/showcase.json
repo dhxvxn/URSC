@@ -21,8 +21,7 @@
   "comBodyZ": 0.009
  },
  "integrator": {
-  "absTol": 1e-10,
-  "relTol": 1e-13,
+  "positionToleranceM": 0.001,
   "maxStepSeconds": 30.0
  },
  "weather": {

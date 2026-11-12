@@ -34,12 +34,7 @@ public final class RunConfig {
 
     public enum DragModel { NRLMSISE00, JB2008, HARRIS_PRIESTER, EXPONENTIAL }
 
-    public enum ThirdBodyEphemeris { ANALYTIC, DE440 }
-
     public enum ShapeModel { CANNONBALL, BOX_WING }
-
-    /** What the batch orbit fit uses as measurements. */
-    public enum OdMethod { SPP_POSITIONS, CARRIER_PHASE }
 
     public enum AttitudeSource { NOMINAL_YAW_STEERING, MEASURED_PROQUA }
 
@@ -98,7 +93,7 @@ public final class RunConfig {
         public String eopFile = "";
         /** Optional: CSSI space-weather file (SpaceWeather-All-v1.2.txt or SW-All.csv). */
         public String spaceWeatherFile = "";
-        /** Optional: JPL DE440 binary ephemeris (lnxp1990.440). */
+        /** JPL DE440 binary ephemeris (lnxp1990.440); blank = data/ephemeris/lnxp1990.440. */
         public String de440File = "";
         /** Optional: ICGEM .gfc gravity field (else bundled EGM96). */
         public String gravityFile = "";
@@ -128,8 +123,6 @@ public final class RunConfig {
         public double maxSppRms = 30.0;
         public boolean estimateCd = false;
         public boolean estimateCr = false;
-        /** Fit SPP position fixes, or refine with undifferenced ionosphere-free code + carrier phase. */
-        public OdMethod method = OdMethod.SPP_POSITIONS;
         /** Carrier-phase estimator sampling (s); data are read at up to 10 s for cycle-slip detection. */
         public double phaseRateSeconds = 30.0;
         /** A-priori sigma of the ionosphere-free code in the carrier-phase fit (m). */
@@ -185,7 +178,6 @@ public final class RunConfig {
         public Toggle srp = new Toggle(true);
         public Toggle sun = new Toggle(true);
         public Toggle moon = new Toggle(true);
-        public ThirdBodyEphemeris thirdBodyEphemeris = ThirdBodyEphemeris.ANALYTIC;
         public Toggle solidTides = new Toggle(true);
         public Toggle oceanTides = new Toggle(true);
         public Toggle relativity = new Toggle(true);
@@ -235,9 +227,10 @@ public final class RunConfig {
         public EopAfterCutoff afterCutoff = EopAfterCutoff.PERSIST;
     }
 
+    /** Orekit Dormand-Prince 8(5,3) integrator settings. */
     public static final class Integrator {
-        public double absTol = 1e-10;
-        public double relTol = 1e-12;
+        /** Position error tolerance per step (m); Orekit derives all state tolerances from it. */
+        public double positionToleranceM = 1.0e-3;
         public double maxStepSeconds = 30.0;
         public double minStepSeconds = 1e-3;
     }

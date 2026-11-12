@@ -127,7 +127,7 @@ function draw() {
   add('OD post-fit RMS per cutoff', { x, xLabel: 'days from ' + cur.startDate, yUnit: 'm', yMin: 0, series: [
     { name: 'issued', y: d.map((r) => (r.status === 'SUCCESS' ? r.postFitRms : null)), color: '#3fbf74', points: true },
     { name: 'flagged', y: d.map((r) => ((r.flags || []).length ? r.postFitRms : null)), color: '#e0a44a', points: true }] });
-  add('SPP fixes used per cutoff', { x, xLabel: 'days from ' + cur.startDate, yMin: 0, series: [
+  add('Code + phase observations per cutoff', { x, xLabel: 'days from ' + cur.startDate, yMin: 0, series: [
     { name: 'fixes', y: d.map((r) => r.fixes ?? null), color: '#4f9cf7', points: true }] });
   if (d.some((r) => r.err1d != null || r.errCutoff != null)) {
     add('Error vs POEORB (days with a reference)', { x, xLabel: 'days from ' + cur.startDate, yUnit: 'm', yMin: 0, series: [

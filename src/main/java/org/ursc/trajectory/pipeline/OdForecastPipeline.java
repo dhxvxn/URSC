@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -11,32 +12,44 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 
-import org.ursc.trajectory.attitude.NominalYawSteering;
-import org.ursc.trajectory.estimation.BatchLeastSquares;
-import org.ursc.trajectory.estimation.CarrierPhaseOd;
-import org.ursc.trajectory.estimation.PositionObservation;
-import org.ursc.trajectory.frames.FramesFactory;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.linear.CholeskyDecomposer;
+import org.hipparchus.optim.nonlinear.vector.leastsquares.GaussNewtonOptimizer;
+import org.orekit.attitudes.AttitudeProvider;
+import org.orekit.estimation.iod.IodGibbs;
+import org.orekit.estimation.leastsquares.BatchLSEstimator;
+import org.orekit.estimation.measurements.EstimatedMeasurement;
+import org.orekit.estimation.measurements.ObservableSatellite;
+import org.orekit.estimation.measurements.ObservedMeasurement;
+import org.orekit.estimation.measurements.Position;
+import org.orekit.forces.ForceModel;
+import org.orekit.orbits.CartesianOrbit;
+import org.orekit.orbits.Orbit;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.conversion.NumericalPropagatorBuilder;
+import org.orekit.utils.ParameterDriver;
 import org.ursc.trajectory.gnss.RinexObsReader;
 import org.ursc.trajectory.gnss.SppEngine;
 import org.ursc.trajectory.gnss.SppSolution;
 import org.ursc.trajectory.gnss.products.GnssOrbitClockSource;
 import org.ursc.trajectory.gnss.products.GnssProductResolver;
 import org.ursc.trajectory.gnss.products.ProductLoader;
-import org.ursc.trajectory.math.Constants;
 import org.ursc.trajectory.math.Vector3D;
-import org.ursc.trajectory.orbits.CartesianOrbit;
-import org.ursc.trajectory.orbits.PVCoordinates;
-import org.ursc.trajectory.propagation.SampledPropagator;
-import org.ursc.trajectory.propagation.analytical.KeplerianPropagator;
-import org.ursc.trajectory.propagation.SpacecraftState;
-import org.ursc.trajectory.propagation.sampling.EphemerisCollector;
+import org.ursc.trajectory.orekit.OrekitCarrierPhaseOd;
+import org.ursc.trajectory.orekit.OrekitDates;
+import org.ursc.trajectory.orekit.OrekitDynamics;
+import org.ursc.trajectory.orekit.OrekitForecast;
+import org.ursc.trajectory.orekit.OrekitGpsProducts;
+import org.ursc.trajectory.orekit.OrekitGpsSource;
+import org.ursc.trajectory.orekit.OrekitSession;
 import org.ursc.trajectory.time.AbsoluteDate;
 
 /**
- * GNSS-driven orbit determination and forecast:
+ * GNSS orbit determination and forecast on the Orekit engine:
  * GNSSRD + GPS products (IGS Final > Rapid > Ultra-rapid > broadcast) + UTC cutoff
- * -> SPP fixes -> ITRF-to-GCRF -> covariance-weighted batch OD -> numerical forecast
- * with formal covariance. Truth (POEORB) is never read here.
+ * -> code positions (SPP) for the initial orbit (Orekit Gibbs + Orekit batch fit)
+ * -> Orekit batch least-squares on undifferenced ionosphere-free code + carrier phase
+ * -> Orekit numerical forecast with formal covariance. Truth (POEORB) is never read here.
  */
 public final class OdForecastPipeline {
 
@@ -56,7 +69,6 @@ public final class OdForecastPipeline {
                 res.status = RunResult.Status.FAILED_VALIDATION;
                 return res;
             }
-            pl.stage("Reading GNSS observations", 0.02);
             final List<Path> obsFiles = InputFiles.expand(cfg.inputs.gnssrd);
             final List<Path> prodFiles = InputFiles.expand(cfg.inputs.gpsProducts);
             hash(obsFiles, res);
@@ -68,26 +80,26 @@ public final class OdForecastPipeline {
                 res.status = RunResult.Status.FAILED_VALIDATION;
                 return res;
             }
-            final boolean phase = cfg.od.method == RunConfig.OdMethod.CARRIER_PHASE;
-            // carrier phase needs dense data for cycle-slip detection; read only the arc then
-            final ObsLoader.Loaded obs = phase
-                    ? ObsLoader.load(obsFiles, Math.min(cfg.od.samplingSeconds, 10.0),
-                            cutoff.shiftedBy(-cfg.od.arcHours * 3600.0 - 60.0), cutoff)
-                    : ObsLoader.load(obsFiles, cfg.od.samplingSeconds);
-            res.warnings.addAll(obs.problems);
-            pl.stage("Loading GPS orbit/clock products", 0.06);
-            final ProductLoader.Loaded prod = ProductLoader.load(prodFiles, Map.of());
-            res.warnings.addAll(prod.problems);
-            if (prod.sources.isEmpty()) {
-                res.errors.add("No usable GPS orbit/clock product among the supplied files "
-                        + "(need IGS SP3[+CLK] Final/Rapid/Ultra-rapid or RINEX broadcast navigation)");
-                res.status = RunResult.Status.FAILED_VALIDATION;
-                return res;
-            }
-            res.objectName = cfg.spacecraft.objectName.isBlank() ? obs.objectName : cfg.spacecraft.objectName;
-            res.objectId = cfg.spacecraft.objectId.isBlank() ? obs.objectId : cfg.spacecraft.objectId;
-            try (Environment env = Environment.setUp(cfg, cutoff)) {
-                run(cfg, cutoff, obs.epochs, prod.sources, env, pl, res, obs.antennaDelta);
+            final AbsoluteDate arcStart = cutoff.shiftedBy(-cfg.od.arcHours * 3600.0);
+            try (Environment env = Environment.setUp(cfg, cutoff);
+                 OrekitSession session = openSession(cfg, env, arcStart.shiftedBy(-86400.0),
+                         cutoff.shiftedBy(cfg.forecast.spanDays * 86400.0 + 86400.0))) {
+                pl.stage("Reading GNSS observations (Orekit RINEX parser)", 0.02);
+                final ObsLoader.Loaded obs = ObsLoader.loadWithOrekit(obsFiles, Math.min(cfg.od.samplingSeconds, 10.0),
+                        arcStart.shiftedBy(-60.0), cutoff, session);
+                res.warnings.addAll(obs.problems);
+                pl.stage("Loading GPS orbit/clock products (Orekit SP3 / clock / navigation parsers)", 0.06);
+                final ProductLoader.Loaded prod = OrekitGpsProducts.load(prodFiles, Map.of(), session);
+                res.warnings.addAll(prod.problems);
+                if (prod.sources.isEmpty()) {
+                    res.errors.add("No usable GPS orbit/clock product among the supplied files "
+                            + "(need IGS SP3[+CLK] Final/Rapid/Ultra-rapid or RINEX broadcast navigation)");
+                    res.status = RunResult.Status.FAILED_VALIDATION;
+                    return res;
+                }
+                res.objectName = cfg.spacecraft.objectName.isBlank() ? obs.objectName : cfg.spacecraft.objectName;
+                res.objectId = cfg.spacecraft.objectId.isBlank() ? obs.objectId : cfg.spacecraft.objectId;
+                run(cfg, cutoff, obs.epochs, prod.sources, env, session, pl, res, obs.antennaDelta);
             }
         } catch (final Exception e) {
             res.errors.add(e.getClass().getSimpleName() + ": " + e.getMessage());
@@ -96,6 +108,14 @@ public final class OdForecastPipeline {
             res.elapsedSeconds = (System.nanoTime() - t0) / 1e9;
         }
         return res;
+    }
+
+    /** Orekit data context of a run (EOP held at the cutoff by {@link Environment}). */
+    static OrekitSession openSession(final RunConfig cfg, final Environment env, final AbsoluteDate from,
+                                     final AbsoluteDate to) throws IOException {
+        final Path gravity = cfg.inputs.gravityFile == null || cfg.inputs.gravityFile.isBlank()
+                ? null : Paths.get(cfg.inputs.gravityFile);
+        return OrekitSession.open(env.eop, from, to, gravity, Environment.de440(cfg));
     }
 
     /** Checks the three mandatory inputs; returns the parsed cutoff or null. */
@@ -118,26 +138,24 @@ public final class OdForecastPipeline {
                 res.errors.add(e.getMessage());
             }
         }
-        if (cfg.od.arcHours <= 0 || cfg.od.samplingSeconds <= 0 || cfg.forecast.spanDays < 0
-                || cfg.forecast.outputStepSeconds <= 0) {
+        if (cfg.od.arcHours <= 0 || cfg.od.samplingSeconds <= 0 || cfg.od.phaseRateSeconds <= 0
+                || cfg.forecast.spanDays < 0 || cfg.forecast.outputStepSeconds <= 0) {
             res.errors.add("Arc length, sampling, forecast span and output step must be positive");
+        }
+        if (Environment.de440(cfg) == null) {
+            res.errors.add("The JPL DE440 ephemeris (lnxp1990.440) was not found; select it as the DE440 file "
+                    + "(it is in data/ephemeris/ of the project)");
         }
         return res.errors.isEmpty() ? cutoff : null;
     }
 
-    /** Core run on in-memory observations and sources (used directly by tests). */
-    static void run(final RunConfig cfg, final AbsoluteDate cutoff, final List<RinexObsReader.Epoch> epochs,
-                    final List<GnssOrbitClockSource> sources, final Environment env,
-                    final ProgressListener pl, final RunResult res) {
-        run(cfg, cutoff, epochs, sources, env, pl, res, null);
-    }
-
     /**
-     * Core run; {@code antennaDelta} is the GPS antenna offset from the centre of mass in the body
-     * frame (m) from the observation header, or null.
+     * Core run on in-memory observations and Orekit-backed GPS sources (used directly by tests).
+     *
+     * @param antennaDelta GPS antenna position from the observation header, body frame (m), or null
      */
     static void run(final RunConfig cfg, final AbsoluteDate cutoff, final List<RinexObsReader.Epoch> epochs,
-                    final List<GnssOrbitClockSource> sources, final Environment env,
+                    final List<GnssOrbitClockSource> sources, final Environment env, final OrekitSession session,
                     final ProgressListener pl, final RunResult res, final double[] antennaDelta) {
         res.cutoffUtc = TimeUtil.formatUtc(cutoff);
         if (res.workflow.isEmpty()) {
@@ -149,12 +167,7 @@ public final class OdForecastPipeline {
         res.label = forecastMode ? "forecast (cutoff-safe)" : "reconstruction (retrospective, not cutoff-safe)";
 
         // ---- product resolution
-        final GnssOrbitClockSource.ProductClass forced = cfg.products.tier == RunConfig.ProductTier.AUTO ? null
-                : GnssOrbitClockSource.ProductClass.valueOf(cfg.products.tier.name());
-        final GnssProductResolver resolver = new GnssProductResolver(sources,
-                forecastMode ? GnssProductResolver.Mode.FORECAST : GnssProductResolver.Mode.RECONSTRUCTION,
-                cutoff, GnssProductResolver.Eligibility.valueOf(cfg.products.eligibility.name()), forced,
-                cfg.od.minSatellites);
+        final GnssProductResolver resolver = resolver(cfg, cutoff, sources);
         res.productRejected.addAll(resolver.rejected());
         if (resolver.eligible().isEmpty()) {
             res.errors.add("No GPS product is eligible" + (forecastMode ? " for this cutoff" : ""));
@@ -162,12 +175,11 @@ public final class OdForecastPipeline {
             return;
         }
 
-        // ---- SPP over the arc
+        // ---- code positions over the arc: only to seed the orbit
         final AbsoluteDate arcStart = cutoff.shiftedBy(-cfg.od.arcHours * 3600.0);
         final List<RinexObsReader.Epoch> arc = new ArrayList<>();
         AbsoluteDate lastKept = null;
         for (final RinexObsReader.Epoch e : epochs) {
-            // SPP at the OD sampling, even when denser data were read for carrier phase
             if (!e.getDate().isBefore(arcStart) && !e.getDate().isAfter(cutoff)
                     && (lastKept == null || e.getDate().durationFrom(lastKept) >= cfg.od.samplingSeconds - 1.0e-6)) {
                 arc.add(e);
@@ -180,15 +192,177 @@ public final class OdForecastPipeline {
             res.status = RunResult.Status.FAILED_SPP;
             return;
         }
+        final List<Position> fixes = new ArrayList<>();
+        final ObservableSatellite seedSat = new ObservableSatellite(0);
+        if (!positions(cfg, arc, resolver, session, seedSat, fixes, pl, res)) {
+            return;
+        }
+        res.productUsage.putAll(resolver.usage());
+        res.productFallbacks.putAll(resolver.fallbacks());
+        pl.log("SPP: " + fixes.size() + " accepted fixes of " + arc.size() + " epochs (initial orbit only)");
+        if (fixes.size() < 6) {
+            res.errors.add("Only " + fixes.size() + " usable SPP fixes in the arc (need at least 6 to seed the orbit)");
+            res.status = RunResult.Status.FAILED_SPP;
+            return;
+        }
+
+        // ---- initial orbit: Orekit Gibbs on three fixes, then an Orekit batch fit to the fixes
+        pl.stage("Initial orbit (Orekit Gibbs + batch fit to code positions)", 0.22);
+        final double mass = cfg.spacecraft.massKg;
+        final AttitudeProvider attitude = OrekitDynamics.attitude(cfg, env, session);
+        final List<String> fw = new ArrayList<>();
+        final Orbit gibbs = gibbs(fixes, session);
+        final NumericalPropagatorBuilder seedBuilder = OrekitDynamics.builder(gibbs, mass, cfg,
+                OrekitDynamics.forces(cfg, env, session, cfg.spacecraft.cd, cfg.spacecraft.cr, fw), attitude);
+        final BatchLSEstimator seedFit = new BatchLSEstimator(
+                new GaussNewtonOptimizer(new CholeskyDecomposer(1.0e-15, 1.0e-15), true), seedBuilder);
+        for (final Position f : fixes) {
+            seedFit.addMeasurement(f);
+        }
+        seedFit.setParametersConvergenceThreshold(1.0e-3);
+        seedFit.setMaxIterations(cfg.od.maxIterations);
+        seedFit.setMaxEvaluations(4 * cfg.od.maxIterations);
+        final Orbit seedOrbit;
+        try {
+            seedOrbit = seedFit.estimate()[0].getInitialState().getOrbit();
+        } catch (final RuntimeException e) {
+            res.errors.add("Initial orbit fit to the code positions did not converge (" + e.getMessage()
+                    + "); no forecast issued");
+            res.status = RunResult.Status.FAILED_OD;
+            return;
+        }
+        final RunResult.Od od = new RunResult.Od();
+        final double seedRms = seedResiduals(seedFit, fixes, od);
+        od.sppPostFitRms = seedRms;
+        od.weighted = cfg.od.covarianceWeighting;
+        od.varianceFactor = seedVarianceFactor(seedFit, fixes);
+        od.epochUtc = TimeUtil.formatUtc(OrekitDates.fromOrekit(seedOrbit.getDate()));
+        res.flags.addAll(ManeuverCheck.assess(od, cfg.od.pseudorangeSigma));
+        for (final String f : res.flags) {
+            pl.log("WARNING: " + f);
+        }
+        pl.log(String.format(java.util.Locale.US, "Initial orbit: fit to %d code positions, RMS %.2f m",
+                fixes.size(), seedRms));
+
+        // ---- orbit determination: Orekit batch least squares on code + carrier phase
+        pl.stage("Orbit determination: Orekit batch least squares on code + carrier phase", 0.27);
+        final boolean estCd = cfg.od.estimateCd && cfg.forces.drag.enabled;
+        final boolean estCr = cfg.od.estimateCr && cfg.forces.srp.enabled;
+        final List<ForceModel> odForces = OrekitDynamics.forces(cfg, env, session, cfg.spacecraft.cd, cfg.spacecraft.cr, fw);
+        final NumericalPropagatorBuilder builder = OrekitDynamics.builder(seedOrbit, mass, cfg, odForces, attitude);
+        for (final ParameterDriver d : OrekitDynamics.coefficientDrivers(odForces, estCd, estCr)) {
+            d.setSelected(true);
+        }
+        final OrekitCarrierPhaseOd.Settings cs = new OrekitCarrierPhaseOd.Settings();
+        cs.rateSeconds = cfg.od.phaseRateSeconds;
+        cs.sigmaCode = cfg.od.codeSigma;
+        cs.sigmaPhase = cfg.od.phaseSigma;
+        cs.maxIterations = cfg.od.maxIterations;
+        if (cfg.od.antennaOffset) {
+            if (antennaDelta != null && antennaDelta.length == 3) {
+                cs.antennaBody = new org.hipparchus.geometry.euclidean.threed.Vector3D(
+                        antennaDelta[0] - cfg.spacecraft.comBodyX, antennaDelta[1] - cfg.spacecraft.comBodyY,
+                        antennaDelta[2] - cfg.spacecraft.comBodyZ);
+                od.antennaOffsetApplied = cs.antennaBody.getNorm() > 0.0;
+            } else {
+                res.warnings.add("The GNSSRD header has no ANTENNA: DELTA; the antenna offset from the centre of "
+                        + "mass is not applied");
+            }
+        }
+        final GnssProductResolver cpResolver = resolver(cfg, cutoff, sources);
+        final OrekitCarrierPhaseOd.Result cp;
+        try {
+            cp = new OrekitCarrierPhaseOd(builder, epochs, OrekitDates.fromOrekit(seedOrbit.getDate()), cutoff,
+                    (t, prns) -> {
+                        final GnssProductResolver.Selection sel = cpResolver.select(t, prns);
+                        return sel == null || !(sel.source instanceof OrekitGpsSource) ? null : (OrekitGpsSource) sel.source;
+                    }, cs, session).estimate();
+        } catch (final RuntimeException e) {
+            res.errors.add("Carrier-phase orbit determination failed (" + e.getClass().getSimpleName() + ": "
+                    + e.getMessage() + "); no forecast issued");
+            res.status = RunResult.Status.FAILED_OD;
+            res.od = od;
+            return;
+        }
+        fillOd(od, cp, seedOrbit, estCd, estCr, cfg);
+        res.od = od;
+        for (final String w : new java.util.LinkedHashSet<>(fw)) {
+            if (!res.warnings.contains(w)) {
+                res.warnings.add(w);
+            }
+        }
+        res.warnings.addAll(cp.notes);
+        pl.log(String.format(java.util.Locale.US,
+                "OD (code + carrier phase): phase RMS %.3f m, code RMS %.2f m, %d phase + %d code obs, %d arcs, "
+                        + "%d slips, %d rejected, change from initial orbit %.2f m",
+                cp.phaseRms, cp.codeRms, cp.phaseObservations, cp.codeObservations, cp.arcs,
+                cp.slipsPreprocessing + cp.slipsFromResiduals, cp.rejected, od.changeFromSpp));
+        if (cp.orbit == null || cp.phaseObservations < 100 || !(cp.phaseRms < 1.0)) {
+            od.converged = false;
+            res.errors.add(String.format(java.util.Locale.US,
+                    "Carrier-phase orbit determination is not usable (%d phase observations, phase RMS %.3f m%s); "
+                            + "no forecast issued (never replaced by a truth state)",
+                    cp.phaseObservations, cp.phaseRms, cp.notes.isEmpty() ? "" : ", " + String.join("; ", cp.notes)));
+            res.status = RunResult.Status.FAILED_OD;
+            return;
+        }
+
+        // ---- forecast from the cutoff, with formal covariance (Orekit STM)
+        pl.stage("Forecast propagation (Orekit)", 0.45);
+        final double cr = coefficient(cp, "reflection", cfg.spacecraft.cr, estCr);
+        final double cdUsed = coefficient(cp, "drag", cfg.spacecraft.cd, estCd);
+        final List<String> params = new ArrayList<>(cp.propagationParameters.keySet());
+        final double[][] p0 = cfg.forecast.covariance ? cp.covariance : null;
+        if (cfg.forecast.covariance && p0 == null) {
+            res.warnings.add("OD covariance unavailable; OEM written without covariance");
+        }
+        final SpacecraftState s0 = new SpacecraftState(cp.orbit).withMass(mass);
+        final org.orekit.time.AbsoluteDate oCut = OrekitDates.toOrekit(cutoff);
+        final org.orekit.time.AbsoluteDate oEnd = oCut.shiftedBy(cfg.forecast.spanDays * 86400.0);
+        final List<RunResult.State> states = OrekitForecast.run(s0, p0, params,
+                () -> OrekitDynamics.forces(cfg, env, session, cdUsed, cr, new ArrayList<>()), attitude, oCut, oEnd, cfg, pl);
+        res.states.addAll(states);
+        pl.stage("Done", 1.0);
+        res.status = RunResult.Status.SUCCESS;
+    }
+
+    private static double coefficient(final OrekitCarrierPhaseOd.Result cp, final String key, final double fallback,
+                                      final boolean estimated) {
+        if (!estimated) {
+            return fallback;
+        }
+        for (final Map.Entry<String, Double> e : cp.propagationParameters.entrySet()) {
+            if (e.getKey().toLowerCase(java.util.Locale.US).contains(key)) {
+                return e.getValue();
+            }
+        }
+        return fallback;
+    }
+
+    private static GnssProductResolver resolver(final RunConfig cfg, final AbsoluteDate cutoff,
+                                                final List<GnssOrbitClockSource> sources) {
+        final boolean forecastMode = cfg.products.mode == RunConfig.ProductMode.FORECAST;
+        final GnssOrbitClockSource.ProductClass forced = cfg.products.tier == RunConfig.ProductTier.AUTO ? null
+                : GnssOrbitClockSource.ProductClass.valueOf(cfg.products.tier.name());
+        return new GnssProductResolver(sources,
+                forecastMode ? GnssProductResolver.Mode.FORECAST : GnssProductResolver.Mode.RECONSTRUCTION,
+                cutoff, GnssProductResolver.Eligibility.valueOf(cfg.products.eligibility.name()), forced,
+                cfg.od.minSatellites);
+    }
+
+    /** Single-point positions (code only) on the SPP sampling grid, as Orekit Position measurements. */
+    private static boolean positions(final RunConfig cfg, final List<RinexObsReader.Epoch> arc,
+                                     final GnssProductResolver resolver, final OrekitSession session,
+                                     final ObservableSatellite sat, final List<Position> fixes,
+                                     final ProgressListener pl, final RunResult res) {
         final SppEngine engine = new SppEngine();
-        final List<PositionObservation> fixes = new ArrayList<>();
         Vector3D guess = Vector3D.ZERO;
         for (int k = 0; k < arc.size(); k++) {
             if (pl.cancelled()) {
                 res.status = RunResult.Status.CANCELLED;
-                return;
+                return false;
             }
-            pl.stage("Single point positioning", 0.08 + 0.17 * k / arc.size());
+            pl.stage("Code positions for the initial orbit", 0.08 + 0.12 * k / arc.size());
             final RinexObsReader.Epoch e = arc.get(k);
             final RunResult.SppRow row = new RunResult.SppRow();
             row.utc = TimeUtil.formatUtc(e.getDate());
@@ -246,240 +420,48 @@ public final class OdForecastPipeline {
                         sol.getPostFitRms(), cfg.od.maxSppRms);
                 continue;
             }
-            final Vector3D pG = FramesFactory.getTransform(FramesFactory.getITRF(), FramesFactory.getGCRF(),
-                    e.getDate()).transformPosition(sol.getPosition());
-            final double[][] cov = cfg.od.covarianceWeighting
-                    ? FrameUtil.covItrfToGcrf(sol.covariance(cfg.od.pseudorangeSigma), e.getDate()) : null;
-            if (cfg.od.covarianceWeighting && cov == null) {
-                row.reason = "singular geometry";
-                continue;
+            // ITRF -> GCRF with Orekit
+            final org.orekit.time.AbsoluteDate t = OrekitDates.toOrekit(e.getDate());
+            final org.orekit.frames.StaticTransform tr = session.itrf.getStaticTransformTo(session.gcrf, t);
+            final org.hipparchus.geometry.euclidean.threed.Vector3D pG =
+                    tr.transformPosition(OrekitDates.toOrekit(sol.getPosition()));
+            final Position fix;
+            if (cfg.od.covarianceWeighting) {
+                final double[][] c = sol.covariance(cfg.od.pseudorangeSigma);
+                if (c == null) {
+                    row.reason = "singular geometry";
+                    continue;
+                }
+                fix = new Position(t, pG, rotateCovariance(c, tr.getRotation()), 1.0, sat);
+            } else {
+                fix = new Position(t, pG, cfg.od.pseudorangeSigma, 1.0, sat);
             }
             row.accepted = true;
-            fixes.add(new PositionObservation(e.getDate(), pG, cov));
+            fixes.add(fix);
         }
-        res.productUsage.putAll(resolver.usage());
-        res.productFallbacks.putAll(resolver.fallbacks());
-        pl.log("SPP: " + fixes.size() + " accepted fixes of " + arc.size() + " epochs");
-        if (fixes.size() < 6) {
-            res.errors.add("Only " + fixes.size() + " usable SPP fixes in the arc (need at least 6)");
-            res.status = RunResult.Status.FAILED_SPP;
-            return;
-        }
+        return true;
+    }
 
-        // ---- batch OD
-        pl.stage("Orbit determination", 0.27);
-        final AbsoluteDate epoch0 = fixes.get(0).getDate();
-        final boolean estCd = cfg.od.estimateCd && cfg.forces.drag.enabled;
-        final boolean estCr = cfg.od.estimateCr && cfg.forces.srp.enabled;
-        final int p = 6 + (estCd ? 1 : 0) + (estCr ? 1 : 0);
-        final double[] x0 = new double[p];
-        final double[] scale = new double[p];
-        final String[] names = new String[p];
-        final Vector3D v0 = initialVelocity(fixes);
-        final Vector3D r0 = fixes.get(0).getPosition();
-        final double[] rv = {r0.getX(), r0.getY(), r0.getZ(), v0.getX(), v0.getY(), v0.getZ()};
-        final String[] rvNames = {"x", "y", "z", "vx", "vy", "vz"};
-        for (int i = 0; i < 6; i++) {
-            x0[i] = rv[i];
-            scale[i] = i < 3 ? 1.0 : 1.0e-3;
-            names[i] = rvNames[i];
-        }
-        int k = 6;
-        final int cdIdx = estCd ? k++ : -1;
-        final int crIdx = estCr ? k++ : -1;
-        if (estCd) {
-            x0[cdIdx] = cfg.spacecraft.cd;
-            scale[cdIdx] = 1.0e-2;
-            names[cdIdx] = "Cd";
-        }
-        if (estCr) {
-            x0[crIdx] = cfg.spacecraft.cr;
-            scale[crIdx] = 1.0e-2;
-            names[crIdx] = "Cr";
-        }
-        final double mass = cfg.spacecraft.massKg;
-        final BatchLeastSquares.PropagatorFactory factory = q -> ForceModelBuilder.build(
-                state(epoch0, q, mass), cdIdx >= 0 ? q[cdIdx] : cfg.spacecraft.cd,
-                crIdx >= 0 ? q[crIdx] : cfg.spacecraft.cr, cfg, env, false);
-        final BatchLeastSquares bls = new BatchLeastSquares(factory, fixes, scale);
-        final BatchLeastSquares.Result fit = cfg.forecast.covariance
-                ? bls.estimateWithCovariance(x0, cfg.od.maxIterations) : bls.estimate(x0, cfg.od.maxIterations);
-        final RunResult.Od od = new RunResult.Od();
-        od.converged = fit.converged;
-        od.iterations = fit.iterations;
-        od.observations = fixes.size();
-        od.preFitRms = fit.preFitRms;
-        od.postFitRms = fit.postFitRms;
-        od.varianceFactor = fit.varianceFactor;
-        od.weighted = fit.weighted;
-        od.epochUtc = TimeUtil.formatUtc(epoch0);
-        od.parameterNames = names;
-        od.parameters = fit.params;
-        od.covariance = fit.covariance;
-        if (fit.residuals != null) {
-            for (int i = 0; i < fixes.size(); i++) {
-                od.residualUtc.add(TimeUtil.formatUtc(fixes.get(i).getDate()));
-                od.residualNorm.add(fit.residuals[i].getNorm());
-            }
-        }
-        od.sppPostFitRms = fit.postFitRms;
-        res.od = od;
-        res.flags.addAll(ManeuverCheck.assess(od, cfg.od.pseudorangeSigma));
-        for (final String f : res.flags) {
-            pl.log("WARNING: " + f);
-        }
-        pl.log(String.format(java.util.Locale.US, "OD: converged=%s iterations=%d post-fit RMS %.2f m",
-                fit.converged, fit.iterations, fit.postFitRms));
-        if (!fit.converged) {
-            res.errors.add("Batch OD did not converge in " + cfg.od.maxIterations
-                    + " iterations; no forecast issued (never replaced by a truth state)");
-            res.status = RunResult.Status.FAILED_OD;
-            return;
-        }
-
-        // ---- optional refinement on undifferenced code + carrier phase, seeded by the SPP solution
-        double[] solParams = fit.params;
-        double[][] solCov = fit.covariance;
-        if (cfg.od.method == RunConfig.OdMethod.CARRIER_PHASE) {
-            pl.stage("Carrier-phase orbit determination", 0.30);
-            final CarrierPhaseOd.Result cp = carrierPhase(cfg, cutoff, epochs, sources, env, antennaDelta,
-                    factory, scale, epoch0, fit.params, od, res);
-            pl.log(String.format(java.util.Locale.US,
-                    "Carrier-phase OD: converged=%s phase RMS %.3f m, code RMS %.2f m, %d phase + %d code obs, "
-                            + "%d arcs, %d slips, change from SPP %.2f m",
-                    cp.converged, cp.phaseRms, cp.codeRms, cp.phaseObservations, cp.codeObservations, cp.arcs,
-                    cp.slipsPreprocessing + cp.slipsFromResiduals, od.changeFromSpp));
-            if ("CARRIER_PHASE".equals(od.method)) {
-                solParams = cp.params;
-                solCov = cp.covariance;
-            }
-        }
-
-        // ---- forecast from the cutoff, with formal covariance
-        pl.stage("Forecast propagation", 0.45);
-        final AbsoluteDate end = cutoff.shiftedBy(cfg.forecast.spanDays * 86400.0);
-        final double[] cdcr = {cdIdx >= 0 ? solParams[cdIdx] : cfg.spacecraft.cd,
-                               crIdx >= 0 ? solParams[crIdx] : cfg.spacecraft.cr};
-        final List<SpacecraftState> nominal = trajectory(solParams, cdcr, epoch0, cutoff, end, cfg, env, false);
-        double[][][] covs = null;
-        if (cfg.forecast.covariance && solCov != null) {
-            covs = propagateCovariance(solParams, scale, solCov, cdIdx, crIdx, epoch0, cutoff, end,
-                    cfg, env, pl);
-            if (covs == null) {
-                if (pl.cancelled()) {
-                    res.status = RunResult.Status.CANCELLED;
-                    return;
+    private static double[][] rotateCovariance(final double[][] c, final Rotation r) {
+        final double[][] m = r.getMatrix();   // maps ITRF components to GCRF components
+        final double[][] out = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                double v = 0.0;
+                for (int a = 0; a < 3; a++) {
+                    for (int b = 0; b < 3; b++) {
+                        v += m[i][a] * c[a][b] * m[j][b];
+                    }
                 }
-                res.warnings.add("Covariance propagation failed; OEM written without covariance");
-            }
-        } else if (cfg.forecast.covariance) {
-            res.warnings.add("OD covariance unavailable (singular normal matrix); OEM written without covariance");
-        }
-        for (int i = 0; i < nominal.size(); i++) {
-            final SpacecraftState s = nominal.get(i);
-            res.states.add(new RunResult.State(s.getDate(), s.getPosition(), s.getVelocity(),
-                    covs == null ? null : covs[i]));
-        }
-        pl.stage("Done", 1.0);
-        res.status = RunResult.Status.SUCCESS;
-    }
-
-    /**
-     * Refine the orbit on undifferenced ionosphere-free code and carrier phase. On success the
-     * result replaces the SPP-based solution in {@code od}; otherwise a warning is recorded and the
-     * SPP-based solution stands.
-     */
-    private static CarrierPhaseOd.Result carrierPhase(final RunConfig cfg, final AbsoluteDate cutoff,
-            final List<RinexObsReader.Epoch> epochs, final List<GnssOrbitClockSource> sources,
-            final Environment env, final double[] antennaDelta, final BatchLeastSquares.PropagatorFactory factory,
-            final double[] scale, final AbsoluteDate epoch0, final double[] seed, final RunResult.Od od,
-            final RunResult res) {
-        final boolean forecastMode = cfg.products.mode == RunConfig.ProductMode.FORECAST;
-        final GnssOrbitClockSource.ProductClass forced = cfg.products.tier == RunConfig.ProductTier.AUTO ? null
-                : GnssOrbitClockSource.ProductClass.valueOf(cfg.products.tier.name());
-        // a separate resolver so the SPP product-usage statistics are not double counted
-        final GnssProductResolver resolver = new GnssProductResolver(sources,
-                forecastMode ? GnssProductResolver.Mode.FORECAST : GnssProductResolver.Mode.RECONSTRUCTION,
-                cutoff, GnssProductResolver.Eligibility.valueOf(cfg.products.eligibility.name()), forced,
-                cfg.od.minSatellites);
-        final CarrierPhaseOd.Settings cs = new CarrierPhaseOd.Settings();
-        cs.rateSeconds = cfg.od.phaseRateSeconds;
-        cs.sigmaCode = cfg.od.codeSigma;
-        cs.sigmaPhase = cfg.od.phaseSigma;
-        cs.maxIterations = cfg.od.maxIterations;
-        if (cfg.od.antennaOffset) {
-            if (antennaDelta != null && antennaDelta.length == 3) {
-                cs.antennaBody = new Vector3D(antennaDelta[0] - cfg.spacecraft.comBodyX,
-                        antennaDelta[1] - cfg.spacecraft.comBodyY, antennaDelta[2] - cfg.spacecraft.comBodyZ);
-                cs.attitude = env.attitude != null ? env.attitude : new NominalYawSteering();
-                od.antennaOffsetApplied = cs.antennaBody.getNorm() > 0.0;
-            } else {
-                res.warnings.add("Carrier-phase OD: the GNSSRD header has no ANTENNA: DELTA; "
-                        + "the antenna offset from the centre of mass is not applied");
+                out[i][j] = v;
             }
         }
-        final CarrierPhaseOd.Result cp;
-        try {
-            cp = new CarrierPhaseOd(factory, scale, epochs, epoch0, cutoff, (t, prns) -> {
-                final GnssProductResolver.Selection sel = resolver.select(t, prns);
-                return sel == null ? null : sel.source;
-            }, cs).estimate(seed);
-        } catch (final RuntimeException ex) {
-            res.warnings.add("Carrier-phase OD failed (" + ex.getMessage() + "); the SPP-based orbit is used");
-            final CarrierPhaseOd.Result r = new CarrierPhaseOd.Result();
-            r.params = seed;
-            return r;
-        }
-        od.codeRms = cp.codeRms;
-        od.phaseRms = cp.phaseRms;
-        od.codeObservations = cp.codeObservations;
-        od.phaseObservations = cp.phaseObservations;
-        od.phaseArcs = cp.arcs;
-        od.cycleSlips = cp.slipsPreprocessing + cp.slipsFromResiduals;
-        od.rejectedObservations = cp.rejectedCode + cp.rejectedPhase;
-        od.changeFromSpp = Math.sqrt(sq(cp.params[0] - seed[0]) + sq(cp.params[1] - seed[1]) + sq(cp.params[2] - seed[2]));
-        final boolean ok = cp.converged && cp.phaseObservations >= 100 && cp.phaseRms < 1.0
-                && od.changeFromSpp < 200.0;
-        if (!ok) {
-            res.warnings.add(String.format(java.util.Locale.US,
-                    "Carrier-phase OD rejected (converged=%s, %d phase observations, phase RMS %.3f m, "
-                            + "change from SPP %.1f m%s); the SPP-based orbit is used",
-                    cp.converged, cp.phaseObservations, cp.phaseRms, od.changeFromSpp,
-                    cp.notes.isEmpty() ? "" : ", " + String.join("; ", cp.notes)));
-            return cp;
-        }
-        od.method = "CARRIER_PHASE";
-        od.iterations += cp.iterations;
-        od.observations = cp.codeObservations + cp.phaseObservations;
-        od.preFitRms = od.sppPostFitRms;
-        od.postFitRms = cp.phaseRms;
-        od.varianceFactor = cp.varianceFactor;
-        od.weighted = true;
-        od.parameters = cp.params;
-        od.covariance = cp.covariance;
-        for (int i = 0; i < cp.epochDates.size(); i++) {
-            od.phaseResidualUtc.add(TimeUtil.formatUtc(cp.epochDates.get(i)));
-            od.phaseResidualRms.add(cp.epochPhaseRms.get(i));
-        }
-        return cp;
+        return out;
     }
 
-    private static double sq(final double x) {
-        return x * x;
-    }
-
-    static SpacecraftState state(final AbsoluteDate epoch, final double[] q, final double mass) {
-        return new SpacecraftState(new CartesianOrbit(new PVCoordinates(new Vector3D(q[0], q[1], q[2]),
-                new Vector3D(q[3], q[4], q[5])), FramesFactory.getGCRF(), epoch, Constants.EARTH_MU), mass);
-    }
-
-    /**
-     * Initial velocity at the first fix: Gibbs initial orbit determination (exact for two-body
-     * motion) on three fixes separated by at least ~10 minutes, then Keplerian propagation
-     * back to the first fix. Falls back to a 3-point derivative for very short arcs.
-     */
-    static Vector3D initialVelocity(final List<PositionObservation> f) {
-        final AbsoluteDate t0 = f.get(0).getDate();
+    /** Orekit Gibbs initial orbit determination on three fixes about 10 minutes apart. */
+    static Orbit gibbs(final List<Position> f, final OrekitSession s) {
+        final org.orekit.time.AbsoluteDate t0 = f.get(0).getDate();
         int i1 = -1;
         int i2 = -1;
         for (int i = 1; i < f.size(); i++) {
@@ -490,100 +472,78 @@ public final class OdForecastPipeline {
                 break;
             }
         }
-        if (i1 > 0 && i2 > 0) {
-            final Vector3D r1 = f.get(0).getPosition();
-            final Vector3D r2 = f.get(i1).getPosition();
-            final Vector3D r3 = f.get(i2).getPosition();
-            final Vector3D v2 = gibbs(r1, r2, r3, Constants.EARTH_MU);
-            if (v2 != null) {
-                final SpacecraftState s2 = new SpacecraftState(new CartesianOrbit(new PVCoordinates(r2, v2),
-                        FramesFactory.getGCRF(), f.get(i1).getDate(), Constants.EARTH_MU), 1.0);
-                return new KeplerianPropagator(s2).propagate(t0).getVelocity();
-            }
+        if (i1 < 0 || i2 < 0) {
+            i1 = 1;
+            i2 = 2;
         }
-        final PositionObservation a = f.get(0);
-        final PositionObservation b = f.get(1);
-        final PositionObservation c = f.get(2);
-        final double t1 = b.getDate().durationFrom(a.getDate());
-        final double t2 = c.getDate().durationFrom(a.getDate());
-        final Vector3D d1 = b.getPosition().subtract(a.getPosition());
-        final Vector3D d2 = c.getPosition().subtract(a.getPosition());
-        return d1.scalarMultiply(t2 / (t1 * (t2 - t1))).subtract(d2.scalarMultiply(t1 / (t2 * (t2 - t1))));
+        final Orbit mid = new IodGibbs(org.orekit.utils.Constants.EIGEN5C_EARTH_MU).estimate(s.gcrf,
+                f.get(0), f.get(i1), f.get(i2));
+        // move to the first fix (Keplerian) so the estimated epoch is the start of the arc
+        return new CartesianOrbit(mid.shiftedBy(t0.durationFrom(mid.getDate())));
     }
 
-    /** Gibbs method (Vallado, Algorithm 54): velocity at {@code r2}, or null if degenerate. */
-    static Vector3D gibbs(final Vector3D r1, final Vector3D r2, final Vector3D r3, final double mu) {
-        final double m1 = r1.getNorm();
-        final double m2 = r2.getNorm();
-        final double m3 = r3.getNorm();
-        final Vector3D z12 = r1.crossProduct(r2);
-        final Vector3D z23 = r2.crossProduct(r3);
-        final Vector3D z31 = r3.crossProduct(r1);
-        final Vector3D n = z23.scalarMultiply(m1).add(z31.scalarMultiply(m2)).add(z12.scalarMultiply(m3));
-        final Vector3D d = z12.add(z23).add(z31);
-        final Vector3D s = r1.scalarMultiply(m2 - m3).add(r2.scalarMultiply(m3 - m1)).add(r3.scalarMultiply(m1 - m2));
-        final double nd = n.getNorm() * d.getNorm();
-        if (!(nd > 0)) {
-            return null;
+    /** Fill the seed-fit residual series of {@code od}; returns the 3-D RMS (m). */
+    private static double seedResiduals(final BatchLSEstimator fit, final List<Position> fixes, final RunResult.Od od) {
+        final Map<ObservedMeasurement<?>, EstimatedMeasurement<?>> est = fit.getLastEstimations();
+        double ss = 0.0;
+        for (final Position p : fixes) {
+            final double[] o = p.getObservedValue();
+            final double[] e = est.get(p).getEstimatedValue();
+            final double n = Math.sqrt(sq(o[0] - e[0]) + sq(o[1] - e[1]) + sq(o[2] - e[2]));
+            od.residualUtc.add(TimeUtil.formatUtc(OrekitDates.fromOrekit(p.getDate())));
+            od.residualNorm.add(n);
+            ss += n * n;
         }
-        final double lg = Math.sqrt(mu / nd);
-        return d.crossProduct(r2).scalarMultiply(lg / m2).add(s.scalarMultiply(lg));
+        return Math.sqrt(ss / fixes.size());
     }
 
-    /** Propagate params from epoch0 to the cutoff, then sample [cutoff, end] at the output step. */
-    static List<SpacecraftState> trajectory(final double[] params, final double[] cdcr, final AbsoluteDate epoch0,
-                                            final AbsoluteDate cutoff, final AbsoluteDate end, final RunConfig cfg,
-                                            final Environment env, final boolean simplified) {
-        final double mass = cfg.spacecraft.massKg;
-        final SpacecraftState atCutoff = ForceModelBuilder.build(state(epoch0, params, mass), cdcr[0], cdcr[1],
-                cfg, env, simplified).propagate(cutoff);
-        final SampledPropagator prop = ForceModelBuilder.build(atCutoff, cdcr[0], cdcr[1], cfg, env, simplified);
-        final EphemerisCollector col = new EphemerisCollector();
-        prop.setStepHandler(cfg.forecast.outputStepSeconds, col);
-        prop.propagate(end);
-        return new ArrayList<>(col.getStates());
+    private static double seedVarianceFactor(final BatchLSEstimator fit, final List<Position> fixes) {
+        final double rms = fit.getOptimum().getRMS();
+        return rms * rms;
     }
 
-    /**
-     * Formal covariance P(t) = Phi(t) C Phi(t)^T, with Phi (6 x p) from finite-difference
-     * propagation of each parameter (reduced force model, same perturbation sizes as the OD).
-     */
-    private static double[][][] propagateCovariance(final double[] params, final double[] scale,
-            final double[][] cov, final int cdIdx, final int crIdx, final AbsoluteDate epoch0,
-            final AbsoluteDate cutoff, final AbsoluteDate end, final RunConfig cfg, final Environment env,
-            final ProgressListener pl) {
-        final int p = params.length;
-        final double[] cdcr = {cdIdx >= 0 ? params[cdIdx] : cfg.spacecraft.cd,
-                               crIdx >= 0 ? params[crIdx] : cfg.spacecraft.cr};
-        final List<SpacecraftState> ref = trajectory(params, cdcr, epoch0, cutoff, end, cfg, env, true);
-        final int n = ref.size();
-        final double[][][] phi = new double[n][6][p];
-        for (int j = 0; j < p; j++) {
-            if (pl.cancelled()) {
-                return null;
-            }
-            pl.stage("Covariance propagation (" + (j + 1) + "/" + p + ")", 0.6 + 0.38 * j / p);
-            final double[] q = params.clone();
-            q[j] += scale[j];
-            final double[] cc = {cdIdx >= 0 ? q[cdIdx] : cfg.spacecraft.cd, crIdx >= 0 ? q[crIdx] : cfg.spacecraft.cr};
-            final List<SpacecraftState> pert = trajectory(q, cc, epoch0, cutoff, end, cfg, env, true);
-            if (pert.size() != n) {
-                return null;
-            }
-            for (int i = 0; i < n; i++) {
-                final Vector3D dr = pert.get(i).getPosition().subtract(ref.get(i).getPosition());
-                final Vector3D dv = pert.get(i).getVelocity().subtract(ref.get(i).getVelocity());
-                final double[] d = {dr.getX(), dr.getY(), dr.getZ(), dv.getX(), dv.getY(), dv.getZ()};
-                for (int a = 0; a < 6; a++) {
-                    phi[i][a][j] = d[a] / scale[j];
-                }
-            }
+    private static void fillOd(final RunResult.Od od, final OrekitCarrierPhaseOd.Result cp, final Orbit seed,
+                               final boolean estCd, final boolean estCr, final RunConfig cfg) {
+        od.method = "CARRIER_PHASE";
+        od.converged = cp.converged && cp.orbit != null;
+        od.iterations = cp.iterations;
+        od.observations = cp.codeObservations + cp.phaseObservations;
+        od.preFitRms = od.sppPostFitRms;
+        od.postFitRms = cp.phaseRms;
+        od.codeRms = cp.codeRms;
+        od.phaseRms = cp.phaseRms;
+        od.codeObservations = cp.codeObservations;
+        od.phaseObservations = cp.phaseObservations;
+        od.phaseArcs = cp.arcs;
+        od.cycleSlips = cp.slipsPreprocessing + cp.slipsFromResiduals;
+        od.rejectedObservations = cp.rejected;
+        od.varianceFactor = cp.varianceFactor;
+        od.weighted = true;
+        if (cp.orbit == null) {
+            return;
         }
-        final double[][][] out = new double[n][][];
-        for (int i = 0; i < n; i++) {
-            out[i] = FrameUtil.mul(FrameUtil.mul(phi[i], cov), FrameUtil.transpose(phi[i]));
+        od.epochUtc = TimeUtil.formatUtc(OrekitDates.fromOrekit(cp.orbit.getDate()));
+        final org.orekit.utils.PVCoordinates pv = cp.orbit.getPVCoordinates();
+        od.changeFromSpp = pv.getPosition().distance(seed.getPVCoordinates().getPosition());
+        final List<String> names = new ArrayList<>(List.of("x", "y", "z", "vx", "vy", "vz"));
+        final List<Double> values = new ArrayList<>(List.of(pv.getPosition().getX(), pv.getPosition().getY(),
+                pv.getPosition().getZ(), pv.getVelocity().getX(), pv.getVelocity().getY(), pv.getVelocity().getZ()));
+        for (final Map.Entry<String, Double> e : cp.propagationParameters.entrySet()) {
+            final String n = e.getKey().toLowerCase(java.util.Locale.US);
+            names.add(n.contains("drag") ? "Cd" : n.contains("reflection") || n.contains("radiation") ? "Cr" : e.getKey());
+            values.add(e.getValue());
         }
-        return out;
+        od.parameterNames = names.toArray(new String[0]);
+        od.parameters = values.stream().mapToDouble(Double::doubleValue).toArray();
+        od.covariance = cp.covariance;
+        for (int i = 0; i < cp.epochDates.size(); i++) {
+            od.phaseResidualUtc.add(TimeUtil.formatUtc(cp.epochDates.get(i)));
+            od.phaseResidualRms.add(cp.epochPhaseRms.get(i));
+        }
+    }
+
+    private static double sq(final double x) {
+        return x * x;
     }
 
     static void hash(final List<Path> files, final RunResult res) {

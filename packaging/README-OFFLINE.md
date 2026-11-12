@@ -59,7 +59,9 @@ Copy files from the approved media into a folder, then in **Data** either *Add* 
 *Watch* it: watched folders are indexed automatically when new files arrive and you are
 notified (runs are never started automatically). Accepted: GNSSRD RINEX observations, IGS
 SP3/CLK (Final, Rapid, Ultra-rapid; `.gz`, `.Z` or plain), RINEX broadcast navigation, POEORB
-reference orbits, PROQUA attitude, finals2000A EOP, CSSI space weather, DE440, ICGEM gravity.
+reference orbits, PROQUA attitude, finals2000A EOP, CSSI space weather, ICGEM gravity. The JPL
+DE440 ephemeris needed by the Orekit engine (Sun and Moon) is included in the bundle
+(`data/ephemeris/lnxp1990.440` next to the program); Orekit itself is inside the jar.
 Only the observations, one GPS product and the UTC cutoff are required.
 
 To try the software without real data: **Data → Create demo dataset**.
