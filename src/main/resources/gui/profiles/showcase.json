@@ -15,7 +15,10 @@
   "dragAreaM2": 8.0,
   "srpAreaM2": 8.0,
   "cd": 2.2,
-  "cr": 1.3
+  "cr": 1.3,
+  "comBodyX": 1.489,
+  "comBodyY": 0.217,
+  "comBodyZ": 0.009
  },
  "integrator": {
   "absTol": 1e-10,

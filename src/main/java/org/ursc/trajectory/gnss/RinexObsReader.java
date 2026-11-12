@@ -41,11 +41,80 @@ public final class RinexObsReader {
         private final int prn;
         private final Map<String, Integer> typeIndex;
         private final double[] values;
+        /** Loss-of-lock indicator per observation type (RINEX LLI digit), or null if none were parsed. */
+        private final int[] lli;
 
         SatRecord(final int prn, final Map<String, Integer> typeIndex, final double[] values) {
+            this(prn, typeIndex, values, null);
+        }
+
+        SatRecord(final int prn, final Map<String, Integer> typeIndex, final double[] values, final int[] lli) {
             this.prn = prn;
             this.typeIndex = typeIndex;
             this.values = values;
+            this.lli = lli;
+        }
+
+        /**
+         * @return the RINEX loss-of-lock indicator for {@code code} (bit 0 = lost lock / possible
+         *         cycle slip since the previous epoch), or 0 if absent.
+         */
+        public int lli(final String code) {
+            final Integer i = typeIndex.get(code);
+            return lli == null || i == null || i >= lli.length ? 0 : lli[i];
+        }
+
+        /** L1 carrier-phase observation code used for the combinations: L1W if present, else L1C. */
+        public String phaseL1Code() {
+            return Double.isNaN(obs("L1W")) ? "L1C" : "L1W";
+        }
+
+        /** L1 carrier phase in metres (cycles x wavelength), NaN if absent. */
+        public double phaseL1Meters() {
+            return obs(phaseL1Code()) * GpsConstants.SPEED_OF_LIGHT / GpsConstants.F_L1;
+        }
+
+        /** L2 (L2W) carrier phase in metres, NaN if absent. */
+        public double phaseL2Meters() {
+            return obs("L2W") * GpsConstants.SPEED_OF_LIGHT / GpsConstants.F_L2;
+        }
+
+        /**
+         * Ionosphere-free carrier phase in metres (same combination as the code), NaN if either
+         * frequency is missing. Contains an unknown constant (the ambiguity) per continuous arc.
+         */
+        public double ionoFreePhase() {
+            final double f1sq = GpsConstants.F_L1 * GpsConstants.F_L1;
+            final double f2sq = GpsConstants.F_L2 * GpsConstants.F_L2;
+            return (f1sq * phaseL1Meters() - f2sq * phaseL2Meters()) / (f1sq - f2sq);
+        }
+
+        /** Geometry-free phase combination L1 - L2 (m): ionosphere + constant; jumps reveal cycle slips. */
+        public double geometryFree() {
+            return phaseL1Meters() - phaseL2Meters();
+        }
+
+        /**
+         * Melbourne-Wubbena combination in wide-lane cycles: wide-lane phase minus narrow-lane code.
+         * Free of geometry, clocks and first-order ionosphere, so it is constant within an arc apart
+         * from code noise; a jump reveals a cycle slip.
+         */
+        public double melbourneWubbenaCycles() {
+            double p1 = obs("C1W");
+            if (Double.isNaN(p1)) {
+                p1 = obs("C1C");
+            }
+            final double p2 = obs("C2W");
+            final double f1 = GpsConstants.F_L1;
+            final double f2 = GpsConstants.F_L2;
+            final double wl = (f1 * phaseL1Meters() - f2 * phaseL2Meters()) / (f1 - f2);
+            final double nl = (f1 * p1 + f2 * p2) / (f1 + f2);
+            return (wl - nl) / (GpsConstants.SPEED_OF_LIGHT / (f1 - f2));
+        }
+
+        /** Loss of lock flagged on either carrier used in the combinations. */
+        public boolean lossOfLock() {
+            return (lli(phaseL1Code()) & 1) != 0 || (lli("L2W") & 1) != 0;
         }
 
         /** @return the GPS PRN (satellite number). */
@@ -108,6 +177,26 @@ public final class RinexObsReader {
             return new Epoch(date, 0.0, sats);
         }
 
+        /**
+         * Build a synthetic dual-frequency epoch (simulation and tests): each entry maps a PRN to
+         * {@code {C1W, L1W, C2W, L2W}} with codes in metres and phases in cycles, and an optional
+         * per-PRN loss-of-lock flag.
+         */
+        public static Epoch syntheticDual(final AbsoluteDate date, final java.util.Map<Integer, double[]> obs,
+                                          final java.util.Set<Integer> lossOfLock) {
+            final java.util.Map<String, Integer> idx = new java.util.LinkedHashMap<>();
+            idx.put("C1W", 0);
+            idx.put("L1W", 1);
+            idx.put("C2W", 2);
+            idx.put("L2W", 3);
+            final List<SatRecord> sats = new java.util.ArrayList<>();
+            for (final java.util.Map.Entry<Integer, double[]> e : obs.entrySet()) {
+                final int flag = lossOfLock != null && lossOfLock.contains(e.getKey()) ? 1 : 0;
+                sats.add(new SatRecord(e.getKey(), idx, e.getValue().clone(), new int[] {0, flag, 0, flag}));
+            }
+            return new Epoch(date, 0.0, sats);
+        }
+
         public AbsoluteDate getDate() {
             return date;
         }
@@ -126,10 +215,20 @@ public final class RinexObsReader {
     public static final class Data {
         private final List<String> obsTypes;
         private final List<Epoch> epochs;
+        private double[] antennaDelta;
 
         Data(final List<String> obsTypes, final List<Epoch> epochs) {
             this.obsTypes = obsTypes;
             this.epochs = epochs;
+        }
+
+        /**
+         * Antenna reference-point offset from the header ({@code ANTENNA: DELTA X/Y/Z}, or the
+         * {@code DELTA H/E/N} record that spaceborne producers such as Sentinel-3 CPOD fill with the
+         * body-frame X/Y/Z), in metres; {@code null} if the header has none.
+         */
+        public double[] getAntennaDelta() {
+            return antennaDelta == null ? null : antennaDelta.clone();
         }
 
         /** @return the GPS observation codes in file order (e.g. C1C, L1C, S1C, C1W, ...). */
@@ -186,6 +285,7 @@ public final class RinexObsReader {
                 new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 
         final List<String> gpsTypes = new ArrayList<>();
+        double[] antennaDelta = null;
         // parse header
         String line;
         while ((line = br.readLine()) != null) {
@@ -197,6 +297,15 @@ public final class RinexObsReader {
                 while (gpsTypes.size() < count) {
                     line = br.readLine();
                     parseObsTypes(line, count - gpsTypes.size(), gpsTypes);
+                }
+            } else if ("ANTENNA: DELTA X/Y/Z".equals(label) || "ANTENNA: DELTA H/E/N".equals(label)) {
+                try {
+                    antennaDelta = new double[] {
+                        Double.parseDouble(line.substring(0, 14).trim()),
+                        Double.parseDouble(line.substring(14, 28).trim()),
+                        Double.parseDouble(line.substring(28, 42).trim())};
+                } catch (final RuntimeException ignored) {
+                    antennaDelta = null;
                 }
             } else if ("END OF HEADER".equals(label)) {
                 break;
@@ -248,6 +357,7 @@ public final class RinexObsReader {
                 }
                 final int prn = Integer.parseInt(rec.substring(1, 3).trim());
                 final double[] values = new double[gpsTypes.size()];
+                final int[] lli = new int[gpsTypes.size()];
                 for (int t = 0; t < gpsTypes.size(); t++) {
                     final int start = 3 + 16 * t;
                     final int end = start + 14;
@@ -258,8 +368,12 @@ public final class RinexObsReader {
                     final String field =
                             rec.substring(start, Math.min(end, rec.length())).trim();
                     values[t] = field.isEmpty() ? Double.NaN : Double.parseDouble(field);
+                    if (end < rec.length()) {
+                        final char c = rec.charAt(end);
+                        lli[t] = c >= '0' && c <= '9' ? c - '0' : 0;
+                    }
                 }
-                sats.add(new SatRecord(prn, typeIndex, values));
+                sats.add(new SatRecord(prn, typeIndex, values, lli));
             }
             if (keep) {
                 epochs.add(new Epoch(date, rcvClock, sats));
@@ -270,7 +384,9 @@ public final class RinexObsReader {
         if (epochs.isEmpty()) {
             throw new IOException("no observation epochs parsed from RINEX stream");
         }
-        return new Data(new ArrayList<>(gpsTypes), epochs);
+        final Data data = new Data(new ArrayList<>(gpsTypes), epochs);
+        data.antennaDelta = antennaDelta;
+        return data;
     }
 
     private static void parseObsTypes(final String line, final int remaining,

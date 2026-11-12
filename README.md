@@ -133,6 +133,7 @@ back into the computation. Full detail, with pictures and a glossary, is in
 - **[docs/PRESENTATION.md](docs/PRESENTATION.md)** — a 60–120 minute speaker's script and demo guide.
 - **[docs/PROMPT_DEVELOPMENT_REPORT.md](docs/PROMPT_DEVELOPMENT_REPORT.md)** — the polished, reproducible prompt history (Codex + Claude) that built the project.
 - **[docs/GNSS-OD-demo.mp4](docs/GNSS-OD-demo.mp4)** — a 43-second demonstration video (opens in GitHub's video player), with its narration in **[docs/VIDEO-NARRATION.md](docs/VIDEO-NARRATION.md)**.
+- **[docs/CARRIER_PHASE_OD.md](docs/CARRIER_PHASE_OD.md)** — the optional carrier-phase orbit determination (code + phase, cycle slips, antenna offset) and its validation against POEORB.
 - **[docs/USAGE.md](docs/USAGE.md)** — every CLI command and flag, and the scenario `.properties` reference.
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — package map and how to add a force model / atmosphere / integrator / propagator.
 - **[docs/PHYSICS.md](docs/PHYSICS.md)** — every model with its formula, references and accuracy caveats.
@@ -158,6 +159,10 @@ numerical propagation → CCSDS OEM**, with:
   acceleration.
 - **Integrators:** Dormand-Prince 5(4) adaptive (default) and RK4; a semi-analytical DSST
   mean-element propagator for long runs.
+- **Two orbit-determination methods:** a fit to SPP position fixes (default), or a refinement on
+  undifferenced ionosphere-free **code + carrier phase** (receiver clock per epoch, float
+  ambiguity per phase arc, cycle-slip detection, attitude-based antenna offset) — see
+  [docs/CARRIER_PHASE_OD.md](docs/CARRIER_PHASE_OD.md).
 - **Formal covariance** propagated from the orbit-determination solution to the output epochs.
 - **Outputs:** CCSDS OEM 2.0 (with covariance), KML, CZML, a printable HTML report, and a log —
   every run is reproducible from its stored configuration and input checksums.
@@ -173,7 +178,7 @@ Sentinel-3A two-month campaign.
 
 ## Verification
 
-`mvn test` runs the full suite (120+ tests): loss-free orbit conversions, energy conservation,
+`mvn test` runs the full suite (120+ tests, including a closed-loop carrier-phase OD test with injected cycle slips): loss-free orbit conversions, energy conservation,
 J2 nodal regression, the time-scale/leap-second table, NRLMSISE-00 against its official reference
 case, DSST agreement, batch-OD recovery of a known state and drag coefficient, POEORB parsing,
 CCSDS OEM round-trip, and the data-catalogue content recognition. The pipeline is additionally

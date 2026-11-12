@@ -31,7 +31,13 @@ public final class OemExport {
         for (final String r : res.productRejected) {
             oem.headerComments.add("GPS product not used: " + r);
         }
-        if (res.od != null) {
+        if (res.od != null && "CARRIER_PHASE".equals(res.od.method)) {
+            oem.headerComments.add(String.format(java.util.Locale.US,
+                    "OD: undifferenced iono-free code + carrier phase, %d phase / %d code obs, %d arcs, "
+                            + "post-fit phase RMS %.3f m, code RMS %.2f m, antenna offset %s",
+                    res.od.phaseObservations, res.od.codeObservations, res.od.phaseArcs, res.od.phaseRms,
+                    res.od.codeRms, res.od.antennaOffsetApplied ? "applied" : "not applied"));
+        } else if (res.od != null) {
             oem.headerComments.add(String.format(java.util.Locale.US,
                     "OD: %d SPP fixes, %s, post-fit RMS %.3f m, %d iterations", res.od.observations,
                     res.od.weighted ? "covariance-weighted" : "unit-weighted", res.od.postFitRms, res.od.iterations));

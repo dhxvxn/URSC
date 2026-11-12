@@ -22,6 +22,8 @@ public final class ObsLoader {
         public final List<RinexObsReader.Epoch> epochs = new ArrayList<>();
         public String objectName = "";
         public String objectId = "";
+        /** GPS antenna offset from the observation header (body frame, m), or null if absent. */
+        public double[] antennaDelta;
         public final List<String> problems = new ArrayList<>();
     }
 
@@ -29,6 +31,16 @@ public final class ObsLoader {
     }
 
     public static Loaded load(final List<Path> files, final double samplingSeconds) {
+        return load(files, samplingSeconds, null, null);
+    }
+
+    /**
+     * Load and merge observation files, keeping only epochs in {@code [from, to]} (either bound
+     * may be null). Filtering per file keeps memory bounded when many days are read at a high rate.
+     */
+    public static Loaded load(final List<Path> files, final double samplingSeconds,
+                              final org.ursc.trajectory.time.AbsoluteDate from,
+                              final org.ursc.trajectory.time.AbsoluteDate to) {
         final Loaded out = new Loaded();
         final Map<Double, RinexObsReader.Epoch> byTime = new TreeMap<>();
         for (final Path f : files) {
@@ -44,7 +56,13 @@ public final class ObsLoader {
                         d = RinexObsReader.read(in, samplingSeconds);
                     }
                 }
+                if (out.antennaDelta == null) {
+                    out.antennaDelta = d.getAntennaDelta();
+                }
                 for (final RinexObsReader.Epoch e : d.getEpochs()) {
+                    if (from != null && e.getDate().isBefore(from) || to != null && e.getDate().isAfter(to)) {
+                        continue;
+                    }
                     byTime.putIfAbsent(e.getDate().durationFromJ2000(), e); // first file wins on overlap
                 }
                 if (out.objectName.isEmpty()) {

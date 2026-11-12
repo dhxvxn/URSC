@@ -38,6 +38,9 @@ public final class RunConfig {
 
     public enum ShapeModel { CANNONBALL, BOX_WING }
 
+    /** What the batch orbit fit uses as measurements. */
+    public enum OdMethod { SPP_POSITIONS, CARRIER_PHASE }
+
     public enum AttitudeSource { NOMINAL_YAW_STEERING, MEASURED_PROQUA }
 
     public enum WeatherAfterCutoff {
@@ -125,6 +128,16 @@ public final class RunConfig {
         public double maxSppRms = 30.0;
         public boolean estimateCd = false;
         public boolean estimateCr = false;
+        /** Fit SPP position fixes, or refine with undifferenced ionosphere-free code + carrier phase. */
+        public OdMethod method = OdMethod.SPP_POSITIONS;
+        /** Carrier-phase estimator sampling (s); data are read at up to 10 s for cycle-slip detection. */
+        public double phaseRateSeconds = 30.0;
+        /** A-priori sigma of the ionosphere-free code in the carrier-phase fit (m). */
+        public double codeSigma = 1.0;
+        /** A-priori sigma of the ionosphere-free carrier phase (m). */
+        public double phaseSigma = 0.01;
+        /** Apply the GPS antenna offset from the RINEX header (body frame, via the attitude). */
+        public boolean antennaOffset = true;
     }
 
     public static final class Forecast {
@@ -149,6 +162,13 @@ public final class RunConfig {
         public double srpAreaM2 = 5.0;
         public double cd = 2.2;
         public double cr = 1.3;
+        /**
+         * Centre of mass in the spacecraft body frame (m), the same frame as the GNSS header's
+         * ANTENNA: DELTA; the carrier-phase fit uses antenna = DELTA - centre of mass.
+         */
+        public double comBodyX = 0.0;
+        public double comBodyY = 0.0;
+        public double comBodyZ = 0.0;
         public AttitudeSource attitude = AttitudeSource.NOMINAL_YAW_STEERING;
         // box-wing plate areas (m^2) and solar-array cant (deg)
         public double faceAreaX = 2.0;

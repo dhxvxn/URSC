@@ -355,6 +355,85 @@
    ]
   },
   {
+   "key": "od.method",
+   "group": "Orbit determination",
+   "label": "OD measurements",
+   "type": "enum",
+   "unit": "",
+   "what": "What the orbit fit uses. SPP positions: fits the single-point position fixes (one 3-D point per epoch, metre-level noise). Carrier phase: starts from that solution and refits directly to the undifferenced ionosphere-free GPS code and carrier-phase measurements, estimating a receiver clock per epoch and a float ambiguity per continuous phase arc, with cycle-slip detection and the antenna offset.",
+   "how": "Carrier phase is far more precise (centimetre-level measurement noise instead of metres) and is the standard for precise LEO orbits; its accuracy is then limited by the GPS orbit/clock product, so pair it with IGS Final or Rapid products. It is slower (about a minute more per run). SPP positions is the fast, robust baseline.",
+   "options": [
+    [
+     "SPP_POSITIONS",
+     "SPP position fixes"
+    ],
+    [
+     "CARRIER_PHASE",
+     "Code + carrier phase"
+    ]
+   ],
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "od.phaseRateSeconds",
+   "group": "Orbit determination",
+   "label": "Carrier-phase sampling",
+   "type": "number",
+   "unit": "s",
+   "what": "Spacing of the measurements used by the carrier-phase fit. Cycle slips are still detected on 10 s data in between.",
+   "how": "30 s is standard (about 700 epochs over 6 h). 10 s adds little precision for much more computing; 60 s is faster.",
+   "min": 10,
+   "max": 300,
+   "step": 10,
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "od.codeSigma",
+   "group": "Orbit determination",
+   "label": "Code sigma (carrier-phase fit)",
+   "type": "number",
+   "unit": "m",
+   "what": "Starting one-sigma of the ionosphere-free code measurements in the carrier-phase fit. The fit re-estimates it from the post-fit residuals, so it mainly matters for the first iterations.",
+   "how": "0.5-2 m for a geodetic receiver.",
+   "min": 0.05,
+   "max": 20,
+   "step": 0.05,
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "od.phaseSigma",
+   "group": "Orbit determination",
+   "label": "Phase sigma (carrier-phase fit)",
+   "type": "number",
+   "unit": "m",
+   "what": "Starting one-sigma of the ionosphere-free carrier phase. Re-estimated from the residuals.",
+   "how": "0.005-0.02 m. The post-fit phase RMS reported after the run is typically a few centimetres with broadcast products (GPS orbit/clock errors) and below 1-2 cm with IGS Final.",
+   "min": 0.001,
+   "max": 0.5,
+   "step": 0.001,
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "od.antennaOffset",
+   "group": "Orbit determination",
+   "label": "Apply GPS antenna offset",
+   "type": "bool",
+   "unit": "",
+   "what": "Uses the antenna position relative to the centre of mass from the GNSSRD header (ANTENNA: DELTA), rotated by the attitude, in the carrier-phase fit. Without it the orbit is that of the antenna, not the centre of mass.",
+   "how": "Keep on. It shifts the orbit by up to about a metre (for Sentinel-3A, 3 m along track and 0.8 m radially).",
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
    "key": "forecast.spanDays",
    "group": "Forecast & output",
    "label": "Forecast / propagation span",
@@ -365,7 +444,12 @@
    "min": 0.01,
    "max": 60,
    "step": 0.25,
-   "presets": [7, 14, 21, 30]
+   "presets": [
+    7,
+    14,
+    21,
+    30
+   ]
   },
   {
    "key": "forecast.outputStepSeconds",
@@ -532,6 +616,51 @@
    "min": 0.5,
    "max": 2.5,
    "step": 0.05
+  },
+  {
+   "key": "spacecraft.comBodyX",
+   "group": "Spacecraft",
+   "label": "Centre of mass X",
+   "type": "number",
+   "unit": "m",
+   "what": "Centre-of-mass X coordinate in the spacecraft body frame, the frame of the GNSS antenna position in the observation header (ANTENNA: DELTA). Used only by the carrier-phase fit, which needs the antenna position relative to the centre of mass.",
+   "how": "From the mission's mass and centre-of-gravity history. Sentinel-3A: 1.489 m (launch value; it moves by millimetres as fuel is used). Keep 0 if the header already gives the offset from the centre of mass.",
+   "min": -10,
+   "max": 10,
+   "step": 0.001,
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "spacecraft.comBodyY",
+   "group": "Spacecraft",
+   "label": "Centre of mass Y",
+   "type": "number",
+   "unit": "m",
+   "what": "Centre-of-mass Y coordinate in the spacecraft body frame, the frame of the GNSS antenna position in the observation header (ANTENNA: DELTA). Used only by the carrier-phase fit, which needs the antenna position relative to the centre of mass.",
+   "how": "From the mission's mass and centre-of-gravity history. Sentinel-3A: 0.217 m (launch value; it moves by millimetres as fuel is used). Keep 0 if the header already gives the offset from the centre of mass.",
+   "min": -10,
+   "max": 10,
+   "step": 0.001,
+   "workflows": [
+    "OD_FORECAST"
+   ]
+  },
+  {
+   "key": "spacecraft.comBodyZ",
+   "group": "Spacecraft",
+   "label": "Centre of mass Z",
+   "type": "number",
+   "unit": "m",
+   "what": "Centre-of-mass Z coordinate in the spacecraft body frame, the frame of the GNSS antenna position in the observation header (ANTENNA: DELTA). Used only by the carrier-phase fit, which needs the antenna position relative to the centre of mass.",
+   "how": "From the mission's mass and centre-of-gravity history. Sentinel-3A: 0.009 m (launch value; it moves by millimetres as fuel is used). Keep 0 if the header already gives the offset from the centre of mass.",
+   "min": -10,
+   "max": 10,
+   "step": 0.001,
+   "workflows": [
+    "OD_FORECAST"
+   ]
   },
   {
    "key": "spacecraft.attitude",
