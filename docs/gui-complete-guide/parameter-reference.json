@@ -1,0 +1,1333 @@
+[
+  {
+    "key": "inputs.gnssrd",
+    "group": "Mandatory inputs",
+    "label": "GNSS observations (GNSSRD)",
+    "type": "files",
+    "unit": "",
+    "what": "The spacecraft's own GPS receiver measurements (Sentinel AUX_GNSSRD archives, .DBL or any RINEX 3 observation file). These are the measurements the orbit is determined from.",
+    "how": "Add the files or folders covering at least the fitting arc before the cutoff. Several days can be added; only epochs inside the arc are used. 'Auto-select' picks matching files from the catalog.",
+    "mandatory": true,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "kinds": [
+      "GNSS_OBSERVATIONS"
+    ],
+    "startup_default": []
+  },
+  {
+    "key": "inputs.gpsProducts",
+    "group": "Mandatory inputs",
+    "label": "GPS orbit & clock products",
+    "type": "files",
+    "unit": "",
+    "what": "Where the GPS satellites were and what their clocks read: IGS Final, Rapid or Ultra-rapid (SP3 orbits + RINEX CLK clocks) and/or broadcast navigation (RINEX nav). At least one is required.",
+    "how": "Add everything you have; the app chooses per epoch in the order Final > Rapid > Ultra-rapid > Broadcast, after excluding products not available at the cutoff (Forecast mode). Precise products give ~2-3 cm satellite orbits versus ~1 m for broadcast.",
+    "mandatory": true,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "kinds": [
+      "IGS_ORBIT_SP3",
+      "IGS_CLOCK",
+      "GPS_BROADCAST_NAV"
+    ],
+    "startup_default": []
+  },
+  {
+    "key": "cutoffUtc",
+    "group": "Mandatory inputs",
+    "label": "UTC cutoff",
+    "type": "datetime",
+    "unit": "",
+    "what": "The moment the forecast is issued. Only measurements up to the cutoff are fitted, and the forecast starts at the cutoff.",
+    "how": "Choose a time covered by your GNSSRD data. In Forecast mode nothing after this time is used (products, weather, EOP, attitude), so the result is an honest prediction.",
+    "mandatory": true,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": "2024-09-03T05:59:42"
+  },
+  {
+    "key": "workflow",
+    "group": "Mandatory inputs",
+    "label": "Workflow",
+    "type": "enum",
+    "unit": "",
+    "what": "What to run: orbit determination from GNSS measurements followed by a forecast, or a plain propagation from one known state.",
+    "how": "Use OD + Forecast for real operations. Use Propagate when you already have a state (typed, or from an OEM/POEORB) and want to study force models without fitting.",
+    "options": [
+      [
+        "OD_FORECAST",
+        "OD + Forecast"
+      ],
+      [
+        "PROPAGATE",
+        "Propagate from a state"
+      ]
+    ],
+    "startup_default": "OD_FORECAST"
+  },
+  {
+    "key": "window.startDate",
+    "group": "Test window",
+    "label": "First cutoff date",
+    "type": "date",
+    "unit": "UTC",
+    "what": "First day of a window run. A window run repeats orbit determination and a forecast once per day, each day with its own cutoff and its own input files from the catalog.",
+    "how": "The tested Sentinel-3A window starts on 2024-09-03. Press 'Run whole window' to process every day up to the last date; press '▶ Run' for the single cutoff above.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": "2024-09-03"
+  },
+  {
+    "key": "window.endDate",
+    "group": "Test window",
+    "label": "Last cutoff date",
+    "type": "date",
+    "unit": "UTC",
+    "what": "Last day of the window run (inclusive).",
+    "how": "The tested window ends on 2024-11-02 (61 daily cutoffs). Each day needs observations and a GPS product in the catalog; days without data are listed as 'no data' and skipped.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": "2024-11-02"
+  },
+  {
+    "key": "window.cutoffTimeUtc",
+    "group": "Test window",
+    "label": "Cutoff time of day",
+    "type": "text",
+    "unit": "UTC hh:mm:ss",
+    "what": "Time of day of every cutoff in the window.",
+    "how": "05:59:42 UTC is 06:00:00 GPS time in 2024 (GPS runs 18 s ahead of UTC); the tested window used it, so the six-hour arc covers GPS 00:00-06:00 of each day.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": "05:59:42"
+  },
+  {
+    "key": "window.stepDays",
+    "group": "Test window",
+    "label": "Days between cutoffs",
+    "type": "int",
+    "unit": "days",
+    "min": 1,
+    "max": 30,
+    "what": "Spacing of the cutoffs in the window run.",
+    "how": "1 = every day (the tested set). Use 7 for a quick weekly overview: about 9 runs instead of 61.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 1
+  },
+  {
+    "key": "runName",
+    "group": "Forecast & output",
+    "label": "Run name",
+    "type": "text",
+    "unit": "",
+    "what": "Free label stored with the run and shown in the history.",
+    "how": "Use something you will recognise later, e.g. 'S3A 16 Oct rapid vs broadcast'.",
+    "startup_default": "Sentinel-3A tested window"
+  },
+  {
+    "key": "products.mode",
+    "group": "GPS products & mode",
+    "label": "Product mode",
+    "type": "enum",
+    "unit": "",
+    "what": "Forecast: only GPS products (and weather/EOP/attitude) available at the cutoff are used, so the run is a true forecast. Reconstruction: the best data present is used even if it was published later; results are labelled retrospective.",
+    "how": "Use Forecast for anything presented as prediction accuracy. Use Reconstruction to see the best orbit achievable after the fact or to compare product tiers.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "options": [
+      [
+        "FORECAST",
+        "Forecast (cutoff-safe)"
+      ],
+      [
+        "RECONSTRUCTION",
+        "Reconstruction (retrospective)"
+      ]
+    ],
+    "startup_default": "FORECAST"
+  },
+  {
+    "key": "products.eligibility",
+    "group": "GPS products & mode",
+    "label": "Issue-time evidence",
+    "type": "enum",
+    "unit": "",
+    "what": "How a precise product's publication time is established for Forecast mode. Nominal latency assumes IGS's documented delays (Ultra-rapid: 3 h after its observed part ends; Rapid: 17 h after the day; Final: 18 days after). Verified requires real issue-time metadata.",
+    "how": "Nominal latency is the practical default and is reported as an assumption. Choose Verified only if your archive records when each file arrived.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "options": [
+      [
+        "NOMINAL_LATENCY",
+        "Nominal latency (assumed)"
+      ],
+      [
+        "REQUIRE_VERIFIED",
+        "Verified issue times only"
+      ]
+    ],
+    "startup_default": "NOMINAL_LATENCY"
+  },
+  {
+    "key": "products.tier",
+    "group": "GPS products & mode",
+    "label": "Force product tier",
+    "type": "enum",
+    "unit": "",
+    "what": "Automatic picks the best eligible product per epoch. Forcing a tier uses only that class, for comparisons.",
+    "how": "Leave on Automatic for operations. Force Broadcast vs Rapid etc. to measure how much precise products improve the orbit.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "options": [
+      [
+        "AUTO",
+        "Automatic (priority order)"
+      ],
+      [
+        "FINAL",
+        "IGS Final only"
+      ],
+      [
+        "RAPID",
+        "IGS Rapid only"
+      ],
+      [
+        "ULTRA_RAPID",
+        "IGS Ultra-rapid only"
+      ],
+      [
+        "BROADCAST",
+        "Broadcast only"
+      ]
+    ],
+    "startup_default": "AUTO"
+  },
+  {
+    "key": "od.arcHours",
+    "group": "Orbit determination",
+    "label": "Fitting arc",
+    "type": "number",
+    "unit": "h",
+    "what": "Length of the measurement window before the cutoff that the orbit is fitted to.",
+    "how": "4-12 h is typical for LEO. Longer arcs average out noise and constrain drag better, but a manoeuvre inside the arc spoils the fit and drag mismodelling grows with length. 6 h is a good default.",
+    "min": 0.5,
+    "max": 72,
+    "step": 0.5,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 6
+  },
+  {
+    "key": "od.samplingSeconds",
+    "group": "Orbit determination",
+    "label": "Observation sampling",
+    "type": "number",
+    "unit": "s",
+    "what": "Spacing of the GNSS epochs used for positioning and fitting.",
+    "how": "300 s is plenty for a 6 h arc and fast. 30-60 s adds more fixes (slightly less noise) at higher cost. Must divide evenly into the data rate.",
+    "min": 1,
+    "max": 3600,
+    "step": 1,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 300
+  },
+  {
+    "key": "od.pseudorangeSigma",
+    "group": "Orbit determination",
+    "label": "Pseudorange sigma",
+    "type": "number",
+    "unit": "m",
+    "what": "Assumed 1-sigma noise of the ionosphere-free code measurement; sets the weight of each fix and the size of the formal covariance.",
+    "how": "2-5 m for dual-frequency code with broadcast orbits; 1-2 m with IGS products. Too small makes the covariance optimistic; the run reports a variance factor near 1 when this is right.",
+    "min": 0.1,
+    "max": 50,
+    "step": 0.1,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 5
+  },
+  {
+    "key": "od.covarianceWeighting",
+    "group": "Orbit determination",
+    "label": "Covariance weighting",
+    "type": "bool",
+    "unit": "",
+    "what": "Weights each position fix by its geometry (PDOP) and the pseudorange sigma, instead of treating all fixes equally.",
+    "how": "Keep on: poor-geometry fixes then count less, which is both more accurate and gives a meaningful covariance.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": true
+  },
+  {
+    "key": "od.maxIterations",
+    "group": "Orbit determination",
+    "label": "Max OD iterations",
+    "type": "int",
+    "unit": "",
+    "what": "Upper limit on Gauss-Newton iterations of the batch least-squares fit. A run that has not converged issues no forecast.",
+    "how": "Convergence normally takes 3-6 iterations; 12 leaves margin. Raising it rarely helps a fit that is not converging; check the data instead.",
+    "min": 1,
+    "max": 50,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 12
+  },
+  {
+    "key": "od.minSatellites",
+    "group": "Orbit determination",
+    "label": "Min GPS satellites",
+    "type": "int",
+    "unit": "",
+    "what": "Minimum satellites a GPS product must cover at an epoch to be selected for it (4 unknowns: position and clock).",
+    "how": "Keep 4. Raising it to 5-6 rejects weak epochs at the cost of fewer fixes.",
+    "min": 4,
+    "max": 12,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 4
+  },
+  {
+    "key": "od.maxPdop",
+    "group": "Orbit determination",
+    "label": "Max PDOP",
+    "type": "number",
+    "unit": "",
+    "what": "Position dilution of precision limit; fixes with worse satellite geometry are rejected.",
+    "how": "4-6 is typical. Lower is stricter (fewer, better fixes).",
+    "min": 1,
+    "max": 50,
+    "step": 0.5,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 6
+  },
+  {
+    "key": "od.maxSppRms",
+    "group": "Orbit determination",
+    "label": "Max SPP residual RMS",
+    "type": "number",
+    "unit": "m",
+    "what": "Rejects position fixes whose pseudorange residuals are larger than this, which usually means a bad measurement or satellite.",
+    "how": "10-30 m with broadcast orbits, 5-10 m with precise products.",
+    "min": 1,
+    "max": 500,
+    "step": 1,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 30
+  },
+  {
+    "key": "od.estimateCd",
+    "group": "Orbit determination",
+    "label": "Estimate drag coefficient",
+    "type": "bool",
+    "unit": "",
+    "what": "Solve for the drag coefficient Cd together with the orbit, instead of keeping it fixed.",
+    "how": "Helps when drag dominates the error (low orbits, high solar activity) and the arc is long enough (>= 6-12 h). On short arcs it can be poorly determined and absorb noise.",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": false
+  },
+  {
+    "key": "od.estimateCr",
+    "group": "Orbit determination",
+    "label": "Estimate radiation coefficient",
+    "type": "bool",
+    "unit": "",
+    "what": "Solve for the solar radiation pressure coefficient Cr.",
+    "how": "Usually weakly observable over a few hours; leave off unless the arc spans many orbits and SRP matters (high area-to-mass).",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": false
+  },
+  {
+    "key": "forecast.spanDays",
+    "group": "Forecast & output",
+    "label": "Forecast / propagation span",
+    "type": "number",
+    "unit": "days",
+    "what": "How far ahead of the cutoff (or initial state) the orbit is predicted.",
+    "how": "7 days is the default; 14, 21 or 30 are one click away, or type any value. Errors grow with time mainly through drag; beyond a week the formal covariance and the uncertainty in solar activity dominate.",
+    "min": 0.01,
+    "max": 60,
+    "step": 0.25,
+    "presets": [
+      7,
+      14,
+      21,
+      30
+    ],
+    "startup_default": 7
+  },
+  {
+    "key": "forecast.outputStepSeconds",
+    "group": "Forecast & output",
+    "label": "Output step",
+    "type": "number",
+    "unit": "s",
+    "what": "Time between ephemeris lines in the OEM file.",
+    "how": "60 s suits visualisation and interpolation (OEM declares Lagrange order 7). Use 10-30 s for precise users, 300 s for small files.",
+    "min": 1,
+    "max": 3600,
+    "step": 1,
+    "startup_default": 60
+  },
+  {
+    "key": "forecast.frame",
+    "group": "Forecast & output",
+    "label": "OEM reference frame",
+    "type": "enum",
+    "unit": "",
+    "what": "Frame of the positions/velocities written to the OEM.",
+    "how": "EME2000 is the most widely read inertial frame. GCRF differs from it by ~23 mas (frame bias, ~1 m at LEO). ITRF is Earth-fixed, convenient for ground stations and maps.",
+    "options": [
+      [
+        "EME2000",
+        "EME2000 (inertial, J2000)"
+      ],
+      [
+        "GCRF",
+        "GCRF (inertial, ICRF-aligned)"
+      ],
+      [
+        "ITRF",
+        "ITRF (Earth-fixed)"
+      ]
+    ],
+    "startup_default": "EME2000"
+  },
+  {
+    "key": "forecast.covariance",
+    "group": "Forecast & output",
+    "label": "Write formal covariance",
+    "type": "bool",
+    "unit": "",
+    "what": "Propagates the OD uncertainty forward and writes 6x6 covariance blocks into the OEM.",
+    "how": "Costs one extra (simplified) propagation per estimated parameter. It is formal uncertainty from the measurement noise model, not a guarantee of actual error (drag and manoeuvres are not in it).",
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": false
+  },
+  {
+    "key": "forecast.covarianceEveryNSteps",
+    "group": "Forecast & output",
+    "label": "Covariance every N steps",
+    "type": "int",
+    "unit": "",
+    "what": "Write a covariance block every N ephemeris lines.",
+    "how": "60 with a 60 s step gives hourly covariance, a good balance of detail and file size.",
+    "min": 1,
+    "max": 10000,
+    "workflows": [
+      "OD_FORECAST"
+    ],
+    "startup_default": 60
+  },
+  {
+    "key": "spacecraft.objectName",
+    "group": "Spacecraft",
+    "label": "Object name",
+    "type": "text",
+    "unit": "",
+    "what": "OEM OBJECT_NAME. Blank = taken from the GNSSRD file (e.g. SENTINEL-3A).",
+    "how": "Leave blank for Sentinel files; set it for other spacecraft.",
+    "startup_default": "SENTINEL-3A"
+  },
+  {
+    "key": "spacecraft.objectId",
+    "group": "Spacecraft",
+    "label": "Object ID",
+    "type": "text",
+    "unit": "",
+    "what": "OEM OBJECT_ID, normally the COSPAR international designator.",
+    "how": "e.g. 2016-011A for Sentinel-3A. Blank = filled for known Sentinels, else UNKNOWN.",
+    "startup_default": "2016-011A"
+  },
+  {
+    "key": "spacecraft.massKg",
+    "group": "Spacecraft",
+    "label": "Mass",
+    "type": "number",
+    "unit": "kg",
+    "what": "Spacecraft mass. Drag and radiation accelerations scale with area divided by mass.",
+    "how": "Use the current mass including propellant. Only the ratios Cd*A/m and Cr*A/m matter, so an error in mass can be absorbed by estimating Cd.",
+    "min": 1,
+    "max": 100000,
+    "step": 1,
+    "startup_default": 1130
+  },
+  {
+    "key": "spacecraft.shape",
+    "group": "Spacecraft",
+    "label": "Shape model",
+    "type": "enum",
+    "unit": "",
+    "what": "Cannonball: one constant area in every direction. Box-wing: a body box plus solar array whose projected area follows the attitude.",
+    "how": "Cannonball is the generic default and is adequate when Cd is fixed or estimated. Box-wing is more physical for elongated spacecraft with large arrays and needs the plate areas.",
+    "options": [
+      [
+        "CANNONBALL",
+        "Cannonball (generic)"
+      ],
+      [
+        "BOX_WING",
+        "Box-wing (attitude-dependent)"
+      ]
+    ],
+    "startup_default": "CANNONBALL"
+  },
+  {
+    "key": "spacecraft.dragAreaM2",
+    "group": "Spacecraft",
+    "label": "Drag area",
+    "type": "number",
+    "unit": "m^2",
+    "what": "Cross-section facing the flow (cannonball model).",
+    "how": "Average projected area; with Cd 2.2 typical LEO spacecraft have A/m of 0.005-0.02 m^2/kg.",
+    "min": 0.01,
+    "max": 1000,
+    "step": 0.1,
+    "showIf": [
+      "spacecraft.shape",
+      "CANNONBALL"
+    ],
+    "startup_default": 8
+  },
+  {
+    "key": "spacecraft.srpAreaM2",
+    "group": "Spacecraft",
+    "label": "Radiation area",
+    "type": "number",
+    "unit": "m^2",
+    "what": "Area facing the Sun (cannonball model).",
+    "how": "Include the solar array, which usually dominates.",
+    "min": 0.01,
+    "max": 1000,
+    "step": 0.1,
+    "showIf": [
+      "spacecraft.shape",
+      "CANNONBALL"
+    ],
+    "startup_default": 8
+  },
+  {
+    "key": "spacecraft.cd",
+    "group": "Spacecraft",
+    "label": "Drag coefficient Cd",
+    "type": "number",
+    "unit": "",
+    "what": "How efficiently the thin upper atmosphere transfers momentum to the spacecraft.",
+    "how": "2.0-2.4 for most satellites; 2.2 is the standard assumption. Estimate it in the OD when drag dominates.",
+    "min": 0.5,
+    "max": 5,
+    "step": 0.05,
+    "startup_default": 2.2
+  },
+  {
+    "key": "spacecraft.cr",
+    "group": "Spacecraft",
+    "label": "Radiation coefficient Cr",
+    "type": "number",
+    "unit": "",
+    "what": "Fraction of sunlight momentum transferred: 1 = fully absorbed, 2 = perfect mirror.",
+    "how": "1.2-1.5 is typical.",
+    "min": 0.5,
+    "max": 2.5,
+    "step": 0.05,
+    "startup_default": 1.3
+  },
+  {
+    "key": "spacecraft.attitude",
+    "group": "Spacecraft",
+    "label": "Attitude source",
+    "type": "enum",
+    "unit": "",
+    "what": "Orientation used by the box-wing model: a nominal yaw-steering law, or measured quaternions from AUX_PROQUA files.",
+    "how": "Nominal is within ~2 deg of measured for Sentinel-3 and needs no data. Measured attitude is used only up to the cutoff in Forecast mode.",
+    "options": [
+      [
+        "NOMINAL_YAW_STEERING",
+        "Nominal yaw steering"
+      ],
+      [
+        "MEASURED_PROQUA",
+        "Measured (AUX_PROQUA)"
+      ]
+    ],
+    "showIf": [
+      "spacecraft.shape",
+      "BOX_WING"
+    ],
+    "startup_default": "NOMINAL_YAW_STEERING"
+  },
+  {
+    "key": "spacecraft.faceAreaX",
+    "group": "Spacecraft",
+    "label": "Body face X area",
+    "type": "number",
+    "unit": "m^2",
+    "what": "Plate area of the box-wing model.",
+    "how": "From the spacecraft's macro-model document (e.g. Sentinel-3 CPOD: X 2.84, Y 5.41, Z 6.10, array 10.5 m^2).",
+    "min": 0,
+    "max": 1000,
+    "step": 0.01,
+    "showIf": [
+      "spacecraft.shape",
+      "BOX_WING"
+    ],
+    "startup_default": 2
+  },
+  {
+    "key": "spacecraft.faceAreaY",
+    "group": "Spacecraft",
+    "label": "Body face Y area",
+    "type": "number",
+    "unit": "m^2",
+    "what": "Plate area of the box-wing model.",
+    "how": "From the spacecraft's macro-model document (e.g. Sentinel-3 CPOD: X 2.84, Y 5.41, Z 6.10, array 10.5 m^2).",
+    "min": 0,
+    "max": 1000,
+    "step": 0.01,
+    "showIf": [
+      "spacecraft.shape",
+      "BOX_WING"
+    ],
+    "startup_default": 2
+  },
+  {
+    "key": "spacecraft.faceAreaZ",
+    "group": "Spacecraft",
+    "label": "Body face Z area",
+    "type": "number",
+    "unit": "m^2",
+    "what": "Plate area of the box-wing model.",
+    "how": "From the spacecraft's macro-model document (e.g. Sentinel-3 CPOD: X 2.84, Y 5.41, Z 6.10, array 10.5 m^2).",
+    "min": 0,
+    "max": 1000,
+    "step": 0.01,
+    "showIf": [
+      "spacecraft.shape",
+      "BOX_WING"
+    ],
+    "startup_default": 2
+  },
+  {
+    "key": "spacecraft.wingAreaM2",
+    "group": "Spacecraft",
+    "label": "Solar array area",
+    "type": "number",
+    "unit": "m^2",
+    "what": "Plate area of the box-wing model.",
+    "how": "From the spacecraft's macro-model document (e.g. Sentinel-3 CPOD: X 2.84, Y 5.41, Z 6.10, array 10.5 m^2).",
+    "min": 0,
+    "max": 1000,
+    "step": 0.01,
+    "showIf": [
+      "spacecraft.shape",
+      "BOX_WING"
+    ],
+    "startup_default": 5
+  },
+  {
+    "key": "spacecraft.arrayCantDeg",
+    "group": "Spacecraft",
+    "label": "Array cant angle",
+    "type": "number",
+    "unit": "deg",
+    "what": "Tilt of the solar array relative to its rotation plane.",
+    "how": "Sentinel-3: 24 deg.",
+    "min": -90,
+    "max": 90,
+    "step": 0.5,
+    "showIf": [
+      "spacecraft.shape",
+      "BOX_WING"
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "forces.gravity.enabled",
+    "group": "Perturbations",
+    "label": "Earth gravity field",
+    "type": "bool",
+    "unit": "",
+    "what": "Earth's non-spherical gravity (spherical harmonics). Off = central point mass only (two-body).",
+    "how": "Always on for real work; switch off only to see how much the field matters.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.gravity.degree",
+    "group": "Perturbations",
+    "label": "Gravity degree",
+    "type": "int",
+    "unit": "",
+    "what": "Highest spherical-harmonic degree used.",
+    "how": "Effect saturates near degree 70-80 at 800 km. 20-40 is faster with small loss; bundled EGM96 stops at 70 (add an ICGEM file for more).",
+    "min": 2,
+    "max": 360,
+    "showIf": [
+      "forces.gravity.enabled",
+      true
+    ],
+    "startup_default": 70
+  },
+  {
+    "key": "forces.gravity.order",
+    "group": "Perturbations",
+    "label": "Gravity order",
+    "type": "int",
+    "unit": "",
+    "what": "Highest order used (<= degree).",
+    "how": "Normally equal to the degree. Order 0 keeps only the zonal terms (J2, J3...).",
+    "min": 0,
+    "max": 360,
+    "showIf": [
+      "forces.gravity.enabled",
+      true
+    ],
+    "startup_default": 70
+  },
+  {
+    "key": "forces.drag.enabled",
+    "group": "Perturbations",
+    "label": "Atmospheric drag",
+    "type": "bool",
+    "unit": "",
+    "what": "Drag from the thin upper atmosphere; the dominant uncertainty for LEO prediction.",
+    "how": "Always on below ~1000 km.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.dragModel",
+    "group": "Perturbations",
+    "label": "Density model",
+    "type": "enum",
+    "unit": "",
+    "what": "Thermosphere density model used for drag.",
+    "how": "NRLMSISE-00 (default) was the most accurate at 1 day in the Sentinel-3A study. JB2008 responds better to geomagnetic storms (uses its bundled solar indices). Harris-Priester and exponential are fast, crude models for quick looks.",
+    "options": [
+      [
+        "NRLMSISE00",
+        "NRLMSISE-00"
+      ],
+      [
+        "JB2008",
+        "JB2008"
+      ],
+      [
+        "HARRIS_PRIESTER",
+        "Harris-Priester"
+      ],
+      [
+        "EXPONENTIAL",
+        "Exponential"
+      ]
+    ],
+    "showIf": [
+      "forces.drag.enabled",
+      true
+    ],
+    "startup_default": "NRLMSISE00"
+  },
+  {
+    "key": "forces.srp.enabled",
+    "group": "Perturbations",
+    "label": "Solar radiation pressure",
+    "type": "bool",
+    "unit": "",
+    "what": "Push of sunlight, with Earth shadow (umbra/penumbra).",
+    "how": "On for all real work; metre-level over a day.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.sun.enabled",
+    "group": "Perturbations",
+    "label": "Sun gravity",
+    "type": "bool",
+    "unit": "",
+    "what": "Third-body attraction of the Sun.",
+    "how": "Keep on; tens of metres over a day.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.moon.enabled",
+    "group": "Perturbations",
+    "label": "Moon gravity",
+    "type": "bool",
+    "unit": "",
+    "what": "Third-body attraction of the Moon.",
+    "how": "Keep on; tens of metres over a day.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.thirdBodyEphemeris",
+    "group": "Perturbations",
+    "label": "Sun/Moon ephemeris",
+    "type": "enum",
+    "unit": "",
+    "what": "Source of Sun and Moon positions for third-body forces, radiation pressure and the density model.",
+    "how": "Analytic (~0.01 deg) is the generic default. DE440 (add lnxp1990.440) is exact and slightly improves short-arc accuracy.",
+    "options": [
+      [
+        "ANALYTIC",
+        "Analytic series"
+      ],
+      [
+        "DE440",
+        "JPL DE440 file"
+      ]
+    ],
+    "startup_default": "ANALYTIC"
+  },
+  {
+    "key": "forces.solidTides.enabled",
+    "group": "Perturbations",
+    "label": "Solid Earth tides",
+    "type": "bool",
+    "unit": "",
+    "what": "Gravity change from the Earth's body tides.",
+    "how": "Small (decimetres/day); keep on for precise work.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.oceanTides.enabled",
+    "group": "Perturbations",
+    "label": "Ocean tides",
+    "type": "bool",
+    "unit": "",
+    "what": "Gravity change from ocean tides (FES2004, bundled).",
+    "how": "Small (centimetres-decimetres/day).",
+    "startup_default": true
+  },
+  {
+    "key": "forces.relativity.enabled",
+    "group": "Perturbations",
+    "label": "General relativity",
+    "type": "bool",
+    "unit": "",
+    "what": "Schwarzschild correction to Earth's gravity.",
+    "how": "Centimetre-level; keep on for precise work.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.lenseThirring",
+    "group": "Perturbations",
+    "label": "Lense-Thirring",
+    "type": "bool",
+    "unit": "",
+    "what": "Frame-dragging relativistic term.",
+    "how": "Millimetre-level; harmless to keep on.",
+    "showIf": [
+      "forces.relativity.enabled",
+      true
+    ],
+    "startup_default": true
+  },
+  {
+    "key": "forces.albedo.enabled",
+    "group": "Perturbations",
+    "label": "Earth albedo & infrared",
+    "type": "bool",
+    "unit": "",
+    "what": "Radiation pressure from sunlight reflected by Earth and its thermal emission.",
+    "how": "Decimetre-level for LEO; keep on.",
+    "startup_default": true
+  },
+  {
+    "key": "forces.empirical.enabled",
+    "group": "Perturbations",
+    "label": "Empirical acceleration",
+    "type": "bool",
+    "unit": "",
+    "what": "Constant extra acceleration in radial/transverse/normal axes, for experiments.",
+    "how": "Leave off unless testing the sensitivity to unmodelled forces.",
+    "startup_default": false
+  },
+  {
+    "key": "forces.empirical.radial",
+    "group": "Perturbations",
+    "label": "Empirical radial",
+    "type": "number",
+    "unit": "m/s^2",
+    "what": "Constant radial acceleration.",
+    "how": "1e-8 m/s^2 shifts a LEO orbit by metres per day.",
+    "step": 1e-09,
+    "showIf": [
+      "forces.empirical.enabled",
+      true
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "forces.empirical.transverse",
+    "group": "Perturbations",
+    "label": "Empirical transverse",
+    "type": "number",
+    "unit": "m/s^2",
+    "what": "Constant transverse acceleration.",
+    "how": "1e-8 m/s^2 shifts a LEO orbit by metres per day.",
+    "step": 1e-09,
+    "showIf": [
+      "forces.empirical.enabled",
+      true
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "forces.empirical.normal",
+    "group": "Perturbations",
+    "label": "Empirical normal",
+    "type": "number",
+    "unit": "m/s^2",
+    "what": "Constant normal acceleration.",
+    "how": "1e-8 m/s^2 shifts a LEO orbit by metres per day.",
+    "step": 1e-09,
+    "showIf": [
+      "forces.empirical.enabled",
+      true
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "inputs.poeorb",
+    "group": "Optional data & environment",
+    "label": "POEORB reference orbits",
+    "type": "files",
+    "unit": "",
+    "what": "Precise orbit products used only for display and comparison (overlay on the globe, error plot). Never used to compute a run.",
+    "how": "Add them to see how far the forecast is from the precise orbit.",
+    "kinds": [
+      "POEORB"
+    ],
+    "startup_default": []
+  },
+  {
+    "key": "inputs.proqua",
+    "group": "Optional data & environment",
+    "label": "Measured attitude (PROQUA)",
+    "type": "files",
+    "unit": "",
+    "what": "AUX_PROQUA quaternion files for the box-wing model.",
+    "how": "Only used when Shape = Box-wing and Attitude = Measured.",
+    "kinds": [
+      "ATTITUDE_PROQUA"
+    ],
+    "startup_default": []
+  },
+  {
+    "key": "inputs.eopFile",
+    "group": "Optional data & environment",
+    "label": "Earth orientation file",
+    "type": "file",
+    "unit": "",
+    "what": "IERS finals2000A or EOP C04 file (polar motion and UT1-UTC).",
+    "how": "Strongly recommended: without it UT1-UTC and polar motion are taken as zero, which costs metres to tens of metres in the Earth-fixed frame.",
+    "kinds": [
+      "EOP"
+    ],
+    "startup_default": ""
+  },
+  {
+    "key": "inputs.spaceWeatherFile",
+    "group": "Optional data & environment",
+    "label": "Space weather file",
+    "type": "file",
+    "unit": "",
+    "what": "CSSI file with solar flux F10.7 and geomagnetic Ap history.",
+    "how": "Recommended for NRLMSISE-00. Without it the constant values below are used.",
+    "kinds": [
+      "SPACE_WEATHER"
+    ],
+    "startup_default": ""
+  },
+  {
+    "key": "inputs.de440File",
+    "group": "Optional data & environment",
+    "label": "JPL DE440 file",
+    "type": "file",
+    "unit": "",
+    "what": "Planetary ephemeris for exact Sun/Moon positions.",
+    "how": "Needed only when Sun/Moon ephemeris = DE440.",
+    "kinds": [
+      "DE_EPHEMERIS"
+    ],
+    "startup_default": ""
+  },
+  {
+    "key": "inputs.gravityFile",
+    "group": "Optional data & environment",
+    "label": "Gravity field file",
+    "type": "file",
+    "unit": "",
+    "what": "ICGEM .gfc gravity model (e.g. EIGEN-6S, EGM2008).",
+    "how": "Optional; the bundled EGM96 (to degree 70) is the default.",
+    "kinds": [
+      "GRAVITY_FIELD"
+    ],
+    "startup_default": ""
+  },
+  {
+    "key": "weather.f107",
+    "group": "Optional data & environment",
+    "label": "F10.7 (constant)",
+    "type": "number",
+    "unit": "sfu",
+    "what": "Daily solar radio flux at 10.7 cm, a proxy for the Sun's heating of the thermosphere. Used when no weather file is given.",
+    "how": "Solar minimum ~70, moderate ~150, maximum 200-250.",
+    "min": 50,
+    "max": 400,
+    "step": 1,
+    "startup_default": 150
+  },
+  {
+    "key": "weather.f107a",
+    "group": "Optional data & environment",
+    "label": "F10.7 81-day mean (constant)",
+    "type": "number",
+    "unit": "sfu",
+    "what": "Centred 81-day average of F10.7.",
+    "how": "Usually close to the daily value outside flares.",
+    "min": 50,
+    "max": 400,
+    "step": 1,
+    "startup_default": 150
+  },
+  {
+    "key": "weather.ap",
+    "group": "Optional data & environment",
+    "label": "Ap (constant)",
+    "type": "number",
+    "unit": "",
+    "what": "Daily geomagnetic index; storms heat and expand the atmosphere.",
+    "how": "Quiet ~5, unsettled ~15, storm 50-400.",
+    "min": 0,
+    "max": 400,
+    "step": 1,
+    "startup_default": 15
+  },
+  {
+    "key": "weather.afterCutoff",
+    "group": "Optional data & environment",
+    "label": "Weather after cutoff",
+    "type": "enum",
+    "unit": "",
+    "what": "How solar and geomagnetic drivers are treated after the cutoff when a weather file is present.",
+    "how": "Persist (cutoff-safe) holds F10.7 at its cutoff value and uses the forecast Ap below. 'Use file' reads actual later values: retrospective only.",
+    "options": [
+      [
+        "PERSIST",
+        "Persist (cutoff-safe)"
+      ],
+      [
+        "USE_FILE",
+        "Use file (retrospective)"
+      ]
+    ],
+    "startup_default": "PERSIST"
+  },
+  {
+    "key": "weather.forecastAp",
+    "group": "Optional data & environment",
+    "label": "Forecast Ap",
+    "type": "number",
+    "unit": "",
+    "what": "Geomagnetic level assumed after the cutoff (storms cannot be forecast days ahead).",
+    "how": "5-15 for a nominal forecast; try 50+ for a stressed scenario.",
+    "min": 0,
+    "max": 400,
+    "step": 1,
+    "startup_default": 5
+  },
+  {
+    "key": "eop.afterCutoff",
+    "group": "Optional data & environment",
+    "label": "EOP after cutoff",
+    "type": "enum",
+    "unit": "",
+    "what": "Earth orientation after the cutoff.",
+    "how": "Persist holds the cutoff values (cutoff-safe); 'Use file' reads later values (retrospective).",
+    "options": [
+      [
+        "PERSIST",
+        "Persist (cutoff-safe)"
+      ],
+      [
+        "USE_FILE",
+        "Use file (retrospective)"
+      ]
+    ],
+    "startup_default": "PERSIST"
+  },
+  {
+    "key": "integrator.absTol",
+    "group": "Integrator",
+    "label": "Absolute tolerance",
+    "type": "number",
+    "unit": "m",
+    "what": "Dormand-Prince 5(4) per-step position error target.",
+    "how": "1e-10 (default) is converged for metre-level work; 1e-8 runs faster with millimetre-level loss.",
+    "step": 1e-12,
+    "startup_default": 1e-10
+  },
+  {
+    "key": "integrator.relTol",
+    "group": "Integrator",
+    "label": "Relative tolerance",
+    "type": "number",
+    "unit": "",
+    "what": "Per-step relative error target.",
+    "how": "1e-12 default; 1e-10 for speed.",
+    "step": 1e-13,
+    "startup_default": 1e-13
+  },
+  {
+    "key": "integrator.maxStepSeconds",
+    "group": "Integrator",
+    "label": "Max step",
+    "type": "number",
+    "unit": "s",
+    "what": "Largest allowed integration step.",
+    "how": "30 s default keeps drag and eclipse transitions well resolved; 60-120 s is faster.",
+    "min": 1,
+    "max": 600,
+    "step": 1,
+    "startup_default": 30
+  },
+  {
+    "key": "integrator.minStepSeconds",
+    "group": "Integrator",
+    "label": "Min step",
+    "type": "number",
+    "unit": "s",
+    "what": "Smallest allowed step.",
+    "how": "Leave at 1e-3 s.",
+    "min": 1e-06,
+    "max": 10,
+    "step": 0.001,
+    "startup_default": 0.001
+  },
+  {
+    "key": "initialState.source",
+    "group": "Initial state",
+    "label": "State source",
+    "type": "enum",
+    "unit": "",
+    "what": "Where the starting state comes from.",
+    "how": "Typed: enter it. OEM/POEORB: pick a file; the state nearest the epoch below (or the first) is used.",
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "options": [
+      [
+        "TYPED",
+        "Typed"
+      ],
+      [
+        "OEM_FILE",
+        "From an OEM file"
+      ],
+      [
+        "POEORB_FILE",
+        "From a POEORB file"
+      ]
+    ],
+    "startup_default": "TYPED"
+  },
+  {
+    "key": "initialState.file",
+    "group": "Initial state",
+    "label": "State file",
+    "type": "file",
+    "unit": "",
+    "what": "OEM or POEORB file holding the initial state.",
+    "how": "Pick from the catalog or browse.",
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "kinds": [
+      "OEM",
+      "POEORB"
+    ],
+    "showIf": [
+      "initialState.source",
+      "!TYPED"
+    ],
+    "startup_default": ""
+  },
+  {
+    "key": "initialState.epochUtc",
+    "group": "Initial state",
+    "label": "Epoch (UTC)",
+    "type": "datetime",
+    "unit": "",
+    "what": "Epoch of the typed state, or the epoch to pick from a file.",
+    "how": "For files, blank = first state.",
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "startup_default": ""
+  },
+  {
+    "key": "initialState.frame",
+    "group": "Initial state",
+    "label": "Frame of typed state",
+    "type": "enum",
+    "unit": "",
+    "what": "Reference frame of the typed position/velocity.",
+    "how": "ITRF for states from POEORB/GNSS, EME2000/GCRF for inertial states.",
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "options": [
+      [
+        "ITRF",
+        "ITRF"
+      ],
+      [
+        "GCRF",
+        "GCRF"
+      ],
+      [
+        "EME2000",
+        "EME2000"
+      ]
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": "ITRF"
+  },
+  {
+    "key": "initialState.x",
+    "group": "Initial state",
+    "label": "Position X",
+    "type": "number",
+    "unit": "m",
+    "what": "Initial position component.",
+    "how": "Metres in the frame above.",
+    "step": 0.001,
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "initialState.y",
+    "group": "Initial state",
+    "label": "Position Y",
+    "type": "number",
+    "unit": "m",
+    "what": "Initial position component.",
+    "how": "Metres in the frame above.",
+    "step": 0.001,
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "initialState.z",
+    "group": "Initial state",
+    "label": "Position Z",
+    "type": "number",
+    "unit": "m",
+    "what": "Initial position component.",
+    "how": "Metres in the frame above.",
+    "step": 0.001,
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "initialState.vx",
+    "group": "Initial state",
+    "label": "Velocity X",
+    "type": "number",
+    "unit": "m/s",
+    "what": "Initial velocity component.",
+    "how": "Metres per second in the frame above.",
+    "step": 1e-06,
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "initialState.vy",
+    "group": "Initial state",
+    "label": "Velocity Y",
+    "type": "number",
+    "unit": "m/s",
+    "what": "Initial velocity component.",
+    "how": "Metres per second in the frame above.",
+    "step": 1e-06,
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": 0
+  },
+  {
+    "key": "initialState.vz",
+    "group": "Initial state",
+    "label": "Velocity Z",
+    "type": "number",
+    "unit": "m/s",
+    "what": "Initial velocity component.",
+    "how": "Metres per second in the frame above.",
+    "step": 1e-06,
+    "workflows": [
+      "PROPAGATE"
+    ],
+    "showIf": [
+      "initialState.source",
+      "TYPED"
+    ],
+    "startup_default": 0
+  }
+]

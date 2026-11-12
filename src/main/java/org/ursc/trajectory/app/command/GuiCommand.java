@@ -31,7 +31,9 @@ public final class GuiCommand implements Command {
         final GuiServer server = new GuiServer(port, workspace);
         server.start();
         final List<String> data = new ArrayList<>();
-        if (args.has("data")) {
+        if (args.has("presentation")) {
+            System.out.println("Presentation mode: bundled saved results; input indexing skipped. No computation is started.");
+        } else if (args.has("data")) {
             for (final String f : args.get("data", "").split("[;,]")) {
                 if (!f.isBlank()) {
                     data.add(Paths.get(f.trim()).toAbsolutePath().toString());

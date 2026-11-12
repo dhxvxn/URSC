@@ -1,0 +1,1198 @@
+[
+  {
+    "id": "C001",
+    "section": "Global navigation",
+    "name": "Tab buttons",
+    "kind": "Navigation",
+    "explanation": "Select Saved presentation, Data, Run, Results, Window, History or Help. Changing tabs does not start an orbit computation.",
+    "options": [
+      "Saved presentation",
+      "Data",
+      "Run",
+      "Results",
+      "Window",
+      "History",
+      "Help"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C002",
+    "section": "Global navigation",
+    "name": "Quick search",
+    "kind": "Search field + Enter",
+    "explanation": "Type a help question and press Enter. Opens Help and searches the local documentation. It does not change run settings.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C003",
+    "section": "Global navigation",
+    "name": "Job indicator",
+    "kind": "Progress display",
+    "explanation": "Shows active job stage and fractional completion when a new run is executing.",
+    "options": [],
+    "condition": "An active job has emitted progress"
+  },
+  {
+    "id": "C004",
+    "section": "Global navigation",
+    "name": "Guide",
+    "kind": "Link",
+    "explanation": "Opens the separate interactive feature guide in a new browser tab. Its older walkthrough images/text can differ from the current app; this manual uses current controls.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C005",
+    "section": "Global navigation",
+    "name": "Theme (◐)",
+    "kind": "Button",
+    "explanation": "Switch between light and dark themes. Saved in browser local storage; does not change scientific results.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C006",
+    "section": "Global navigation",
+    "name": "Quit (⏻)",
+    "kind": "Button + confirmation",
+    "explanation": "Stops the local Java server and cancels active jobs. Confirm to stop, cancel to keep presenting. The browser page then reports shutdown.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C007",
+    "section": "Saved presentation",
+    "name": "Experiment",
+    "kind": "Dropdown",
+    "explanation": "Select a stored campaign profile; filters the archived table without running anything.",
+    "options": [
+      "Improved Broadcast — nominal",
+      "Original four-product comparison",
+      "Retrospective — original candidate maneuvers",
+      "Retrospective — corrected candidate maneuvers"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C008",
+    "section": "Saved presentation",
+    "name": "Product tier",
+    "kind": "Dropdown",
+    "explanation": "Restrict the selected archived profile by GPS product tier. A filter with no cases gives an empty-state message.",
+    "options": [
+      "all",
+      "broadcast",
+      "ultra-rapid",
+      "rapid",
+      "final"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C009",
+    "section": "Saved presentation",
+    "name": "Download all OEMs",
+    "kind": "Download link",
+    "explanation": "Downloads the complete archived OEM ZIP, including all experiment profiles and accompanying interpretation notes.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C010",
+    "section": "Saved presentation",
+    "name": "Output explanation PDF",
+    "kind": "Download link",
+    "explanation": "Downloads the report explaining the OEM fields, units, coverage and limitations.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C011",
+    "section": "Saved presentation",
+    "name": "Complete coverage CSV",
+    "kind": "Download link",
+    "explanation": "Downloads all 427 attempted cases, including unissued results.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C012",
+    "section": "Saved presentation",
+    "name": "View",
+    "kind": "Per-row button",
+    "explanation": "Opens saved details for the selected case. The first matching case is selected automatically after filtering.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C013",
+    "section": "Saved presentation",
+    "name": "Download this OEM",
+    "kind": "Button",
+    "explanation": "Downloads exactly the selected archived ephemeris. It does not recompute or select a better result.",
+    "options": [],
+    "condition": "Selected case has an issued OEM"
+  },
+  {
+    "id": "C014",
+    "section": "Saved presentation",
+    "name": "Saved inputs, fit and environment metadata",
+    "kind": "Disclosure",
+    "explanation": "Expand to inspect input basenames, saved fit settings, environment assumptions and the source CSV SHA-256. These are provenance records, not editable live settings.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C015",
+    "section": "Saved presentation",
+    "name": "Archived summary and state table",
+    "kind": "Read-only displays",
+    "explanation": "Attempt/issued/rejected counts, status, day-one/day-seven scored errors, interval and eight UTC state samples. Display values are rounded; the OEM retains stored precision. Not scored is not zero error. Daily samples must not be interpolated into a dense orbit track.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C016",
+    "section": "Data",
+    "name": "+ Add files / folders",
+    "kind": "Button → multi-picker",
+    "explanation": "Choose existing files or directories on the machine running the Java server. Directories are expanded and recognized files are catalogued by content. Does not move or delete the originals.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C017",
+    "section": "Data",
+    "name": "Watch folder",
+    "kind": "Button → folder picker",
+    "explanation": "Register a directory for automatic discovery of new or changed files. This is input indexing, not orbit processing.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C018",
+    "section": "Data",
+    "name": "Rescan",
+    "kind": "Button",
+    "explanation": "Re-read known files and update changed metadata/checksums. Does not run OD or propagation.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C019",
+    "section": "Data",
+    "name": "Create demo dataset",
+    "kind": "Button → folder picker",
+    "explanation": "Writes SIMULATED observations, navigation, precise products and a reference orbit to the selected directory. This does computation and writes files. The demo is not real Sentinel-3A data.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C020",
+    "section": "Data",
+    "name": "Watched-folder ×",
+    "kind": "Per-folder button",
+    "explanation": "Stop watching that folder; does not delete files.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C021",
+    "section": "Data",
+    "name": "Kind filter",
+    "kind": "Dropdown",
+    "explanation": "Filter catalog rows by recognized type; Coverage canvas and total count still describe the catalog.",
+    "options": [
+      "All kinds",
+      "GNSS observations (GNSSRD / RINEX obs)",
+      "GPS broadcast navigation",
+      "IGS precise orbit (SP3)",
+      "IGS precise clock (RINEX CLK)",
+      "Precise orbit ephemeris (POEORB, reference only)",
+      "Measured attitude (AUX_PROQUA)",
+      "Earth orientation parameters",
+      "Space weather (CSSI)",
+      "JPL planetary ephemeris (DE4xx)",
+      "Gravity field (ICGEM .gfc)",
+      "CCSDS orbit ephemeris message (OEM)",
+      "Unrecognised"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C022",
+    "section": "Data",
+    "name": "Filter by name",
+    "kind": "Search input",
+    "explanation": "Case-insensitive substring filter on file names. Combines with Kind filter; does not search file contents.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C023",
+    "section": "Data",
+    "name": "Catalog row hover",
+    "kind": "Tooltip",
+    "explanation": "Hover Name to see the full path and SHA-256. Columns are Kind, Name, Sat, Class, UTC coverage, Size, Note and Forget.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C024",
+    "section": "Data",
+    "name": "Forget ×",
+    "kind": "Per-file button",
+    "explanation": "Remove that catalog entry only. The original file is not deleted; watching/rescanning may rediscover it.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C025",
+    "section": "Data",
+    "name": "Coverage canvas",
+    "kind": "Display",
+    "explanation": "Colored intervals group files by recognized kind and show their validity dates. It shows availability, not forecast accuracy or issue-time eligibility.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C026",
+    "section": "Shared file picker",
+    "name": "Root / Home",
+    "kind": "Dropdown",
+    "explanation": "Navigate the filesystem roots returned by the local server or its Home directory. Options vary by OS: Windows drives or Linux root, plus Home.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C027",
+    "section": "Shared file picker",
+    "name": "Path",
+    "kind": "Text input + Enter",
+    "explanation": "Type a directory path on the server machine; press Enter or Go to navigate. Browser download paths and server filesystem paths are distinct.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C028",
+    "section": "Shared file picker",
+    "name": "Go",
+    "kind": "Button",
+    "explanation": "Navigate to the typed Path.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C029",
+    "section": "Shared file picker",
+    "name": "Parent (⬑ ..) and folder names",
+    "kind": "Navigation rows",
+    "explanation": "Click a parent/folder name to navigate inside it; this does not itself select the directory.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C030",
+    "section": "Shared file picker",
+    "name": "Selection checkbox / radio",
+    "kind": "Selection input",
+    "explanation": "Multi mode allows any files/folders and multiple selections. Single-file mode allows one file; folder mode allows one folder. Selection can be preserved across navigation in multi mode.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C031",
+    "section": "Shared file picker",
+    "name": "Select",
+    "kind": "Button",
+    "explanation": "Return the checked/radio-selected path(s) to the calling input or catalog action. An empty selection returns no paths.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C032",
+    "section": "Shared file picker",
+    "name": "Use this folder",
+    "kind": "Button",
+    "explanation": "Choose the directory currently being browsed, even if its radio item is not checked.",
+    "options": [],
+    "condition": "Folder picker mode"
+  },
+  {
+    "id": "C033",
+    "section": "Shared file picker",
+    "name": "Cancel / Escape / background click",
+    "kind": "Close action",
+    "explanation": "Dismiss without applying a selection. Shared custom dialogs support Escape and clicking the backdrop.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C034",
+    "section": "Run toolbar and actions",
+    "name": "Workflow",
+    "kind": "Two-button toggle",
+    "explanation": "OD + Forecast fits pre-cutoff GNSS position fixes and predicts forward. Propagate from a state starts from a typed/file state and skips GNSS orbit fitting.",
+    "options": [
+      "OD + Forecast",
+      "Propagate from a state"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C035",
+    "section": "Run toolbar and actions",
+    "name": "Presets",
+    "kind": "Dropdown",
+    "explanation": "Lists saved user preset names plus the empty placeholder. Presets depend on the current workspace and are not fixed model options.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C036",
+    "section": "Run toolbar and actions",
+    "name": "Load",
+    "kind": "Button",
+    "explanation": "Load the selected preset settings into the form. Does not run it.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C037",
+    "section": "Run toolbar and actions",
+    "name": "Save as…",
+    "kind": "Button + name prompt",
+    "explanation": "Save the current configuration under the entered preset name. Cancel or an empty name does nothing.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C038",
+    "section": "Run toolbar and actions",
+    "name": "Delete preset",
+    "kind": "Button + confirmation",
+    "explanation": "Delete only the selected saved preset after confirmation. Does not delete a previous run or raw input.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C039",
+    "section": "Run toolbar and actions",
+    "name": "Export",
+    "kind": "Button",
+    "explanation": "Download current settings as JSON using the run name or ursc-config. This is a configuration, not an OEM.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C040",
+    "section": "Run toolbar and actions",
+    "name": "Import",
+    "kind": "Native JSON file picker",
+    "explanation": "Choose a local .json settings file; parse it and load it into the form. Invalid JSON gives an error toast. Does not start computation.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C041",
+    "section": "Run toolbar and actions",
+    "name": "Reset",
+    "kind": "Button + confirmation",
+    "explanation": "Restore startup/test-window defaults and attempt catalog input selection. This changes the form, not already saved results.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C042",
+    "section": "Run toolbar and actions",
+    "name": "Generic",
+    "kind": "Button + confirmation",
+    "explanation": "Load generic library defaults: generic cannonball spacecraft and no test window. This differs from the Sentinel-3A startup preset.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C043",
+    "section": "Run toolbar and actions",
+    "name": "Group headings / settings counts",
+    "kind": "Disclosure",
+    "explanation": "Open or collapse a settings group. Counts report visible settings and modified values. Changing workflow/shape/force switches can reveal other fields.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C044",
+    "section": "Run toolbar and actions",
+    "name": "Auto-select from catalog",
+    "kind": "Button",
+    "explanation": "Populate observations for one spacecraft and suitable product/reference/attitude/environment files for the cutoff. Adds matching files, not an accuracy guarantee.",
+    "options": [],
+    "condition": "OD + Forecast → Mandatory inputs"
+  },
+  {
+    "id": "C045",
+    "section": "Run toolbar and actions",
+    "name": "Spacecraft selector",
+    "kind": "Dynamic dropdown",
+    "explanation": "Select among spacecraft with observations for the current cutoff. Appears only if more than one spacecraft is available; reruns catalog suggestion, not orbit determination.",
+    "options": [],
+    "condition": "Auto-select found multiple spacecraft"
+  },
+  {
+    "id": "C046",
+    "section": "Run toolbar and actions",
+    "name": "Latest from data",
+    "kind": "Button",
+    "explanation": "Set UTC cutoff to the end of the latest matching catalogued observation arc. It does not mean the current wall-clock time.",
+    "options": [],
+    "condition": "UTC cutoff field in OD + Forecast"
+  },
+  {
+    "id": "C047",
+    "section": "Run toolbar and actions",
+    "name": "Run whole window",
+    "kind": "Button + confirmation",
+    "explanation": "Start one new OD + forecast for each configured cutoff date. Uses the catalog separately per day; missing data remain visible. Confirmation states date count. This can take a long time.",
+    "options": [],
+    "condition": "OD + Forecast → Test window"
+  },
+  {
+    "id": "C048",
+    "section": "Run toolbar and actions",
+    "name": "Run",
+    "kind": "Button",
+    "explanation": "Start one new computation using the current workflow/settings. Disabled when validation errors exist or a job is active. For presenting existing results, use Saved presentation instead.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C049",
+    "section": "Run toolbar and actions",
+    "name": "Sweep…",
+    "kind": "Button → dialog",
+    "explanation": "Vary one enum/bool/numeric setting while keeping other form settings fixed. Starting a sweep runs new computations; opening/cancelling its dialog does not.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C050",
+    "section": "Run toolbar and actions",
+    "name": "Compare product tiers",
+    "kind": "Button",
+    "explanation": "Launch a four-tier sweep using Broadcast, Ultra-rapid, Rapid and Final. It explicitly changes the sweep copy to RECONSTRUCTION so later products can be compared. It does not certify forecast-safe accuracy.",
+    "options": [],
+    "condition": "OD + Forecast with observations/products; otherwise explains missing prerequisites"
+  },
+  {
+    "id": "C051",
+    "section": "Run toolbar and actions",
+    "name": "Cancel",
+    "kind": "Button",
+    "explanation": "Requests cancellation of the currently tracked job. It is shown while active work is running; exact stop timing depends on cancellation checks. It is not a delete-results action.",
+    "options": [],
+    "condition": "Active run, sweep or window"
+  },
+  {
+    "id": "C052",
+    "section": "Run toolbar and actions",
+    "name": "Ready/errors/progress/log",
+    "kind": "Displays",
+    "explanation": "Ready to run means configuration validation passed, not that accuracy targets will be met. Error list names blockers. Progress/log show stages, sweep/window case numbers and execution messages.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C053",
+    "section": "Shared setting controls",
+    "name": "ⓘ / i",
+    "kind": "Per-field info button",
+    "explanation": "Shows what the setting means, how to choose it, its configuration key and startup default. Click elsewhere to dismiss. Workflow itself is represented by the top toggle rather than a normal field.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C054",
+    "section": "Shared setting controls",
+    "name": "Changed marker / reset",
+    "kind": "Per-field indicator and button",
+    "explanation": "Non-mandatory settings differing from startup defaults show changed and reset. Reset restores only that setting, then revalidates. Mandatory fields do not have this marker/reset behavior.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C055",
+    "section": "Shared setting controls",
+    "name": "Checkbox",
+    "kind": "Field widget",
+    "explanation": "Toggle on/off; conditional dependent fields may appear or disappear. Exact impact is documented for each of the 85 settings.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C056",
+    "section": "Shared setting controls",
+    "name": "Number field",
+    "kind": "Field widget",
+    "explanation": "Enter an integer or numeric value; browser min/max/step are shown in the field inventory. These UI bounds are not a complete statement of server-side scientific validation.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C057",
+    "section": "Shared setting controls",
+    "name": "Date / datetime / text",
+    "kind": "Field widgets",
+    "explanation": "Dates are calendar cutoff dates. Scientific epoch fields are interpreted as UTC despite using a datetime-local browser control; do not convert them to your local time zone.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C058",
+    "section": "Shared setting controls",
+    "name": "Span presets",
+    "kind": "Four buttons",
+    "explanation": "Set forecast.spanDays to 7, 14, 21 or 30 days immediately. They change the form, not an existing saved output.",
+    "options": [
+      "7",
+      "14",
+      "21",
+      "30"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C059",
+    "section": "Shared setting controls",
+    "name": "Add from catalog…",
+    "kind": "Per-file-field dropdown",
+    "explanation": "Only lists catalog entries of the kinds allowed by that field. Options vary with the catalog and its file names. Select to add or replace the input. Multi-file values are deduplicated.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C060",
+    "section": "Shared setting controls",
+    "name": "Browse…",
+    "kind": "Per-file-field button",
+    "explanation": "Open the shared file picker. Multi-file inputs add paths; single-file inputs replace the selection.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C061",
+    "section": "Shared setting controls",
+    "name": "Selected file ×",
+    "kind": "Per-path button",
+    "explanation": "Remove the path from this configuration only. Does not delete or forget the file globally.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C062",
+    "section": "Shared setting controls",
+    "name": "none selected / not set (default used)",
+    "kind": "Field state messages",
+    "explanation": "Multi-file fields show none selected; a single optional field not set may use a built-in/default model. Check its specific documented behavior and run defaults list.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C063",
+    "section": "Sweep dialog",
+    "name": "Setting to vary",
+    "kind": "Dropdown",
+    "explanation": "Includes every enum, boolean, integer and number parameter except workflow, even if a field is conditional in the current form. The complete candidates are indexed in the parameter appendix. Avoid choices incompatible with the selected workflow.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C064",
+    "section": "Sweep dialog",
+    "name": "Value checkboxes",
+    "kind": "Dynamic checkboxes",
+    "explanation": "For an enum, check the listed model choices; for a boolean, choose on and off. All are initially checked. At least two valid values are required.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C065",
+    "section": "Sweep dialog",
+    "name": "Values, separated by commas",
+    "kind": "Text field",
+    "explanation": "For numeric parameters, enter comma-separated values in the parameter units. Initially suggests half/current/1.5× values. Review integer/bounds constraints before starting.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C066",
+    "section": "Sweep dialog",
+    "name": "Cancel / Start sweep",
+    "kind": "Dialog buttons",
+    "explanation": "Cancel dismisses; Start sweep submits up to 12 sequential cases and eventually opens a comparison. Escape/backdrop also cancel.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C067",
+    "section": "Sweep dialog",
+    "name": "Current value / explanation",
+    "kind": "Display",
+    "explanation": "Shows the selected parameter definition, current value and units. It does not modify the parameter until a sweep starts.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C068",
+    "section": "Results",
+    "name": "Run picker",
+    "kind": "Dropdown",
+    "explanation": "Select a saved local History run. These are workspace runs, separate from the bundled Saved presentation archive. Opening a saved run does not recompute its OD or trajectory.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C069",
+    "section": "Results",
+    "name": "Download OEM",
+    "kind": "Button",
+    "explanation": "Download the selected run's stored OEM, when present. Failed runs may have no OEM.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C070",
+    "section": "Results",
+    "name": "Log",
+    "kind": "Button",
+    "explanation": "Open the saved execution log in a new tab. Use it to inspect defaults, progress and failure messages.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C071",
+    "section": "Results",
+    "name": "Re-use settings",
+    "kind": "Button",
+    "explanation": "Load this result's configuration into Run; does not execute it until Run is pressed.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C072",
+    "section": "Results",
+    "name": "KML",
+    "kind": "Button",
+    "explanation": "Export the selected trajectory for Google Earth. This derives an export from saved output, not a new orbit propagation.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C073",
+    "section": "Results",
+    "name": "CZML",
+    "kind": "Button",
+    "explanation": "Export the selected trajectory for Cesium from saved data.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C074",
+    "section": "Results",
+    "name": "Report",
+    "kind": "Button",
+    "explanation": "Open the printable run report in a new browser tab; use browser Print/Save PDF. Includes saved summaries, inputs, settings, figures and passes.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C075",
+    "section": "Results",
+    "name": "Earth-fixed / Inertial",
+    "kind": "View toggle",
+    "explanation": "Change the globe rendering frame; do not confuse a visualization toggle with the configured OEM output frame.",
+    "options": [
+      "Earth-fixed",
+      "Inertial"
+    ],
+    "condition": "Selected run has visualization trajectory"
+  },
+  {
+    "id": "C076",
+    "section": "Results",
+    "name": "Spacecraft model",
+    "kind": "Dropdown",
+    "explanation": "Automatic chooses a procedural drawing from object name; explicit models override the drawing only. It does not alter force-model geometry or physics.",
+    "options": [
+      "Model: automatic",
+      "Model: Sentinel-3 build",
+      "Model: Generic satellite",
+      "Model: dot only"
+    ],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C077",
+    "section": "Results",
+    "name": "Follow satellite",
+    "kind": "Button",
+    "explanation": "Camera follows the satellite. Drag to look around; scroll changes follow distance. Toggle off for globe-centred navigation.",
+    "options": [],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C078",
+    "section": "Results",
+    "name": "Full view / Leave full view",
+    "kind": "Button",
+    "explanation": "Enlarge the globe to the application window. Use Leave full view or Escape to restore the layout.",
+    "options": [],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C079",
+    "section": "Results",
+    "name": "Globe mouse gestures",
+    "kind": "Canvas controls",
+    "explanation": "Drag to rotate, scroll to zoom, double-click to reset the camera. In follow mode these act around the spacecraft.",
+    "options": [],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C080",
+    "section": "Results",
+    "name": "Map layers",
+    "kind": "Five checkboxes",
+    "explanation": "Toggle Full track, Reference, Day / night, Stations and Grid independently. Layer changes only affect drawing. Reference is POEORB display data, not a correction to prediction.",
+    "options": [
+      "Full track",
+      "Reference",
+      "Day / night",
+      "Stations",
+      "Grid"
+    ],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C081",
+    "section": "Results",
+    "name": "Map hover / click",
+    "kind": "Canvas controls",
+    "explanation": "Hover scrubs the shared time when playback is paused. Click selects that epoch and pauses playback; subsequent pointer movement can scrub again. It is not a persistent time-lock switch.",
+    "options": [],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C082",
+    "section": "Results",
+    "name": "Play / Pause",
+    "kind": "Button",
+    "explanation": "Animate saved samples; wraps to the start at the end. Does not integrate a new orbit.",
+    "options": [],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C083",
+    "section": "Results",
+    "name": "Playback speed",
+    "kind": "Dropdown",
+    "explanation": "Choose simulated-time speed relative to wall time. It affects animation only.",
+    "options": [
+      "60×",
+      "300×",
+      "600×",
+      "1800×",
+      "3600×"
+    ],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C084",
+    "section": "Results",
+    "name": "Time slider",
+    "kind": "Range input",
+    "explanation": "Scrub the saved sample sequence; UTC and elapsed-hours readouts update. Drawing may interpolate between samples, so use sufficiently dense trajectories for meaningful tracks.",
+    "options": [],
+    "condition": "Trajectory available"
+  },
+  {
+    "id": "C085",
+    "section": "Results",
+    "name": "1σ ellipsoid",
+    "kind": "Checkbox + enlargement label",
+    "explanation": "Show the formal position uncertainty ellipsoid when covariance exists. The visual scale multiplier is explicitly displayed. It is not measured error and excludes unmodelled effects.",
+    "options": [],
+    "condition": "Saved trajectory contains formal covariance"
+  },
+  {
+    "id": "C086",
+    "section": "Results",
+    "name": "Run summary and warnings",
+    "kind": "Displays",
+    "explanation": "Status/mode/object/cutoff, state count, fit type/count/iterations, pre/post-fit RMS, variance factor, optional estimated Cd/Cr and uncertainties, product usage/rejection/fallbacks, defaults, warnings, errors, flags and runtime. Missing optional quantities are not invented.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C087",
+    "section": "Results",
+    "name": "Diagnostic plots",
+    "kind": "Conditional displays",
+    "explanation": "Altitude; RTN formal 1σ; 3D/R/T/N error against reference; satellite count/PDOP; accepted/rejected SPP residual RMS; OD residual norms. A plot appears only when its saved data exist.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C088",
+    "section": "Results",
+    "name": "GNSS positioning per epoch",
+    "kind": "Disclosure + table",
+    "explanation": "Expand to inspect UTC, GPS product, satellite count, PDOP, RMS, accepted/rejected indicator and reason. Predicted orbit tags identify predicted GPS orbit nodes.",
+    "options": [],
+    "condition": "Saved SPP rows exist"
+  },
+  {
+    "id": "C089",
+    "section": "Results — stations and passes",
+    "name": "Stations",
+    "kind": "Disclosure",
+    "explanation": "Expand the workspace-wide station editor. Changes affect pass calculations/display for runs in that workspace; they do not refit the orbit.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C090",
+    "section": "Results — stations and passes",
+    "name": "Station Name",
+    "kind": "Text input",
+    "explanation": "Human-readable station label.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C091",
+    "section": "Results — stations and passes",
+    "name": "Latitude / Longitude",
+    "kind": "Numeric inputs",
+    "explanation": "Geodetic degrees; latitude north-positive and longitude east-positive. Use valid terrestrial coordinates.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C092",
+    "section": "Results — stations and passes",
+    "name": "Height",
+    "kind": "Numeric input",
+    "explanation": "Station ellipsoidal height in metres, not kilometres.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C093",
+    "section": "Results — stations and passes",
+    "name": "Elevation mask",
+    "kind": "Numeric input",
+    "explanation": "Minimum elevation angle in degrees above the station horizon for a pass to count.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C094",
+    "section": "Results — stations and passes",
+    "name": "Station ×",
+    "kind": "Per-row button",
+    "explanation": "Remove that station from the editor; use Save stations to persist the edited list.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C095",
+    "section": "Results — stations and passes",
+    "name": "Add station",
+    "kind": "Button",
+    "explanation": "Append a station with zero coordinates/height and 5-degree elevation mask. Edit it before saving.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C096",
+    "section": "Results — stations and passes",
+    "name": "Save stations",
+    "kind": "Button",
+    "explanation": "Validate and persist the station list, update globe/map markers and derive passes from saved trajectories. This does not run OD/propagation.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C097",
+    "section": "Results — stations and passes",
+    "name": "Pass row",
+    "kind": "Clickable result",
+    "explanation": "AOS/LOS are acquisition/loss of signal times. The row shows duration and maximum elevation; click to jump to AOS. A truncated span is marked. Requires an adequate sampling cadence and station(s).",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C098",
+    "section": "Window",
+    "name": "Window picker",
+    "kind": "Dropdown",
+    "explanation": "Choose a locally saved window campaign; shows its name, date interval and completion count. The bundled two-month archive is in Saved presentation, not automatically this local list.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C099",
+    "section": "Window",
+    "name": "Refresh",
+    "kind": "Button",
+    "explanation": "Reload the existing local window list and selected record. Does not rerun it.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C100",
+    "section": "Window",
+    "name": "Delete record",
+    "kind": "Button + confirmation",
+    "explanation": "Delete the window summary after confirmation. Its individual run records stay in History.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C101",
+    "section": "Window",
+    "name": "Progress and summary tiles",
+    "kind": "Displays",
+    "explanation": "Cutoff count, processed, issued, unusable OD, no data, flagged cases and median post-fit RMS. No data is separate from fitting failure. Active campaigns show a progress bar and stage.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C102",
+    "section": "Window",
+    "name": "Trend charts",
+    "kind": "Displays",
+    "explanation": "OD RMS and SPP fix count per date; errors vs POEORB appear where reference scores exist. Missing values are gaps, not zeros.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C103",
+    "section": "Window",
+    "name": "Per-day row / flags hover",
+    "kind": "Clickable row + tooltip",
+    "explanation": "Shows cutoff date, status, GPS product, fixes, RMS, variance factor, flags, cutoff/day-one/day-seven errors and runtime. Hover products/flags for details; click a row with a runId to open Results.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C104",
+    "section": "History",
+    "name": "Run checkboxes",
+    "kind": "Per-row checkboxes",
+    "explanation": "Select two or more locally saved runs for comparison. They do not select bundled snapshot cases.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C105",
+    "section": "History",
+    "name": "Compare selected",
+    "kind": "Button",
+    "explanation": "Open comparison for the checked runs; at least two required. It compares saved trajectories rather than recomputing the physics.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C106",
+    "section": "History",
+    "name": "Open",
+    "kind": "Per-row button",
+    "explanation": "Open that saved run in Results.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C107",
+    "section": "History",
+    "name": "Re-use",
+    "kind": "Per-row button",
+    "explanation": "Load that run's settings in Run, without executing them.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C108",
+    "section": "History",
+    "name": "Delete run",
+    "kind": "Per-row button + confirmation",
+    "explanation": "Delete the chosen saved run and its output files after confirmation. This differs from forgetting a raw input or deleting a window summary.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C109",
+    "section": "History",
+    "name": "History columns",
+    "kind": "Displays",
+    "explanation": "Run ID, name, workflow, status, mode, cutoff/epoch, object, sample count and post-fit RMS. Values come from saved result records.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C110",
+    "section": "Comparison panel",
+    "name": "Base run and color legend",
+    "kind": "Display",
+    "explanation": "First selected run is the base. Other runs are compared to it; base is not automatically the most accurate run.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C111",
+    "section": "Comparison panel",
+    "name": "Position difference table",
+    "kind": "Display",
+    "explanation": "Maximum, RMS and end-of-span 3D separation from the base, in metres. Run-to-run separation is not reference-truth error.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C112",
+    "section": "Comparison panel",
+    "name": "Settings that differ",
+    "kind": "Display",
+    "explanation": "Configuration keys and values that changed between compared runs. Identical settings get an explicit message.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C113",
+    "section": "Comparison panel",
+    "name": "Comparison charts",
+    "kind": "Displays",
+    "explanation": "Reference error curves when stored reference results exist; 3D difference and RTN difference curves for compatible sampled trajectories. Interpolation is used for non-coincident epochs; sparse daily campaign points must not be treated as dense tracks.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C114",
+    "section": "Help",
+    "name": "Question / Search",
+    "kind": "Search input + button",
+    "explanation": "Type a project question and click Search or press Enter. Retrieves local passages and shows a grounded answer when an answer provider returns one.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C115",
+    "section": "Help",
+    "name": "Provider status line",
+    "kind": "Display",
+    "explanation": "Shows indexed passage/document counts, knowledge folder and configured provider order/status. Default extractive provider uses no model; optional provider availability is configuration-dependent.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C116",
+    "section": "Help",
+    "name": "Guides",
+    "kind": "Seven navigation buttons",
+    "explanation": "Load the corresponding bundled help page.",
+    "options": [
+      "Getting started",
+      "Input data",
+      "GPS product priority",
+      "Perturbations & models",
+      "Outputs (OEM, covariance)",
+      "Offline operation & AI",
+      "Troubleshooting"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C117",
+    "section": "Help",
+    "name": "Interactive feature guide",
+    "kind": "Link",
+    "explanation": "Open the separate feature guide in a new tab, just like the global Guide link.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C118",
+    "section": "Help",
+    "name": "Answer / passage citations",
+    "kind": "Displays",
+    "explanation": "Answer includes provider attribution; passage cards show source, title and excerpts. No-result message means try different terms; it is not a new model training step.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C119",
+    "section": "Interactive Guide page",
+    "name": "Section index links",
+    "kind": "Links",
+    "explanation": "Jump to walkthrough, defaults/results, offline/search and feature groups. Active section styling follows scrolling.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C120",
+    "section": "Interactive Guide page",
+    "name": "Walkthrough steps",
+    "kind": "Ten buttons",
+    "explanation": "Choose any of the ten walkthrough panels.",
+    "options": [
+      "Start the app",
+      "The data catalog",
+      "Run setup with tested defaults",
+      "Explain any setting with ⓘ",
+      "Perturbation switches",
+      "One forecast on the globe",
+      "Ride along with Sentinel-3A",
+      "The two-month window",
+      "Compare modelling choices",
+      "Outputs and help"
+    ],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C121",
+    "section": "Interactive Guide page",
+    "name": "Previous / Next",
+    "kind": "Buttons + arrow keys",
+    "explanation": "Move between walkthrough steps; disabled at endpoints. Left/right keyboard arrows also navigate when not typing in a text field or viewing an enlarged screenshot.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C122",
+    "section": "Interactive Guide page",
+    "name": "Filter features",
+    "kind": "Search input",
+    "explanation": "Enter one or more terms; each shown feature must contain every term. The counter shows remaining features and a no-results message appears when appropriate.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C123",
+    "section": "Interactive Guide page",
+    "name": "Screenshot zoom",
+    "kind": "Figure click / Enter / Space",
+    "explanation": "Click a screenshot, or focus it and press Enter/Space, to enlarge it. Close with Close, Escape or the modal backdrop.",
+    "options": [],
+    "condition": "Always in this section"
+  },
+  {
+    "id": "C124",
+    "section": "Interactive Guide page",
+    "name": "Feature cards and guide text",
+    "kind": "Read-only content",
+    "explanation": "Explain existing features. Some historical claims in the built-in guide predate the current data archive; use the Saved presentation provenance and current report for campaign facts, rather than its old no-IGS wording.",
+    "options": [],
+    "condition": "Always in this section"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "individual_files": 385,
+  "aggregate_files": 4,
+  "parsed_files": 389,
+  "parsed_segments_including_aggregate_duplicates": 770,
+  "parsed_states_including_aggregate_duplicates": 6160,
+  "unique_sample_states": 3080,
+  "source_value_check": "exact Decimal round-trip for all six SI state components",
+  "spacing_seconds": 86400,
+  "frame": "ITRF",
+  "time_system": "UTC",
+  "covariance": "not available; not exported",
+  "dense_ephemeris": false,
+  "independent_external_ccsds_validator_used": false
+}
