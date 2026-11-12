@@ -1,0 +1,2339 @@
+{
+  "created_utc": "2026-11-12T04:11:44",
+  "groups": {
+    "original-four-tier": {
+      "attempted": 244,
+      "issued": 205,
+      "not_issued": 39
+    },
+    "improved-broadcast": {
+      "attempted": 61,
+      "issued": 60,
+      "not_issued": 1
+    },
+    "retrospective-old-maneuvers": {
+      "attempted": 61,
+      "issued": 60,
+      "not_issued": 1
+    },
+    "retrospective-corrected-maneuvers": {
+      "attempted": 61,
+      "issued": 60,
+      "not_issued": 1
+    }
+  },
+  "individual_oem_files": 385,
+  "source_values_verified": true,
+  "files": [
+    {
+      "oem": "original-four-tier/S3A_2024-09-03-broadcast_original-four-tier.oem",
+      "sha256": "546d040a409fd8eff42a2e176e6535fc3c5051bcbf98f9e1976f4961bf7c70ec",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-03-broadcast/forecast.csv",
+      "source_sha256": "a0f49944f71e99b069024cb73fff071d4ad4208f5e33f55ee24ee8a6dd4b334f"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-03-final_original-four-tier.oem",
+      "sha256": "5d63818bf1c356a06b0d85877a1bb0305a3ba52e2cd6a0beec97850137dd9499",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-03-final/forecast.csv",
+      "source_sha256": "568bf9552803ecf92f18f8f0653fce9bad2fc39eb9d13e283125b66a41ae619b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-03-rapid_original-four-tier.oem",
+      "sha256": "5ccee2dd21baac71cde6857ab242bda76c4e43e0b775c8dd73f9570ca5b1527b",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-03-rapid/forecast.csv",
+      "source_sha256": "724146bd82da52e6415e34f89546ee9e9a334f47b3f7803ad54fbec7f09f9c29"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-03-ultra-rapid_original-four-tier.oem",
+      "sha256": "8219320894e423ac9a75f76f388e1c2b45dd38d2927fc416170a1fb30c9a95b1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-03-ultra-rapid/forecast.csv",
+      "source_sha256": "187af6efd3a7efb916bfeb3f684d5eae18eba29723a76bea38bcb8f9f8c35ab1"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-04-broadcast_original-four-tier.oem",
+      "sha256": "667f50b6179acaed9e74a6f498830f1ae7027f2edf23d35fe4e122125777aa41",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-04-broadcast/forecast.csv",
+      "source_sha256": "b4cb6e43afa10bc823ccf70491e4c9e45367d70aab67fd6ab01ee6ddf4df9855"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-04-final_original-four-tier.oem",
+      "sha256": "7323139b751e789fc108e4f35ce00a1d82d878de2d77c8978f07b41bde0ab0ac",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-04-final/forecast.csv",
+      "source_sha256": "2fc8fbbb63c67523545f18476469699033a860c016cb3dc5c441947eed61a3df"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-04-rapid_original-four-tier.oem",
+      "sha256": "77898660a3ff3fbabe751f5163c16abfe0158bd4ea7bfe1e2b3c8c5a99f5d627",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-04-rapid/forecast.csv",
+      "source_sha256": "c5ff4fe0d9074a7863832bde523cc8ef3440a76383150c3130784d267aae0c76"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-04-ultra-rapid_original-four-tier.oem",
+      "sha256": "de5c7f8f059e07d2b0e293f937ae02b7a9177177258b500bee31e7ddc6f28a91",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-04-ultra-rapid/forecast.csv",
+      "source_sha256": "0c37e10376caacb36ba521c0636eaf71c98260820dd9d1ee5c4a486712115537"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-05-broadcast_original-four-tier.oem",
+      "sha256": "a1e150ce66e0cfd191ec732859867b3441afa95a774a32ef3dfa521ae79fa61d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-05-broadcast/forecast.csv",
+      "source_sha256": "289d5cbe3b58a738dbbdcfde789d2f5f8033c0bd29131e6b95402644aab7754c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-05-final_original-four-tier.oem",
+      "sha256": "a73f722c47ba05ad2f85e649426f0176045da09e10406b04c0e8e3f44f917460",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-05-final/forecast.csv",
+      "source_sha256": "e6ca7cb7cbf4bb203620174bb0f9de1e0effb6f649b2b5b277a28896a3b1ce84"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-05-rapid_original-four-tier.oem",
+      "sha256": "070d3fc1fb38db385fc437bf48f54045862c922828f25a6f9b0b8cf92a62316c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-05-rapid/forecast.csv",
+      "source_sha256": "b4b704d2d1c2fe3d9f0f470e58546e58e52670068d20c8b8b6c81e1258861832"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-05-ultra-rapid_original-four-tier.oem",
+      "sha256": "f5318cd729ef6c9c0674915317b16f6c00610f0fe85b1d79bbb3230d98a089f9",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-05-ultra-rapid/forecast.csv",
+      "source_sha256": "f68f63fcdc025b51b94a0774d8e03306a0970a9e10ff7fa4def0bbaea0f71d58"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-06-broadcast_original-four-tier.oem",
+      "sha256": "a7e78988bd49891a73e6c2af8f030208dca2270b538e5c8b7af05ce3f6c7fa75",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-06-broadcast/forecast.csv",
+      "source_sha256": "c83c52511fad271a7c324788174fb08fd7072bc1d090fe9b5e4ec66ae191ba74"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-06-final_original-four-tier.oem",
+      "sha256": "d5501d82e8795eccfb7d9116501a948e32199f55b4fa6358860bd0687c98811d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-06-final/forecast.csv",
+      "source_sha256": "441fd78b095db4de0bc382c545b6b9899588e1244c4cb1baa728812cf8cfb91e"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-06-rapid_original-four-tier.oem",
+      "sha256": "6bc724690dcc1c67cc8c1f7c5bb431bc413b72c3076a5dac8a3f4d5da3f663b3",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-06-rapid/forecast.csv",
+      "source_sha256": "bce42138ff03113cd70fd83a023e03d40d8082ab32e4c53e41f0706c775f8439"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-06-ultra-rapid_original-four-tier.oem",
+      "sha256": "ce4df565642afdd34da01fc37ee2f3271d57d3c32b2374f71e07a9d82b6625a4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-06-ultra-rapid/forecast.csv",
+      "source_sha256": "20d176574bf17b6ea70687609848ca51b7759191395bf4e356e7dc8e57bb78d8"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-07-broadcast_original-four-tier.oem",
+      "sha256": "a2d4aaa1fec957c3b954877c1204f96cd417eebc15133a07c991af98cb222d8d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-07-broadcast/forecast.csv",
+      "source_sha256": "6beb2c927bd0f65ccc9beb1524d37ddf22e6e99a6b3b866bb5ed25a1b19d0a58"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-07-final_original-four-tier.oem",
+      "sha256": "0e613829e34a3725f868284024272b98f57b9f3373a195b7290e1fa70ac5b341",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-07-final/forecast.csv",
+      "source_sha256": "225dcf96608d150f814bbf83cc14666a2bd97b0ab5f8eabc38e0618f321645eb"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-07-rapid_original-four-tier.oem",
+      "sha256": "e8ad07c8b59955f8cd7ec36fba023db411655efd152a0ed839b15e6d505c86de",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-07-rapid/forecast.csv",
+      "source_sha256": "ce619f0e099cd076eb44553985177e771453060134e5346155edeee681640410"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-07-ultra-rapid_original-four-tier.oem",
+      "sha256": "c4a5b69496936d40a8e737e121d5b5b536c0bb25a11ac36e3c4dd05dbcbe520f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-07-ultra-rapid/forecast.csv",
+      "source_sha256": "f98226b4769a3796dd9a0acdc0e591be3ea93edf6ff2f610335e07c9ee4f7418"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-08-broadcast_original-four-tier.oem",
+      "sha256": "913cb52d1915183ed5a8ec66803f88a31a656fcffa174457b2fa86bd11c23f3c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-08-broadcast/forecast.csv",
+      "source_sha256": "3773477920ca4cd7b840a4b6379e91bb278300f32eeb0537a7f59446a0f41ea6"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-08-final_original-four-tier.oem",
+      "sha256": "b4074c1fa841eb1e54dfd40adc2d857d281a30085a8bb102f6c388df306ab9a5",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-08-final/forecast.csv",
+      "source_sha256": "8c1c2c55666d0555712c7637ee328ca0680c05bb39b77ec35cd06f2faf695009"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-08-rapid_original-four-tier.oem",
+      "sha256": "960420f357b94c12289a52fd85bfd0e7d5532b2cca111c1f72750a2925c9b82a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-08-rapid/forecast.csv",
+      "source_sha256": "77423c610776c9f2eb12694bd99deaa55059b7e4ea483cf04bf620c6bfc47c97"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-08-ultra-rapid_original-four-tier.oem",
+      "sha256": "db47bea44b4fa8d743f229e13b655f18d5fbf684beff4b530c677b6ea494a263",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-08-ultra-rapid/forecast.csv",
+      "source_sha256": "b9bd3fc4489049501e15879e0fc52c1bc909e540152d30fc76d2cbf383d90847"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-09-rapid_original-four-tier.oem",
+      "sha256": "ebe344e32296c192ffcc5bf9e9a60ded65274b6b298a14006259a185d6cd4eb0",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-09-rapid/forecast.csv",
+      "source_sha256": "821cf8a9e36d68f1a906a7693840877c58764bf9355c3037f1ddc72fad088368"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-10-broadcast_original-four-tier.oem",
+      "sha256": "057e43defcfbd821683a16f3bc44cc21fae78dadb97ddf29365bfd67848cb65a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-10-broadcast/forecast.csv",
+      "source_sha256": "dbf93aaccaaa37c9a2ca061c98ca897df46c4766057b8c0028303488b0f14c76"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-10-final_original-four-tier.oem",
+      "sha256": "7665bd7606a72f5f48b6cd9e9c8a98d29888ff09892d070bcc2ea74ef463dfa3",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-10-final/forecast.csv",
+      "source_sha256": "8521b5254394c615ac846ef159f81169f2d12fd8af1684506eaf9d1bdfc8caa4"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-10-rapid_original-four-tier.oem",
+      "sha256": "c008db5a6a8532d64e18964203b3d1b7e3d8ed097646a9a767fe6bf653587716",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-10-rapid/forecast.csv",
+      "source_sha256": "d7ad8490c534218c613c37fcba016ce6f159dc4aa3a3639422302a80303183a5"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-10-ultra-rapid_original-four-tier.oem",
+      "sha256": "000316837fcfad8eeae0cc2d1781a92ae86203e0b9477981a99f5c344c4f14b1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-10-ultra-rapid/forecast.csv",
+      "source_sha256": "679f35e21fb89de4926721ba3f19a4243fa1e1f7664ab000a1b754705c835317"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-11-broadcast_original-four-tier.oem",
+      "sha256": "01ce23b6c3a3c031f6653e88bc6eb83f3d3ce6699472b32d96e902a2094482ba",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-11-broadcast/forecast.csv",
+      "source_sha256": "2b71c7d15bfd8cde3cb3485db511052328ec2565d305a1e48efb1cb7ed6017a9"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-11-final_original-four-tier.oem",
+      "sha256": "afff3063eff6586f4efd2d50d2d45f4f5beaff0fda030488f2b8a136d1997d70",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-11-final/forecast.csv",
+      "source_sha256": "b3ab6cfc2fa2c3181c65460698b31eec792ae34eecb0f39581b124228a1ea13d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-11-rapid_original-four-tier.oem",
+      "sha256": "0372a83f50d7eb79ecf532a7076bde0be05289589523ab1c87a19fddcca4ada5",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-11-rapid/forecast.csv",
+      "source_sha256": "b9f9f22e8066dd376ce1fc69ffa950b825f5796f901de3f1821c3bae437b8d93"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-11-ultra-rapid_original-four-tier.oem",
+      "sha256": "d50fdc14de63a87d04cc6fd47fe5c9ac60d72204db9a73d87167f854b6b5665a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-11-ultra-rapid/forecast.csv",
+      "source_sha256": "e0f9836146e3f45722fa54c613b160a1a6b1635698cade6a79e39e626dc165be"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-12-final_original-four-tier.oem",
+      "sha256": "af016c161468beabfbd59b39ac1f94fa250e0740e52b490dd44ea71e0039186c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-12-final/forecast.csv",
+      "source_sha256": "3684c2a00b920cf74adecdb1097eecd8f991d3e9c3b3dd0388ab371ce7ca24a9"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-12-rapid_original-four-tier.oem",
+      "sha256": "6f45a7b47b2516a83c2f43c151144566429efa736649e8214f8f25e713eaf54f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-12-rapid/forecast.csv",
+      "source_sha256": "ca337ad3a3e39cea7f736215c841f3eab6296d4da3890e21aea1f6bbf6117a97"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-12-ultra-rapid_original-four-tier.oem",
+      "sha256": "59346aa09be0ccdab0e2945582a536514e59d68460a283c2715a0abb63b571be",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-12-ultra-rapid/forecast.csv",
+      "source_sha256": "bba58b266fd1ad9f411369ef9b5b3439d6bba0a3ee78e6b89c6f64ce1041aafd"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-13-broadcast_original-four-tier.oem",
+      "sha256": "aa609b16b2dc8359d08eff1397469c026965852117cb390555b2db944e17d799",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-13-broadcast/forecast.csv",
+      "source_sha256": "9874e53841ed0b56f3c72045cb82a3405696a521ebbc98470b91e986eafe1f5b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-13-final_original-four-tier.oem",
+      "sha256": "b6593eda2dda4a34aafbdb4686d2d6b7647ec40c94e12d39640c9c65f00a8eef",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-13-final/forecast.csv",
+      "source_sha256": "059394df964106288b8d8424b3f2bccbe3fa534dded301b7a3d85619fec6a4d9"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-13-ultra-rapid_original-four-tier.oem",
+      "sha256": "42c56f004fad86938e2385937c9ceb1e3b791966ac32876046613b6c7c8c3ce4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-13-ultra-rapid/forecast.csv",
+      "source_sha256": "0e8f7dcbe7dff9790c37802979a4f857bef65ed804dd553a98a6ccd44d3b4304"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-14-broadcast_original-four-tier.oem",
+      "sha256": "83db45b8aab25cd37702cd208388ad242d0f934b44df90c5561d0739ad6a4606",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-14-broadcast/forecast.csv",
+      "source_sha256": "412cbaba995a4dfca97fd8546bb708fab2e21e5a6c4e7ee0c97b60ee3658e7a3"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-14-final_original-four-tier.oem",
+      "sha256": "6cca8cb13577edc7a6ad000d32cf0219ea6ed4bf058e95007790420ecee0aa14",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-14-final/forecast.csv",
+      "source_sha256": "7c4c0f4e36731dd5227479eea01ccbfc6e5987ce98e812145e5b00721255a170"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-14-rapid_original-four-tier.oem",
+      "sha256": "b96971c30e6b9496766fb292158de0047f2ad8be73c1785e8313199c5092c91d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-14-rapid/forecast.csv",
+      "source_sha256": "ac5c5075cf384c6ed9f8e79d57d6fe43724db052aeba48333a31a2f2a63b918c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-14-ultra-rapid_original-four-tier.oem",
+      "sha256": "fac68595de21ab4f39e3ba1bd980ae960cd965e6789909d981789a709688af3c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-14-ultra-rapid/forecast.csv",
+      "source_sha256": "8417f9609bbf77e0c5ebd54e9a9acd649dd1ce47b42cb18efcb6f276d4048f2b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-15-broadcast_original-four-tier.oem",
+      "sha256": "bd524531cece13da76a8864a19dc72a92e4ad65c5e31540e4ad70ef928c9be9a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-15-broadcast/forecast.csv",
+      "source_sha256": "3299ad3a8908433a08ca3f4d2aa8320cb09a00a2f02b5b4e07bc54ec03ba1465"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-15-final_original-four-tier.oem",
+      "sha256": "b60a54dd27788063bbfc7f5baa6c3c9edc8fb20c9fbb9586053ecf7fc14ed6ae",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-15-final/forecast.csv",
+      "source_sha256": "28238478fe7f6a707c7fa9a828c382e078d1e22bfd34141ec88ac4a1e8203c82"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-15-rapid_original-four-tier.oem",
+      "sha256": "05365403475ac72ad2d0f51e2fd622f6629e601de7c8422c2191fde05883271b",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-15-rapid/forecast.csv",
+      "source_sha256": "bc511b6fcf1c997b20b73b5a9f387fa006afb2c52d8963f7917866ec1344a371"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-15-ultra-rapid_original-four-tier.oem",
+      "sha256": "ac65926b510e8579af96cb71b371761a7febd450ef185930a8e43cc0e37f04ee",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-15-ultra-rapid/forecast.csv",
+      "source_sha256": "98b320ae93f1e169eab05d150a33f6c48d679b3c3bd7f10729fbe733f7ef3134"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-16-broadcast_original-four-tier.oem",
+      "sha256": "5a479daf80e03f5459ee0e87a6a2253a2352186f4f46369c5d1d863d058bfd6d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-16-broadcast/forecast.csv",
+      "source_sha256": "d5621df27756e06f591c3dac02ab6095496d7a18c7b75ec82b4dc16d104073be"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-16-final_original-four-tier.oem",
+      "sha256": "bec54e46a146600d8e16ec6ed2d32686d31e3c9ca8499345954d46ff80f25c4c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-16-final/forecast.csv",
+      "source_sha256": "b4ebb15e52d2833a5abc51feeef297682422a85499a30c778441d689196a6429"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-16-rapid_original-four-tier.oem",
+      "sha256": "e99720570edc2d3fd59abcb7f1ade70a68711e911d9a1de1fd5f8a28895951d6",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-16-rapid/forecast.csv",
+      "source_sha256": "e50a56f450dd44ac2912ec1cf51b8483512af2ec4375a4749add87307dafe26a"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-16-ultra-rapid_original-four-tier.oem",
+      "sha256": "4c61021c5876f2f48217c793efff5f077ff7d510b5519076c6764db34f38f38d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-16-ultra-rapid/forecast.csv",
+      "source_sha256": "49cc8b2e2648b7e6e00e6bc0653c5049ce6c365d4479894aa6c8b97455f9016c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-17-broadcast_original-four-tier.oem",
+      "sha256": "af57f94471fd4d00f76b486df990d3ac44ca140e344276fd13128b0357e15119",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-17-broadcast/forecast.csv",
+      "source_sha256": "2816e3a25321a373846690f0b6a3a51d7fe1e3ff2de5a2437d61d2074e1fea0c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-17-final_original-four-tier.oem",
+      "sha256": "7ce4bbfc9e648b6fe8acdd13d3a5251597c2e3d7043d0c98a024ac9fff0f88f9",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-17-final/forecast.csv",
+      "source_sha256": "8178abb675ac4c91a3378a29c232fe282a7dc23709521f1935c672e9f7fc6357"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-18-broadcast_original-four-tier.oem",
+      "sha256": "9836ab020d3ed2f7eea571638367d8d66ac163f819893c928e07d99c2e66bb22",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-18-broadcast/forecast.csv",
+      "source_sha256": "0dbc151438d46e27708b1899991f9e72634e329273f4386e5351c2c8d49c768c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-18-final_original-four-tier.oem",
+      "sha256": "c1ce11cc344f717a936f8a0b46b2e1127718b8d3faa6ff22a8e7b66c7235deb4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-18-final/forecast.csv",
+      "source_sha256": "abbb1cccd5ac78135071f898bbbf59819d88749ab59b5491502a00ed4bbee7b0"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-18-rapid_original-four-tier.oem",
+      "sha256": "cc3843709da7ad962784b149692985ae7cd45c2eb6aeecc7f2dbea103b123b32",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-18-rapid/forecast.csv",
+      "source_sha256": "7f79d8160aeb816504c69d42dc39d25b8ff7eeddf26ac378ebdab381bea94d17"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-18-ultra-rapid_original-four-tier.oem",
+      "sha256": "4cde6c50532a3dd31165ac88cfe9128bf38f605da63daaba24ee43c7f4e4ff6f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-18-ultra-rapid/forecast.csv",
+      "source_sha256": "24a07f549763f3e58fd5c59a9efc5e68d0153a744a37a7105265fb465b015dca"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-19-broadcast_original-four-tier.oem",
+      "sha256": "35e1eb58a049879a1154f006d4e0d58f858249ad21c415223b6a3a9f741571c4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-19-broadcast/forecast.csv",
+      "source_sha256": "5bd5ddb04e821b7bf9b574056a35f7d340976f7cfe021165a6a1fa6340a25247"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-19-final_original-four-tier.oem",
+      "sha256": "7bafc92949a13db918d88d6df35db32dd2aad467e32d5ae36c2ad658d007da1f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-19-final/forecast.csv",
+      "source_sha256": "c8ffbf59d0fde0ac6c91bc12b80d2b89fd63d02878cb655998730d0fed6763d1"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-19-rapid_original-four-tier.oem",
+      "sha256": "e7ea8450e3aeb074f77bc27e757e05512fb416ba0b7b43006e04f85926a835ed",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-19-rapid/forecast.csv",
+      "source_sha256": "d218fc574ac52c6a11f9faeb3c4a87e5bb37ced2b78ff1959c00c9e67b4ff073"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-19-ultra-rapid_original-four-tier.oem",
+      "sha256": "e12f68ce724521b47cec901a5c2fe1d31a21965fa7a6cd86d4049ea313212043",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-19-ultra-rapid/forecast.csv",
+      "source_sha256": "c45504f2a12ce9e40a634c561513f59b11fca6561ddf6d9a054d7331fcc45d5b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-20-broadcast_original-four-tier.oem",
+      "sha256": "6a16f60ec18a09a7b48420951efc77c37435aebca866581e502dbff8b0422cfd",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-20-broadcast/forecast.csv",
+      "source_sha256": "91f9aab63784b0106ff0775cc199ee1f6d9aa6ea51da84bb936c50f30a428b4c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-20-final_original-four-tier.oem",
+      "sha256": "0e28033a1e44216792305400d20f9dc7de21f957daea749dc0f1a49f70be94e7",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-20-final/forecast.csv",
+      "source_sha256": "5e11f071a387bc4f79c19f10d21d07df4c3a264842fcede896011d89df4152fa"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-20-rapid_original-four-tier.oem",
+      "sha256": "b3a84d718b587dba64a7e3b374318b8cd4ba05234637b02c5c76a642df4d15c5",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-20-rapid/forecast.csv",
+      "source_sha256": "3f764c46e3f414f73014d426f8006be66492585cda4fdc1cefb42dd9df37ad2e"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-20-ultra-rapid_original-four-tier.oem",
+      "sha256": "20d916fac9445e0f10c0d1e144b2951bbf47175775edfd705bc18f49eb69d411",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-20-ultra-rapid/forecast.csv",
+      "source_sha256": "853a2e5766a8ad1939a5d1e90f28ebe9397cf292cf4629825aecef0e5199e451"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-21-broadcast_original-four-tier.oem",
+      "sha256": "6646c7c3ce35f227283c0ad21ee553c881477b00d7954d320fb724d9fbf77b32",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-21-broadcast/forecast.csv",
+      "source_sha256": "7f98c0497d6db0d2c5eeda6ef053ab635d5d332d77001d20bc41b139d0f3b463"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-21-final_original-four-tier.oem",
+      "sha256": "546d7836838dc7cc8a479f11f15d5f73b789bb6a8aeda270fc0efe3ff112e96b",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-21-final/forecast.csv",
+      "source_sha256": "03a869c0a666e2d9dd39c7e279d7d37e5a41fed81617d89b780e5d852e129457"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-21-rapid_original-four-tier.oem",
+      "sha256": "b459f971a2ffd0bf2044d47ce7a4a952d7cafd61c84681e21d7a4e35bb55adc0",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-21-rapid/forecast.csv",
+      "source_sha256": "c6bed59b806b3775bb90f8e411127f55b05719fa715b6ebc3181c3ca7aa62607"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-22-broadcast_original-four-tier.oem",
+      "sha256": "8a50ece1a233f492b85e2dbfb12ccb6e363258a3950442d2fd1cebec68cd8fa4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-22-broadcast/forecast.csv",
+      "source_sha256": "87edc4dbeded35128594119106380b99605769fa84d28925c4c037ae52e3ec6a"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-22-final_original-four-tier.oem",
+      "sha256": "d5b61b1c284f53b8b04969ed125f117b88b0e6ae28b00b7b6db3b7cb70b27804",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-22-final/forecast.csv",
+      "source_sha256": "fb770d646e14b41d65e56ce5ce9d3f0cf794f80ad609b500b34215b967c252e2"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-22-ultra-rapid_original-four-tier.oem",
+      "sha256": "edea4c75178e9ae5119a973c7a417295562f1325c7463673642fc061d8caada1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-22-ultra-rapid/forecast.csv",
+      "source_sha256": "847a8f9911565c34057bb3581c0f0933b9212429adcb0d316ff627661a09b8de"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-23-final_original-four-tier.oem",
+      "sha256": "11ccc61ecb5ce91ef4d7553ab3e02d872f40f1f14beb2d0be27c4ad56a04fa54",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-23-final/forecast.csv",
+      "source_sha256": "9f3ba73471b64abff5220db6431ccdef988cac4245825bba5da4298cb9f76f1e"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-23-rapid_original-four-tier.oem",
+      "sha256": "0ba85c80f66f89d15419e5707b89539a3759d94f11022c03170785607b9a1c1c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-23-rapid/forecast.csv",
+      "source_sha256": "bb8b902d6cfc280e647fbc034e4fc2963ef32a9972d0427a60ac952084f90798"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-23-ultra-rapid_original-four-tier.oem",
+      "sha256": "d8b24e1c04908fb43011a8cc99f35115f37bf741fd724ce3eda308dbaeb20651",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-23-ultra-rapid/forecast.csv",
+      "source_sha256": "d481e17a4b86ffb09f355d661c1e39965675210c23ec97965c9bf24204c763af"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-24-broadcast_original-four-tier.oem",
+      "sha256": "483c70c42694e1437e888cc0c2bd9e80c0569e6be2598f9c26cea73df0cd2c0a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-24-broadcast/forecast.csv",
+      "source_sha256": "9c1bfb6e09ab6f4323d4f5a2ac0d7313ee8c920d3cc4eeb0694ad9e7682c6555"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-24-final_original-four-tier.oem",
+      "sha256": "9c624ee908d619164816dfac83889cfe74194862dc48eaf13e035df51f4c17a0",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-24-final/forecast.csv",
+      "source_sha256": "4f99b7a659255b1f57bd98549e32a4a578e3311ed59c5e30f565eee47652a36c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-24-rapid_original-four-tier.oem",
+      "sha256": "24e54d4f51d49c59b15e796fc32d1fd057cf5bccfcc17e141bfbd4dfe7bbdf43",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-24-rapid/forecast.csv",
+      "source_sha256": "344c8761623dce34d821d879595d460a881bf2f6089356c711c2d7723a9eb43b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-24-ultra-rapid_original-four-tier.oem",
+      "sha256": "b9f80640fc722abc25224da5781b790e1a78f25d2b171fb9443ebf5558dd89b5",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-24-ultra-rapid/forecast.csv",
+      "source_sha256": "7c4a65fd34bb16edd43890b2f7ad54c7afa3b3f1bf8c79055630a4a458f08d61"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-25-broadcast_original-four-tier.oem",
+      "sha256": "c1fdce6b7770321ec763d3cb78616112b60a927ffbc7674d1a16b3dba781f59f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-25-broadcast/forecast.csv",
+      "source_sha256": "0506286dc29d3954eb0cf547417618fe64bf0b7b9f939a8fde4388201d2fcb70"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-25-final_original-four-tier.oem",
+      "sha256": "d2a6bf5d27fdcc72fe4e8cdd2ef0d685db508fc4bb842f623bdcbd9faafcd028",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-25-final/forecast.csv",
+      "source_sha256": "a275f1d519cfbbe60d97b4765fcc40ba3d1b68f640e4c898099f4e48b5d0528a"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-25-rapid_original-four-tier.oem",
+      "sha256": "253866eb273c2cc12585b11bbba66b87e048d016ed69004a1e8f28006687de5f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-25-rapid/forecast.csv",
+      "source_sha256": "7ce650e323448ab73ea8c480a25d8dc9c090ec81e49e2563f00bc6983b3631b8"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-25-ultra-rapid_original-four-tier.oem",
+      "sha256": "b9985cabc37b66b5e7bcc23006728aa0d3945f4ac724879c639fd4ca8d2512d6",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-25-ultra-rapid/forecast.csv",
+      "source_sha256": "ea93704ea79070a99bb3408c32625d9b8aee366d86d4c2137bea6ab15facbf5c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-26-broadcast_original-four-tier.oem",
+      "sha256": "0a9791a09ee7f2a9747fadca2c583f7d4a473c46351a0f43672c7ad5fd067d87",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-26-broadcast/forecast.csv",
+      "source_sha256": "e7cc22412aaeaacdee74373ca196d800cb263f48b0dc668c01f4278d4f7dced5"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-26-final_original-four-tier.oem",
+      "sha256": "3ccf993d7e5c9cd6e61d16d96fbd13f6942c1dd1397b10e9b4858b2203fed1d1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-26-final/forecast.csv",
+      "source_sha256": "1bba2b7fe8a064bf5c6a4911cf63d01454692d900ec93f67f6670d52beb6b002"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-26-rapid_original-four-tier.oem",
+      "sha256": "2b2f0639cb727b6a7e1b67c0cdd0dfa7c8ba9222ac446f1f956f7443fb37c64d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-26-rapid/forecast.csv",
+      "source_sha256": "cfacc0c6411ce2270ae08a8a040afcb51d49e25728a3a7b3a0912e45cab6bae6"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-26-ultra-rapid_original-four-tier.oem",
+      "sha256": "b0a97b9c881bbd6023866c15d7de3be8a9740276de774b27d0cff488da40f1a8",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-26-ultra-rapid/forecast.csv",
+      "source_sha256": "217f6794cf0f6081b0c06c9c6ba8bd5561e4d160befddce445d7b890b7922123"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-27-broadcast_original-four-tier.oem",
+      "sha256": "3a41324a347eb58806686eab979a5894fc2b656871328fb3a0f3339b68744932",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-27-broadcast/forecast.csv",
+      "source_sha256": "47ddd74d07899efae6c956d9c35320a1bdac104bb56cad42aa4837e11acfc209"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-27-final_original-four-tier.oem",
+      "sha256": "ed31c33de7664f47f4a6d6347bde26122b079f5547219b64c10da8fcfb6f5e17",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-27-final/forecast.csv",
+      "source_sha256": "44ec804e7a0da2fbc073aaedf9fa3764a3c38c725fbe13d140648537f26fc9b9"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-27-rapid_original-four-tier.oem",
+      "sha256": "2f3fc1d4f265e8f89e38e4e4b4148743b12e6d6882e2d6f109c6d40d8eadd41c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-27-rapid/forecast.csv",
+      "source_sha256": "b5087d085510e920612414a09f0bb328167ac6581bdcc642206f4be1bc8db078"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-27-ultra-rapid_original-four-tier.oem",
+      "sha256": "d936473b26a27bf5d4ee10529a766aa1a0de923532c74dd6dc876dfecd4d8fbf",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-27-ultra-rapid/forecast.csv",
+      "source_sha256": "ae6b0d7d3f5a1381950a2c91e635d7f569e09c89d211eac8089178b8fb6706cd"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-28-broadcast_original-four-tier.oem",
+      "sha256": "b163feb0f571ef21c96d13e7de6d1c4856486020c638513f8049c62ec873a4e2",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-28-broadcast/forecast.csv",
+      "source_sha256": "03aca12fd09ba144d8eed0289b41bf3982e62994894974971ea75c8fa8f6adbc"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-28-final_original-four-tier.oem",
+      "sha256": "4efb5f4c186a4a5c8364cb68bbd5b659ac2a6bdd176843145da1ca1c3dfbe1a3",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-28-final/forecast.csv",
+      "source_sha256": "717b3ade0f7a67a7ed1d7a719f6aa19440c6996e3747f9d88be64214702c2861"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-28-rapid_original-four-tier.oem",
+      "sha256": "e20214581963ab4fdbf51b8618afe2aae77835e72c6acab40ba529a36996b666",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-28-rapid/forecast.csv",
+      "source_sha256": "9cb48c9f7eb0e6e016cef7086d96e9d6dd4c19508171c7020d74f7ea92b69960"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-28-ultra-rapid_original-four-tier.oem",
+      "sha256": "f1c904a5aa310483c47434f4ea9ce584159058507b1a056bc1df7d9fc4ec6d70",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-28-ultra-rapid/forecast.csv",
+      "source_sha256": "e0ed6a5f0bfc03a8a9cf41ceff56a3e19067d75456cace2e4e38a9696bebe5c8"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-29-rapid_original-four-tier.oem",
+      "sha256": "724673cd9a73bf94a0f3f8b9b38a279cd26f6fb8bfb8bfae666cb18840bc9be4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-29-rapid/forecast.csv",
+      "source_sha256": "96a333587e16595ce565798ad0bf77f4a2b79117fae13339108a82046630722e"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-29-ultra-rapid_original-four-tier.oem",
+      "sha256": "517e440abbc6bd0e9fe661f24f3bc253fcf646a28fdf6c5d6c26c0a0163ef9d1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-29-ultra-rapid/forecast.csv",
+      "source_sha256": "dd69d7cea67e34313e4393b25a9b17377804431625a987c5c4c3bcce785861d7"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-30-broadcast_original-four-tier.oem",
+      "sha256": "a4a6fd505d16b3dd5601d024c30368a388fe0dce88b2725576348f0a07667385",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-30-broadcast/forecast.csv",
+      "source_sha256": "017b5dd99ccc2bfdd971dfa1ed572ed95d772a3cbb6130a0925019c438481294"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-30-final_original-four-tier.oem",
+      "sha256": "ec37671d50ae4adc8fff4762518f693bb6626ae0e9e91de3ab845b8a5e3ebc5d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-30-final/forecast.csv",
+      "source_sha256": "1b7754d019f98ac552135956d81f019c85db3cd7d0be887a0973b0ae472ffdc4"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-30-rapid_original-four-tier.oem",
+      "sha256": "1fca9de644ce2f5f93c8063ef73666214009628d0deb4660017610ecd98e7329",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-30-rapid/forecast.csv",
+      "source_sha256": "01a7c565112f1ba78dc2717b8dde61cc097de916cbc9e219bf1933fd5a99edf6"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-09-30-ultra-rapid_original-four-tier.oem",
+      "sha256": "d7f9eb31ac67985372b06d548f0ff629a97a550a5d5dc5e9e1ea6db724ec1a11",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-09-30-ultra-rapid/forecast.csv",
+      "source_sha256": "8abb5545c54ead37f3226f9057ff616b302fd2f0a2e2b4e2be582985049c9898"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-01-rapid_original-four-tier.oem",
+      "sha256": "381d274a9ab944d02b6d38eee7532e885bcfb5a73e6594456d0c30a435d42494",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-01-rapid/forecast.csv",
+      "source_sha256": "646aed81c4cbd29fed019df4fdfe0b7033394338965fd37f749317366cc3ad69"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-01-ultra-rapid_original-four-tier.oem",
+      "sha256": "3ecb584421b836adae503740b622a6891beed2b489cdfbd23a6d2bbaea44115f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-01-ultra-rapid/forecast.csv",
+      "source_sha256": "ac01ea74fee71c0bcf8c2e5a9a4f1c60ec0b933d36a4149fb436266bec8e12bd"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-02-final_original-four-tier.oem",
+      "sha256": "4e144709b36b496f6ef448e9bd50c5920e632b35809b21ea25c2659ded073339",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-02-final/forecast.csv",
+      "source_sha256": "545e10d4638df018d9099e1792777ae5cc77faa49ce962b738f1c39d259219c4"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-02-rapid_original-four-tier.oem",
+      "sha256": "4d05707f03129109c94c3f613d150b40349aacaf10f47200e369e5f634f7a419",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-02-rapid/forecast.csv",
+      "source_sha256": "aba60f1048077eb1f71b9334351674598825f07f0c7d36162cc867c2172e775f"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-02-ultra-rapid_original-four-tier.oem",
+      "sha256": "b9c8275bc2b5026167be3df7f5aedebf2829042661f73a9f81eeb072f9dab073",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-02-ultra-rapid/forecast.csv",
+      "source_sha256": "247b7f52ba12c9387fca256c624776dd3652634a50a2406dfc7b13c41d61f4ac"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-03-broadcast_original-four-tier.oem",
+      "sha256": "9b22c61df1b3132420dbbb72227edcf706b3a9c47ca7ac2d27cfa5e37165ac1c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-03-broadcast/forecast.csv",
+      "source_sha256": "1ab0c78dd7120dfe88c6a6d7c742e8b8e7126404ec5d87ba0a10298feae41b50"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-03-final_original-four-tier.oem",
+      "sha256": "ac4c89d4561c8b21fe222370e728981b980651dfe42420f91170dec0517920f3",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-03-final/forecast.csv",
+      "source_sha256": "3766e68ad9757d792a40df07ddfe8c2f13d08d6451d780eebc16d579b4d2c45c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-03-rapid_original-four-tier.oem",
+      "sha256": "e01bcaebc4b508c42420209d9effe2c291a65f035382d397edd0e69fde02ea24",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-03-rapid/forecast.csv",
+      "source_sha256": "097c6513e92f6d75df2c34957d81be6ab2e5a3cd029769d3e84d5d0e7b7e573c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-03-ultra-rapid_original-four-tier.oem",
+      "sha256": "f4fb31d2d62a8457405f7fd60c7c5400031160f6defed2fd50fac3966371a57d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-03-ultra-rapid/forecast.csv",
+      "source_sha256": "10b91dec0f655d75b91c3dcae3b58fdd3b6b2b123b6bce3f03fc1290ea23cf41"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-04-broadcast_original-four-tier.oem",
+      "sha256": "d57bc80ffc237d10e36503d873a9fbe9780ff36ce235ac91ebed99296dacdf8a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-04-broadcast/forecast.csv",
+      "source_sha256": "30c0a674cfce81a65927fc7dc845620902e8eba608be78c8ed9b294687b628d7"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-04-final_original-four-tier.oem",
+      "sha256": "8c9f77d65fdb3a979693f769b405055bc6b0bcbe15fb30055f13af245ec938fc",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-04-final/forecast.csv",
+      "source_sha256": "a62425b75ea4cadd468710f6a39efc8d0ca1b6edb81a01f7346b58408cb6a971"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-04-rapid_original-four-tier.oem",
+      "sha256": "23592e45bdbd4bdc942cc757523dc6ac29d07def17fa8f2821bd6d85a1d926b2",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-04-rapid/forecast.csv",
+      "source_sha256": "15f920924cbeb47c0794b8f52df6de2bf4dce8460cb732b719270cf1b7e91a0d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-04-ultra-rapid_original-four-tier.oem",
+      "sha256": "165da49396bcb5e2cc160bf15420671e27c04ebead8ae5e713c207ed941a5fcc",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-04-ultra-rapid/forecast.csv",
+      "source_sha256": "15e80210dc7c6c38f4bffcf9faaa9b057504f15fb23b387eb65d1dcd379162da"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-05-broadcast_original-four-tier.oem",
+      "sha256": "4e341f459b7296f6bc726a39b73aeb403d3ba6834b19e6299aedafed0b8173f4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-05-broadcast/forecast.csv",
+      "source_sha256": "71b0dc931c3034f8535481a5f005f1f7908ab047e7801f8a065123544f6ef119"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-05-rapid_original-four-tier.oem",
+      "sha256": "58a95a2d2e85d81de32f8f33a5d5e416b5744933a4ea20e315a4a56cfbf518f4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-05-rapid/forecast.csv",
+      "source_sha256": "0902c4e42c3651cad936d5045f2598fd96ba857ecd9ea18581a21fa922076c38"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-05-ultra-rapid_original-four-tier.oem",
+      "sha256": "5e917e8a7f044aed7f5eb896c90a8a5c9bdef5cfbc693475bfbb41e3252c869e",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-05-ultra-rapid/forecast.csv",
+      "source_sha256": "63693dcd135922a85d2a6ce6402f906d1a86149486c9303ea0f7363b52a419df"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-06-broadcast_original-four-tier.oem",
+      "sha256": "cd08d1c056227a63c4e8b4c72d085430519f8d914222209fe08a5e4a69710cd3",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-06-broadcast/forecast.csv",
+      "source_sha256": "37e7714eede9c56d90274f548015553ab9341c0743b29476a6589f7c58dc04d9"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-06-final_original-four-tier.oem",
+      "sha256": "4c730fcf18b97b28bc5c4dda0f9bbf01ef9b810a56c4f69dbaa4ee5b39222c13",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-06-final/forecast.csv",
+      "source_sha256": "a4c8a6cdec8905dc4547bb824ec463642293878237bc3f2ead7168639c86047d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-06-rapid_original-four-tier.oem",
+      "sha256": "5d381734eea940a7e5d9ce6ef4c9280595f3495182320e5443178af778fc962c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-06-rapid/forecast.csv",
+      "source_sha256": "b88d326453b2d4add151c7f6e4241023dbc5496cd58fadc5ee30201fc0444af5"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-06-ultra-rapid_original-four-tier.oem",
+      "sha256": "0eb84f6964d0d2399e91760435e49575640aa687947eab1d7bce950df096cf69",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-06-ultra-rapid/forecast.csv",
+      "source_sha256": "af4717d870cbbfa1838944e358355a9ff7b9f05fdb7098a2a2ab506d0104ba36"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-07-broadcast_original-four-tier.oem",
+      "sha256": "3392f3f5164cd11dda368fec5fcba28408694bb2be2eea85b4f8866a5c7a1c97",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-07-broadcast/forecast.csv",
+      "source_sha256": "ea27050263d0f08f13bd6119d3a0b542a4f8a9efc101af0eead0e4933a62e5aa"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-07-final_original-four-tier.oem",
+      "sha256": "7a50440404a0cd2595bed801cce53cb9f640c516c2e972e5e8b90c13b89f4a63",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-07-final/forecast.csv",
+      "source_sha256": "bf7c08ad54a81e5b83ee08cc802d77c8a10f48180132ba4fd0e0f759e37acddd"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-07-rapid_original-four-tier.oem",
+      "sha256": "d5395c90e70711ea8d2a495411872f09aa93a9b86e95b737d8f4b2bd48071b59",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-07-rapid/forecast.csv",
+      "source_sha256": "0a83843810ee7b395e14309be92729fcb8b01b5e6df7787ba7146f36fcc17359"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-08-broadcast_original-four-tier.oem",
+      "sha256": "8b96c58c01f9e9b6333bf74ae17f12b30195f109fa674e3186c7f712371bfc87",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-08-broadcast/forecast.csv",
+      "source_sha256": "fc11cc936a71bcc637db0f6ee1f6a0822467345223d8f2f92e887f0bf521890f"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-08-final_original-four-tier.oem",
+      "sha256": "1b3e07b7431961b22c4712a830d1b0665dbcc7db6191c4683131bc0780bcecb8",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-08-final/forecast.csv",
+      "source_sha256": "933511fce7eeedb8eb5a78b2fd1bba9b59b5d478fa475f2d677cce61432011dc"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-08-ultra-rapid_original-four-tier.oem",
+      "sha256": "c2f26031a2e8712bc2c1f51b54f0747a0343fb0ecf56c75b72bfdf8055d44f51",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-08-ultra-rapid/forecast.csv",
+      "source_sha256": "fe74b240b7eb839971a970f7804af309dd9026bfd243a6d649cf56fe0030046b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-09-final_original-four-tier.oem",
+      "sha256": "5772bd354870f90b1bba9302a076d5137af8bc7bb14bec6838800cf986e0c8b8",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-09-final/forecast.csv",
+      "source_sha256": "12bfedcf4355f25ac65ee11e8a60705bff2c91a90209eb400401ea0a803b4998"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-09-rapid_original-four-tier.oem",
+      "sha256": "01306df02bf3428145d493d7a79a72ecd164bc4d451d8917d13124acc7299ddf",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-09-rapid/forecast.csv",
+      "source_sha256": "ed9d1c19af720db9da2f3e4c3151725327327c0cb68f63364ab753fd56ffff00"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-10-broadcast_original-four-tier.oem",
+      "sha256": "5f6de28e6c80e0b0a81079d36b4b74bb696ce4fd7b3b9766e40996afd58f4738",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-10-broadcast/forecast.csv",
+      "source_sha256": "34386f11443f9596a5cdbf6d0397725e1fda907e848008ade21c525a20618d95"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-10-final_original-four-tier.oem",
+      "sha256": "4cd960960ac8d7ce15dcd503e0f33834a6eb4d364ca049fafab24d05850e2208",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-10-final/forecast.csv",
+      "source_sha256": "9e43c5b56f2bf1c58f4b612a01f3e236e49d972a180a538954faf367f9fa6afe"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-10-rapid_original-four-tier.oem",
+      "sha256": "2b3d43eb4eeb42f0f2d574642b6ad089d4ee7d85a7a8be062ae94ff8574ecefa",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-10-rapid/forecast.csv",
+      "source_sha256": "d7d85194ea0c87b9c309fcbe610ef6b6ee0325e0572ed024d951ddc39c5171dc"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-10-ultra-rapid_original-four-tier.oem",
+      "sha256": "bcee50fe49f42c649780e9a34678f3b1f6499d26945ec02b0bbf05417c4596dc",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-10-ultra-rapid/forecast.csv",
+      "source_sha256": "434d1bb432af7627a9d77d46b53898c09faa49afec59338aa7c2ec5d01ec71ed"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-11-final_original-four-tier.oem",
+      "sha256": "e3e5aa15508158b7f57d23e90cdb9a46832feb09e0dda8d824303087fbb2ebee",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-11-final/forecast.csv",
+      "source_sha256": "55b411f1fd1363aa97228cc98a6f360c579db79c518e56217a8e236737fb9f1b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-11-rapid_original-four-tier.oem",
+      "sha256": "47e1e33b05156f918472c2f58dbd22868742a2eb4e350f6b64ccd6afa3af0895",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-11-rapid/forecast.csv",
+      "source_sha256": "baae3dbd34aa934b238e3975ae455f6164de9ce24b99de35c33998cd6d3760f5"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-11-ultra-rapid_original-four-tier.oem",
+      "sha256": "2304273775cb98087b2cd7b51980bbe39cb2894c517f145c62a7fde19253e34f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-11-ultra-rapid/forecast.csv",
+      "source_sha256": "2a198f6e4b48440f12e6fa5bad88cae4904e2bd561267999954c393b1c3401ac"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-12-broadcast_original-four-tier.oem",
+      "sha256": "d0ee766d6874e794fae72f1bd4a39bbcd1e4bd4ce66e82872dcad2da85892897",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-12-broadcast/forecast.csv",
+      "source_sha256": "b39e4d59e99e715c13c0baefb1ee1de4f3e9cb85f4f155ab23f645093ba03a6d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-12-final_original-four-tier.oem",
+      "sha256": "c3f9101c88e6ab24818a5a6dc1935fff33c42e95bb95022f767e72f8dd7e8263",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-12-final/forecast.csv",
+      "source_sha256": "795a917f7a7719f4d7b48fa383f96594927549dea1a894c3350cc06fe4299daa"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-12-ultra-rapid_original-four-tier.oem",
+      "sha256": "e5f08362fae53d6f82020dfb08b0dc03d4a5eb198bb05c7bcabb9ccffb11bbc8",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-12-ultra-rapid/forecast.csv",
+      "source_sha256": "fb91fade4ef87e294f44de996b292120ec1d10301750d2cf80e81c4c2436d1bb"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-13-broadcast_original-four-tier.oem",
+      "sha256": "09eff02711c476ac4bdf25a161af557af8207595cbba12bc263e325611fc96a6",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-13-broadcast/forecast.csv",
+      "source_sha256": "0b520766947cf5fe2c93088c52690d8b0d8b4e8d4e1632b5c69e9b9a017e77ec"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-13-final_original-four-tier.oem",
+      "sha256": "b856c2a50bfc9db0cd40d354576c1fb2e40c4ea606d221364ee082c9c17d8414",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-13-final/forecast.csv",
+      "source_sha256": "2499f79d7d9666228f6f578e983cb1a4b856b17fcd606a84090eb5b1ee54308a"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-13-rapid_original-four-tier.oem",
+      "sha256": "685ae408e30babdcf73a76009db0e0762d015d942a4b4c0748c3ea31f975c983",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-13-rapid/forecast.csv",
+      "source_sha256": "8d7d073dc985520870ca0019898c8bcc5c1c9894ad227df9776d760bdd76bf40"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-14-broadcast_original-four-tier.oem",
+      "sha256": "44f57adf1972888d7157b1115c4aee4716e7764c96d6023b4692a3090ed6bc07",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-14-broadcast/forecast.csv",
+      "source_sha256": "12eb85895f2e8a0565a5071dc6c429af649ee5d12f26729d4821b77d8d68c79c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-14-final_original-four-tier.oem",
+      "sha256": "a08fbe8f8461afc44280ccdff76df70066687b3e29122d5e1c6228cd485437ac",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-14-final/forecast.csv",
+      "source_sha256": "d13e71661aa9b9844a8198e74d6a9aa97b40c6be5a5966ad306e9c74c64a20e2"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-14-rapid_original-four-tier.oem",
+      "sha256": "81c595ecd3dea188c6ed029a9174ff64870dca7cef89720a22b7e00db31d0a5a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-14-rapid/forecast.csv",
+      "source_sha256": "ade51266bb8dfdf54ce1dc1b183139930af795bcd4e07d3f0e68272f174276f7"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-14-ultra-rapid_original-four-tier.oem",
+      "sha256": "bfb7a67b20386d04a6d4f13f5ad271104a8c8eb00dd0cb5728562927bce828a7",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-14-ultra-rapid/forecast.csv",
+      "source_sha256": "a08aacbf262597d1e63708a914d616c01400efa6721045069df8ae5c20066a9d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-15-broadcast_original-four-tier.oem",
+      "sha256": "009949b5005d910d9b2fe7016d38760078495131de812bacaa7892c805272e44",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-15-broadcast/forecast.csv",
+      "source_sha256": "c55c37e9f3e7d99b3419eab90ea509e152f7b53fc9b9c01ceb7d600e8131deaa"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-15-rapid_original-four-tier.oem",
+      "sha256": "d9e288c0e39081ad1e2d81d10101bc079d1e055d59c0420198e65fcb3e45d99f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-15-rapid/forecast.csv",
+      "source_sha256": "1afcc58f4a82ce378239f21a7e3a6ccb2b1298f27d24a56db3c789a5b92940ca"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-15-ultra-rapid_original-four-tier.oem",
+      "sha256": "086d73b43fa8d834ba8d44e3fd62e622d47e7da8a0f064801e46bb7d848ea835",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-15-ultra-rapid/forecast.csv",
+      "source_sha256": "a9b4b6be7df2b3a816e0013272b37144fe9463f13d8f08d1722e6c025944c01c"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-16-final_original-four-tier.oem",
+      "sha256": "6a1c24131dcf5a31364cb381515b51fb4eb8938b79627097e98b614ba685a2ed",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-16-final/forecast.csv",
+      "source_sha256": "f2d22641af669bbe9f375693f32689fb4fbc08a4d8722beafa7fd9e7c4d6c0a8"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-16-rapid_original-four-tier.oem",
+      "sha256": "925e42aa952ac8245dc7bc7c90b78faac6cafecae2da3ce2d61e6137f2591f60",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-16-rapid/forecast.csv",
+      "source_sha256": "bcd2b794a23123f352b297216e5a4c802cb6673b1a328608cf6672fd2d710c93"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-16-ultra-rapid_original-four-tier.oem",
+      "sha256": "e95546a27fcd7e0d856d75ec5a86244066184eee9910c910243a693d04f1a403",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-16-ultra-rapid/forecast.csv",
+      "source_sha256": "493643ec6517c7bf7db1101a25d04a537493fc933f0aa1c2034a984aa6dc8abc"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-17-rapid_original-four-tier.oem",
+      "sha256": "063da17daa66fa18b19f056a371104b1e5fb1ca7c85c9f5dc7f05ea9d5e641f4",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-17-rapid/forecast.csv",
+      "source_sha256": "72bc7eff3f0ad6961adbc2fc1b8fc16f255e4b60e456501d7cadff8f58301314"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-17-ultra-rapid_original-four-tier.oem",
+      "sha256": "c75f478f5913804850518adbeac6209fa16d5b8cd14c100372889e2628201b99",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-17-ultra-rapid/forecast.csv",
+      "source_sha256": "f95105c6447214aa2a9809e787ad44f069be1c816f84f71a00049c0453d6e238"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-18-broadcast_original-four-tier.oem",
+      "sha256": "87732bc8ab24ebddb65824a147465f46970220d0e526ede1b7d53138f3026af8",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-18-broadcast/forecast.csv",
+      "source_sha256": "ff3ef4c890b5f6de475c2274474fcb5fff61748c118fe68d737221d860d5ed4f"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-18-final_original-four-tier.oem",
+      "sha256": "3e3b4c92cd89d3c8f7d238a78c8f92f0a787a49c6f8ec64a6a2436b3431af2ef",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-18-final/forecast.csv",
+      "source_sha256": "49413ba5444e64c1cb3a92e561f0bed80995a129b06d8eb9332e9a2a5d0cc180"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-18-rapid_original-four-tier.oem",
+      "sha256": "e8405f8dc26244dc8f61899df6fbb743bf9af95e420ff93bc6468adad8c483dc",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-18-rapid/forecast.csv",
+      "source_sha256": "e544262b574c05cca96acb7702eac1daca05f77b26b1edddb3c5b018ca9a68eb"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-19-final_original-four-tier.oem",
+      "sha256": "d9f5cd292431ef4976c380f69b6879c8dfcc86eb56b6cb88cf390d2c91d30398",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-19-final/forecast.csv",
+      "source_sha256": "13e321656fa0500d6eb6f83dd16115d28c1f227e14b990aa1ee186652d8b0641"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-19-rapid_original-four-tier.oem",
+      "sha256": "97959d1a0f4f83624f25a0f99ca055ee93376e86583f4a8c9a5b7e4f876f8f96",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-19-rapid/forecast.csv",
+      "source_sha256": "bfeca698658cec3d0c908f06941f1109acec0faecdaff5409a4aeb2466184057"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-19-ultra-rapid_original-four-tier.oem",
+      "sha256": "2bcff816cc1960db038d20e7f23f39ed9baee1b4930338350aa88078b2de8783",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-19-ultra-rapid/forecast.csv",
+      "source_sha256": "4c259dca9a438157c99a4109942b32625e63391f2171b10e4b67f050767d3fa4"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-20-broadcast_original-four-tier.oem",
+      "sha256": "f24cd8d2480fd4b2a16f3a47c63118a601284eac70120b487bacdd7e3d8236f0",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-20-broadcast/forecast.csv",
+      "source_sha256": "968e68a2a17abe8089f0f5a60d4187a38e1fb9a2f29ecb320884f67dcb7022a8"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-20-final_original-four-tier.oem",
+      "sha256": "86cf5f5a00bca9620c445c22aeb0cb1d288ba171d9453c1ddfdf252423b81215",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-20-final/forecast.csv",
+      "source_sha256": "dcc743ec06fe341134601bbf926a91122cec39560b12199052d4b53c022bad5f"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-20-rapid_original-four-tier.oem",
+      "sha256": "17d500beeefcb940ab00b1beb59b411362415dc97a2bb9ddd6e6468f90bed090",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-20-rapid/forecast.csv",
+      "source_sha256": "26cb7e7f19f3c01dab7164b31328ae470f32e2dfc1e9452e198e5b08f567beba"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-20-ultra-rapid_original-four-tier.oem",
+      "sha256": "1f220de3f06c8632768c70924137fde802d1fe18eac417ba02883fc5171ee6e9",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-20-ultra-rapid/forecast.csv",
+      "source_sha256": "ccd1700ca69407a6a37c38a1ce438cf7fc845a4d5191330ed1b41a238d021ff9"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-21-broadcast_original-four-tier.oem",
+      "sha256": "8337417dd5eec59b232646d010bea62e224eebf8b2f4522d193757d3050a8fbf",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-21-broadcast/forecast.csv",
+      "source_sha256": "1a6d5f07e0c2f6f2bc8c7c7d15452d23f0ce2fc220594ca3bb0a7cc558f35c6b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-21-final_original-four-tier.oem",
+      "sha256": "b7f3f6217bad8ecee8fe5eb8a351b76f9d8a90754282b70e059148f7b07d7e8e",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-21-final/forecast.csv",
+      "source_sha256": "131c5fa0ef797b23d9ed7900194dbbcf6655edfb97989a57f59d6a788cc6adf7"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-21-rapid_original-four-tier.oem",
+      "sha256": "98485feebdc3129edcf1bbed3f6116db31adb90e00595d69dbbfe0ee5f5407b9",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-21-rapid/forecast.csv",
+      "source_sha256": "61f31d16b4cb3e14c5da4e8eb40615acb6126e8d31b9a1c0f9a15f2d9fcbb6ea"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-21-ultra-rapid_original-four-tier.oem",
+      "sha256": "741b5484ec812204e2e160458eac99fc8afa13366a178cca2c988fa00906b312",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-21-ultra-rapid/forecast.csv",
+      "source_sha256": "afa22b7cb16bd6e0c29e4da1d604b71466eac8f7fd3f7d66cbd298793b7f43a3"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-22-broadcast_original-four-tier.oem",
+      "sha256": "2705490b9a1557b56745f3c574ab7ecb14d77a963412a7ffb8bc1d38c65b477c",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-22-broadcast/forecast.csv",
+      "source_sha256": "ac1859e70bd29f6132e487c277babc1121f0be97cf72481dd3fc8e8886dffaeb"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-22-rapid_original-four-tier.oem",
+      "sha256": "252039ac0765ebcd3b8fd308925725012c0a9cf3a637f09e74e14aff3f5004e5",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-22-rapid/forecast.csv",
+      "source_sha256": "a0e7e674eccec674ba61a313412d4dbc04d67ae452a1ed5cbe09f01353284276"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-23-final_original-four-tier.oem",
+      "sha256": "39b26eaae24f861a76e5eba1bfcbc8f46defa82e32e5ad0bf9949616b8ab7e22",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-23-final/forecast.csv",
+      "source_sha256": "61dbaa3bdb39d55f485a538e4e94435831a54846fe5517317eb75e65bc9a0f7d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-23-ultra-rapid_original-four-tier.oem",
+      "sha256": "4ec2b102661358ad9bc1622ac633a231b5d65d3c7439d6f9a5d3331e3b67126f",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-23-ultra-rapid/forecast.csv",
+      "source_sha256": "b010581e8d663c5850ae07bcad8b7aa73355c0e4d400cb51403cc48d1b206f3d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-24-broadcast_original-four-tier.oem",
+      "sha256": "2c2bd7d7c73b693001d21c68ac90dec3e8f7c0f6cff99a13f58fc510d5e67500",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-24-broadcast/forecast.csv",
+      "source_sha256": "bff096c411b555847c0a90753e1439d86ffa59b78114c27913e5bf7b6fca8abd"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-24-final_original-four-tier.oem",
+      "sha256": "ce354c7ed5ae2fc4322183f569caa4de463d7d713d75c858649fc3054dc0b140",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-24-final/forecast.csv",
+      "source_sha256": "59a51a70a99d6e4f2aa4942692fe21a318b6a39a58e661c9120ce787f48a0b3b"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-24-rapid_original-four-tier.oem",
+      "sha256": "0458c405f592b2d62f0dcf4eec18771200e237a33f546b7afed3e1f6237d3b10",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-24-rapid/forecast.csv",
+      "source_sha256": "9def55c596e145b98161b6b7df53331d13cad51109a68d2e65f502fb286ce595"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-24-ultra-rapid_original-four-tier.oem",
+      "sha256": "f032d9eea73f1b25118e518e248db7b5c279a877296185297074e520a93868d8",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-24-ultra-rapid/forecast.csv",
+      "source_sha256": "70d94c22687940825c4f20b8bf0301164d7a564e8ec90e86ed30211394505e75"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-25-broadcast_original-four-tier.oem",
+      "sha256": "6fea83e17d96e3d22f1c7f369cd2a349814cc52cf1f59d4f274a54eff17ecee6",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-25-broadcast/forecast.csv",
+      "source_sha256": "f6b7b9a59a9829ba380528313865b855fc3715f6d691b736dc59ec380f18569a"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-25-final_original-four-tier.oem",
+      "sha256": "e443533c024dd160bd75bf6191641a38a47e0a966c4e7679af8deeca5c13fdc6",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-25-final/forecast.csv",
+      "source_sha256": "b900c9c3cee3bc8e24c373c2663a7255f1b3c4e00b26e7771a1336f92e37beb2"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-25-rapid_original-four-tier.oem",
+      "sha256": "91797bda25780fbf3430d282a121a4baa38d2477ee997ff27f09ec16cfb66e27",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-25-rapid/forecast.csv",
+      "source_sha256": "3c47c4978bb45baa5b3fd8813f6a5a6cbf6528ea960750a9914d8897c650bc26"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-26-broadcast_original-four-tier.oem",
+      "sha256": "468ec5d3b7278cf0c2e7ce43de09dc80b7b9e0783c76028c48314277e235e336",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-26-broadcast/forecast.csv",
+      "source_sha256": "a1997f66bfdcb84e3015f084a51574c559d0aa890fc7e9ab75d071a1a3427cd2"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-26-rapid_original-four-tier.oem",
+      "sha256": "e8e1e0acffe7b8cd125a38903e267d851ef40d79123e00be9277ba792c65c08a",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-26-rapid/forecast.csv",
+      "source_sha256": "d0439b80aef140330692f8b37f08ea40b191847d4dc51a482fc0ac608cf786e1"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-26-ultra-rapid_original-four-tier.oem",
+      "sha256": "79012345ad3959a089943ebe7f81f5654d6143036068ec1b6145597dd311347b",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-26-ultra-rapid/forecast.csv",
+      "source_sha256": "16237071039327f6bc0589b98cdce6fa8ba66d565436d47d57e53af3f5eea7e1"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-27-broadcast_original-four-tier.oem",
+      "sha256": "3cf8e3c64d2502a2552865d4309132d6edea883c60f1d24d5d943acc6e8e0958",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-27-broadcast/forecast.csv",
+      "source_sha256": "5b9c851bd37bffaafad62ae184244ade309e1a962f398fcf80b7d2d006dbd2dd"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-27-final_original-four-tier.oem",
+      "sha256": "ca62660bc49ca4e79f8f2729d43eb05d2b8487b8e1a6849841b4d2b59181a022",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-27-final/forecast.csv",
+      "source_sha256": "e4867d8868c41e48577fd650c672771a4ea0dcd5e79103bf5c6714cb70a3a4c2"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-27-rapid_original-four-tier.oem",
+      "sha256": "6a2bb1051381cd2201f76b8851c992467f07372aed73ba3adcb9a2bbb9a899b1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-27-rapid/forecast.csv",
+      "source_sha256": "712a1b8b457e04be5359c842660f4a5ed7d1dc230d38d462ea7720dc4da93366"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-27-ultra-rapid_original-four-tier.oem",
+      "sha256": "2988e5ee6db9f85ea44eea7447721e4b7724bfdbee497469d700becd31dac71b",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-27-ultra-rapid/forecast.csv",
+      "source_sha256": "b2bcd44eec437fe5f45131fb4ded01cac263dd8208a47f3db876118aec54a155"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-28-broadcast_original-four-tier.oem",
+      "sha256": "8cbdfc593c6036535a91eed3c175f8d532dd16225646315d40ac155ebeb4c54d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-28-broadcast/forecast.csv",
+      "source_sha256": "8c98c13763b9462cf92488d6199f436c3b9fd4e38de31a65a8958562f3b0cb8a"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-28-final_original-four-tier.oem",
+      "sha256": "1b5b6c87aaeff73d565df724c7c5e7b63ecb657ca9a2f321549ea0ee6bca5b31",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-28-final/forecast.csv",
+      "source_sha256": "be8cb6922637c1131e4445292d3cd47ca502d545693b672e05d5e2df7313aa33"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-28-rapid_original-four-tier.oem",
+      "sha256": "cd330c5eaf9c89aa1366db1045757ec226cdbe6f3566c0f22e3fc61918fcc8c7",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-28-rapid/forecast.csv",
+      "source_sha256": "721570452375c23a2a5b64b661f769ae4740e975b593f631d1c4900451e3f760"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-28-ultra-rapid_original-four-tier.oem",
+      "sha256": "e2177ac74042e086cef74a2a6aae7a1fa8c1141ddf9b2c116a7537bc50ef9269",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-28-ultra-rapid/forecast.csv",
+      "source_sha256": "6507e8fdd2f80eb7b255c2a17758f63bd138da1e993610592fa9d60c42657c69"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-29-broadcast_original-four-tier.oem",
+      "sha256": "8400ce8ec421ed7698e028c200bb3af1903befb94d5a6d4ed2180c31b7a1ecf0",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-29-broadcast/forecast.csv",
+      "source_sha256": "ec5ef9b2dd3ce34f41d24db92ddbc703b6c4f862f5b8328ea4a21cf2c8a6222d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-29-final_original-four-tier.oem",
+      "sha256": "ae396ffc5e2a41d7c3e4cc765c609cb6d2a6b4146c278e1fef69f31bcd7d5079",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-29-final/forecast.csv",
+      "source_sha256": "92a8329ad02518f232a9cc8c65ac0f9277ef5348ce6e87f46fab11e7f08b7861"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-29-rapid_original-four-tier.oem",
+      "sha256": "0f03a22a0374317c86b52b8e2aab8c0649c89104510fb5ec386a0aaea8201f52",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-29-rapid/forecast.csv",
+      "source_sha256": "4d439e2840bd751ff6dba29fb24096a66eb4c82ecda98e34d806a445b36fffdb"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-29-ultra-rapid_original-four-tier.oem",
+      "sha256": "9a1e429b0c5b8b48548601972f47140ec7798647610afbb7579a681749c3c1f6",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-29-ultra-rapid/forecast.csv",
+      "source_sha256": "bbb35ab0dc152e5b09b97437ed075c06ac5b7f9a8ae006fc4e146a646ecaa7cc"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-30-broadcast_original-four-tier.oem",
+      "sha256": "a57d729e51934a49895a0001e3ed1f6607dfe03d5e84c12eda294e5e7b8735fb",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-30-broadcast/forecast.csv",
+      "source_sha256": "a95366347b8eeae1ed41931cb8a1324f47d3f69b7536efb15882be9c3b594d41"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-30-final_original-four-tier.oem",
+      "sha256": "f227570aa7a4078cbbccee43bc122ae773b2e91873d4f18c9ed9e62e1940a68d",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-30-final/forecast.csv",
+      "source_sha256": "e0cb32532d890996681a46b7d348f5057ed2d0ac6c1d35ba718b9b516ee1d2af"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-31-final_original-four-tier.oem",
+      "sha256": "22acff952723932044403bc86a2a23222cac83fbe62084bd95037d3ffb8231a7",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-31-final/forecast.csv",
+      "source_sha256": "49f32e51908238767af7bc17b11d3520c77f005e05ea3109cc29791b656b65a1"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-31-rapid_original-four-tier.oem",
+      "sha256": "e701f17c3887b61068bf598d3f96d5541002a8671c04dbeea8d8eeceae880a86",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-31-rapid/forecast.csv",
+      "source_sha256": "b8dff3a2abdc816f5744c8522144b844633e97f4a354f685edab7a00d7ebab8d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-10-31-ultra-rapid_original-four-tier.oem",
+      "sha256": "bbaf54e24646131385142aec9c82ae174b38300bd21f8eab940a2f1c3af894ab",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-10-31-ultra-rapid/forecast.csv",
+      "source_sha256": "0690cac4a42d5615fcaf487187d289afec5b98c6d00af35e533d20caf6d13b9e"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-01-broadcast_original-four-tier.oem",
+      "sha256": "4b8a81d1eb9496706ad011bdd670241ea86be709e70c4b465420e4d6cb9fdde1",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-01-broadcast/forecast.csv",
+      "source_sha256": "94d76151e370abe9e4ea8eaf93b394d784f7dc024e3c895420484a1c26c71373"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-01-final_original-four-tier.oem",
+      "sha256": "39b093557cd2134fa87655aeb362323ffc829b2f77c883abd24b6195383be952",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-01-final/forecast.csv",
+      "source_sha256": "efee334e5e30a4ceca5584ae8b056bb056c7d99fb3a1ce26342bf88528aaa86d"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-01-rapid_original-four-tier.oem",
+      "sha256": "203a64b950e61002a1a1f912cac7f073e882a19433aaf0e8915599716eba5fae",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-01-rapid/forecast.csv",
+      "source_sha256": "0243bfffe59cf6815722b54110748e1155133979b930d4652aa5be797ef6308e"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-01-ultra-rapid_original-four-tier.oem",
+      "sha256": "79592365a1c36e9b2c775d221baea9fc7cef625c3bf9830971736f7416694aac",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-01-ultra-rapid/forecast.csv",
+      "source_sha256": "ad6d26eb26df95d9c6a880ba99cba8e221f1ae03110014486a33e910bdd06781"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-02-broadcast_original-four-tier.oem",
+      "sha256": "a0e5c7d742e5b86746969b6d39feae62abdc4d4f967cb66cf859dfbb15311437",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-02-broadcast/forecast.csv",
+      "source_sha256": "68ee228c1061f0e0e9999005085950e6f66514e434638136440d245b40a90683"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-02-final_original-four-tier.oem",
+      "sha256": "bc0c59ebc11839ae2d97bc80c40b8b74ed88ba696e14d7f835e1817dc65bb0cb",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-02-final/forecast.csv",
+      "source_sha256": "178687339577349cc088a1443151d8a5ffdc48418169583de723684eb371f388"
+    },
+    {
+      "oem": "original-four-tier/S3A_2024-11-02-ultra-rapid_original-four-tier.oem",
+      "sha256": "fc68195587af4f50999a9393fd58cc84942b585d70562e2650f6b2ea37026fd5",
+      "source_csv": "docs/reports/four-tier-comparison/results/2024-11-02-ultra-rapid/forecast.csv",
+      "source_sha256": "bc7eb82fa833078479c9459100c1ddf30e28375f06be02e8118eec22e25864ed"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-03-broadcast_improved-broadcast.oem",
+      "sha256": "00ec8bec85c3819125687cc570b47bcf841dd8ffe01fe81748e7461e3b64e9b2",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-03-broadcast/forecast.csv",
+      "source_sha256": "70365c98b39103d700878408422b9f6bfb23426176cc0fe5898cc616996d63e7"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-04-broadcast_improved-broadcast.oem",
+      "sha256": "29cd612f8311692360fb600ef60ee8872c3382a3ef45deee465750420c2b3c8f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-04-broadcast/forecast.csv",
+      "source_sha256": "f2a33a03787ad0064fce173272f3604549583dd9b8e830c831e138f2ed76bdde"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-05-broadcast_improved-broadcast.oem",
+      "sha256": "ef9de17a6aa75c59c927879093abc110b4a4664f8ba1e14e583ce20f05716ab3",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-05-broadcast/forecast.csv",
+      "source_sha256": "7b133af1705dcf1c73cb7bbfd0083f7a1dd822d1714845a48c4bfd3cf5ea0280"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-06-broadcast_improved-broadcast.oem",
+      "sha256": "dbab5e1c5f71f269aec75f740260c72456aafc41af76e1718434865ee81e9c95",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-06-broadcast/forecast.csv",
+      "source_sha256": "c4324e71cb5833575b083bf33eeb459db1ad5f6f4ab30efc5869a613ff273bef"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-07-broadcast_improved-broadcast.oem",
+      "sha256": "bcd0c69bd84cc3c3986a3f6bf31709dd12a29af5d72524302430f02ef360ed3a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-07-broadcast/forecast.csv",
+      "source_sha256": "fc06b330758232f463a7f46add0352bc85d5ff0cd0f16cecb13d6ce11d60634b"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-08-broadcast_improved-broadcast.oem",
+      "sha256": "b61681f12e5b3286b5c052e64eba4ac1b211d9e0daeb98d1d0c660a1b8a4aca2",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-08-broadcast/forecast.csv",
+      "source_sha256": "2d0e3cbf93809a6bd788ed61ddfda15424baf34a1beb9d25e0085be4d9369649"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-09-broadcast_improved-broadcast.oem",
+      "sha256": "086304ad80b5791ea3d976627aaaf2a89ad01d244af51ba4e4f9abe314cfb2cd",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-09-broadcast/forecast.csv",
+      "source_sha256": "e2c51e2cfddd16bf56655ee2266d3cb8f0525200f99f433385ea57d0da5aee72"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-10-broadcast_improved-broadcast.oem",
+      "sha256": "c2b77071bba34f684773ffa018dac103138862ef1371e520a1e725ea86aac4c9",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-10-broadcast/forecast.csv",
+      "source_sha256": "86280c99c35edc1fcd82a3642998c2b1f652dd6dcfb06aa6577d66e84c33e9a5"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-11-broadcast_improved-broadcast.oem",
+      "sha256": "54e49218fdf7989efa7fa032f276a269a7751772b43eaaaef6d467c449e82f72",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-11-broadcast/forecast.csv",
+      "source_sha256": "e1bc1e1b352e9cfecf9b57c49ee286f58d63912cc75559866fb304973a293b20"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-12-broadcast_improved-broadcast.oem",
+      "sha256": "d060554b218f7a300ab799789e303f33ec699c3e6d59f018c4582c4d9e94bbcc",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-12-broadcast/forecast.csv",
+      "source_sha256": "9671b65ee36ebeb5246130fd3ecf6520201decd00fa117b16af17be6f69df43d"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-13-broadcast_improved-broadcast.oem",
+      "sha256": "d31bdc493646bfda8bcf4c574a0beef998366610dd2f397276f57af590a7a247",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-13-broadcast/forecast.csv",
+      "source_sha256": "6a676e51de3f35b9330fb04aa53213d6262a832c9fdf7237a6ba721dacbf2121"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-14-broadcast_improved-broadcast.oem",
+      "sha256": "c60e3fdd890c51c1d25df2b8e4b11390a5381000f707c00922493078f2c4f891",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-14-broadcast/forecast.csv",
+      "source_sha256": "3650c977fa78edba890b48281c98f7bd8eed0da202f1d419ddd3dfd64a73bccc"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-15-broadcast_improved-broadcast.oem",
+      "sha256": "38066c4629843f1deba6ca8981a99ce6d05b0694baffd1902cf5d7e1c84d4680",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-15-broadcast/forecast.csv",
+      "source_sha256": "bdbbcfaac83576fcc7ee23cc4474041b53f419dd397e54369e79209af64f874c"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-16-broadcast_improved-broadcast.oem",
+      "sha256": "d0a68ca14d73993b106f0d49808ea53669b92fff1237f7f907314deb31863de1",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-16-broadcast/forecast.csv",
+      "source_sha256": "2ad1d505f8b2d074e3aec1f97b81206200e56aad16dd3be0246acd6df280b29d"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-17-broadcast_improved-broadcast.oem",
+      "sha256": "b410246114f4ec45a2ab654ba3926f34215f59b14e4a0c910ea6c19cd587855c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-17-broadcast/forecast.csv",
+      "source_sha256": "0acd49db8000d906e22921cc6fb96a8a8ccf4304f4077ebdce28027759b67056"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-18-broadcast_improved-broadcast.oem",
+      "sha256": "075ca9007d54987bec77a5314a3a7fecc282f71c686884753d8fe4b911db7c51",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-18-broadcast/forecast.csv",
+      "source_sha256": "f2de582c4042eef0a0e45b8a9fa224e900ebc188b219ce16d7c754d077b25041"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-19-broadcast_improved-broadcast.oem",
+      "sha256": "0253f0fb36c6ec9752acf138f0e349a756860b8a03f715ddf87bae8151a7755f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-19-broadcast/forecast.csv",
+      "source_sha256": "8c69e02c9c4f3cbc7263674b1adae27f962a4e128e5f0aa03fa09b02c0d21943"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-20-broadcast_improved-broadcast.oem",
+      "sha256": "74e6087563202f8b47812e577b770abe89f312ef020c56808eb414b7dbc6fb82",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-20-broadcast/forecast.csv",
+      "source_sha256": "a2cf32d63cbfe3dcee9a1860d39fa53f26fb853286ce83c833fe7225d46a2487"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-21-broadcast_improved-broadcast.oem",
+      "sha256": "dc5ee1ae0e625e9dd5b27b8e801e280f6deec3b15c3d38527c5e0f0586e8d910",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-21-broadcast/forecast.csv",
+      "source_sha256": "6aeeff4cb3edc0a1a6e8a8301c0f1c79e4dd37476ba730ebbfe99908e4d9976b"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-22-broadcast_improved-broadcast.oem",
+      "sha256": "b49f6e3c19c9056bd09587b7bb5702c4c4d50a4331111b26789f3093a18598fe",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-22-broadcast/forecast.csv",
+      "source_sha256": "c68d7f1867fe80531a4521363ca5ef2eaf0f2034de71c253d74a1ccfa644833f"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-23-broadcast_improved-broadcast.oem",
+      "sha256": "4dbdde3714b38eb5f19829e58de1ab288bac51124811cbca52ac3eacbd9d059f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-23-broadcast/forecast.csv",
+      "source_sha256": "d1eb4d6a826cf33832436365596e8ace21ffc0469fe397d86efc94909e4ddfd0"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-24-broadcast_improved-broadcast.oem",
+      "sha256": "94b137c1122a473b2e906c13220418e23fe6bdde3abb3033e180525a36446444",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-24-broadcast/forecast.csv",
+      "source_sha256": "97c1ada0a84850b30a91bdb7c1435d35be422d306b766b9bf9a5b36d06dc390f"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-25-broadcast_improved-broadcast.oem",
+      "sha256": "276ed4d6c24e4c7ea2a771d14da1924bdf89ddff343e789969b64407439c7f73",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-25-broadcast/forecast.csv",
+      "source_sha256": "4cb4ac787336cd79dbaab95d449742e4904ebc508353beea094a26f7f07a1539"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-26-broadcast_improved-broadcast.oem",
+      "sha256": "6330e2dc11392924f03f278ebf2d31e69c9ca73803c83864339d251396879092",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-26-broadcast/forecast.csv",
+      "source_sha256": "d5dc40c683b40e11fa4a4bcceb44015dfa17108a985d12a2759cfe6c223a31ba"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-27-broadcast_improved-broadcast.oem",
+      "sha256": "6d4deb81f4bcd960ed8a790e16b4b444411f9afe453d8979e61439c158c85777",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-27-broadcast/forecast.csv",
+      "source_sha256": "4cf5e3f69a5fcbcd4558761a6dc9a0ed1632a9cf5e77d9791c3207188a8fe169"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-28-broadcast_improved-broadcast.oem",
+      "sha256": "d2fa05c5c427546139eb31d8caf879137b9cbae7d123f1102369020184d186e3",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-28-broadcast/forecast.csv",
+      "source_sha256": "c89e50dbea3cfd0f7df7ce3e152bb0149b1d03292afaed2cc5003dbdba59ddbd"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-29-broadcast_improved-broadcast.oem",
+      "sha256": "068185b703742dda932694f94b8a17c06bf5820531bd131565d33ab58686d1f1",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-29-broadcast/forecast.csv",
+      "source_sha256": "3d4836a973b7a4bc6cabe43d95ecd40bbe08908ae24414556d69c050897e264e"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-09-30-broadcast_improved-broadcast.oem",
+      "sha256": "51b98fc79b317a983d88c1f0ad576304fac816ad673779ae2eac8d5f5be70500",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-09-30-broadcast/forecast.csv",
+      "source_sha256": "5e6f8358be66490d8f733167bae775a66f0b2f6c85d816a89d916fa46fad8dae"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-01-broadcast_improved-broadcast.oem",
+      "sha256": "9747213664ac482c2d7311d2601b9db4cc46599241ca2686e15975aed5f5ead1",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-01-broadcast/forecast.csv",
+      "source_sha256": "5250c4e0aa525c189a1c3407f2cfb18060f9768bcd21455515a8a1318179a327"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-02-broadcast_improved-broadcast.oem",
+      "sha256": "322960b0bd9584eb1475cfd1ab4dbd3ac3d6863d77878a1561bc7fd2aa09ea5a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-02-broadcast/forecast.csv",
+      "source_sha256": "fcf0ada625b0e01230461b9d4bd00dcaaad521224ec712801d42bd119d23a443"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-03-broadcast_improved-broadcast.oem",
+      "sha256": "ee637b384227366fbc3d5d457d0bcaf4f8593bfc2157d9a7d236938b4125e36c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-03-broadcast/forecast.csv",
+      "source_sha256": "848ffb4a22b38f6da09601e4c8d0451d9bcf373cc0fe56c9c9ed34572733a82a"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-04-broadcast_improved-broadcast.oem",
+      "sha256": "cbfc42370102ae5ffa10eb6cfd7844232aec5a6d166c6c173029b261756d7116",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-04-broadcast/forecast.csv",
+      "source_sha256": "d2da030b6e9474cc5daf2a08f7745d6f8757b641171827cb4ce78625ac866b6c"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-05-broadcast_improved-broadcast.oem",
+      "sha256": "93aa8f21c9bbbb1153c2b42d94335dff7219e401ca13d714462ebdf02a3c58d9",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-05-broadcast/forecast.csv",
+      "source_sha256": "4d8558f1b3722b3d352665f3689f6d164de58ae2b5116f09b4d47aa4aa47bfa3"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-06-broadcast_improved-broadcast.oem",
+      "sha256": "258ac28df029e79967a0fc8d0a9efa738bddf175707002a2c5ef7cc302542311",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-06-broadcast/forecast.csv",
+      "source_sha256": "e3c67744507b5db5222acf7a1a7d2de2057e7e98a12d97633efc9cded75930d8"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-07-broadcast_improved-broadcast.oem",
+      "sha256": "a6b016be0cbf0c07586617cd0cbb8983c8934cd6bab500aef653683a8ddf965b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-07-broadcast/forecast.csv",
+      "source_sha256": "9a85398b4612fadd630401cf844a3907c9a7ff3e630da6b34ea013effc9c9b3b"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-08-broadcast_improved-broadcast.oem",
+      "sha256": "962df57a9c3fa60073dc4df4d4775c2ea38956cd87b88900f9c8611e29ea4300",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-08-broadcast/forecast.csv",
+      "source_sha256": "2f5ae23139ad08f78fca503160b864cc0050e7d832d49fc74041ec0213207e4f"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-09-broadcast_improved-broadcast.oem",
+      "sha256": "0f7eac5a45860097b48ed017e0c8f5bea9603d5fabb9e893ac10af750e28b27b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-09-broadcast/forecast.csv",
+      "source_sha256": "e2e709f4182345a1cc70bb3a6ed2b2fc874d2dfc31f9246a0ec25b1541b89596"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-10-broadcast_improved-broadcast.oem",
+      "sha256": "99740b6cc42c6ce1ec49c3b99254e97121bf4805b7440d95b68b1aa38d290d90",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-10-broadcast/forecast.csv",
+      "source_sha256": "dfb45f96d7fe1ab2b4ed1e93cc0337b12979fcb430791919e7bb63c9f0a98c96"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-11-broadcast_improved-broadcast.oem",
+      "sha256": "5d7fd4877fa2502f40ea164d58ddcd9077f5d0b390a9402d1423d62038aff048",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-11-broadcast/forecast.csv",
+      "source_sha256": "cc2b51ca2d24b0cf344947667e86fd3603e31899504aa9f645006327b0c4e8f7"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-12-broadcast_improved-broadcast.oem",
+      "sha256": "a025102551fec2f5e5455b45bf85164f26bd0fd745808c5eb24cbe088d148078",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-12-broadcast/forecast.csv",
+      "source_sha256": "e37f207b25dd193a2d2ee6066dffc52ff1794823a8b4a70b0b27f6445734b8ab"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-13-broadcast_improved-broadcast.oem",
+      "sha256": "9b5a2b91443e063fe1e9a7b7da66cf8f99b31cb8791fd95b8ff6a9b586fd9e42",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-13-broadcast/forecast.csv",
+      "source_sha256": "11b7b49ca8cbbf52ac0f84d9bf95f3b68862a209c617baf0d9b5c6bf65ab190f"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-14-broadcast_improved-broadcast.oem",
+      "sha256": "444b5421a3c99af4c0254b0020401726ae5c30c142033c3be834984307efa0c9",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-14-broadcast/forecast.csv",
+      "source_sha256": "4c3d959ef405045401c3256c32c356a4453dfd90f698b376c8adf19a95851cd6"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-15-broadcast_improved-broadcast.oem",
+      "sha256": "c5597fae5e04889fed153b81d75dfda0717d6e420042f02b8a5eb965966a38ff",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-15-broadcast/forecast.csv",
+      "source_sha256": "2796b02c46f7982db0101869a08fff9072576ff7b61d42e774a8e16fc2110ec5"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-17-broadcast_improved-broadcast.oem",
+      "sha256": "71c6f54539ee1ec0127e90ea6b9e68ad6975785a798ea3cfe3972c0f65e873a9",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-17-broadcast/forecast.csv",
+      "source_sha256": "c12738d38dc0cfe8992f479afdae439cf18e369f2bc1c2850f8425bfd1a11209"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-18-broadcast_improved-broadcast.oem",
+      "sha256": "6bca5343ba630eb5c4e5c527af12e1ad46a31da7682d4e03b2f231b711965a3f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-18-broadcast/forecast.csv",
+      "source_sha256": "d457328e12e1cfea52d38fe532f00352a584b62a279801659e65514bd0c260df"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-19-broadcast_improved-broadcast.oem",
+      "sha256": "66508337afe423ab844b4fd0ba2e31844cc7d7443d952aee8a6fc55ef432923b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-19-broadcast/forecast.csv",
+      "source_sha256": "a58d6c95e89cca3956216e541cecef9ff4ee1223bae94c8586364e0da8976a6a"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-20-broadcast_improved-broadcast.oem",
+      "sha256": "846ee141dac341e3a20c35e3f494701453597d4b2da5f631c1ffda3f306cd0f3",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-20-broadcast/forecast.csv",
+      "source_sha256": "a43c9e545735d1695123c4cb6c87decc020588bd28aeef623abfbc5acf1dc490"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-21-broadcast_improved-broadcast.oem",
+      "sha256": "aa488685e2062deb5579fead3a1cd17987602162dd40f5c7dbccad1583e0b441",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-21-broadcast/forecast.csv",
+      "source_sha256": "b5d888db719bb563b48ee2b31848e78aa48570afce401f4dde46cd0d8485a9e6"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-22-broadcast_improved-broadcast.oem",
+      "sha256": "143f0319af1b5cb5a4eec9c9502424f8d571d7e73ac56ff67b122f2bdfaead63",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-22-broadcast/forecast.csv",
+      "source_sha256": "b4bb7d7f2a3b95b56ea381cbd1158f29c17054454124e68de05c4633f18900b8"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-23-broadcast_improved-broadcast.oem",
+      "sha256": "a1a484ee31f7373e56d12389b91ca81c632f24fe2e14a282e69d3d44996ba5ef",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-23-broadcast/forecast.csv",
+      "source_sha256": "8d4103d4e73d803e22c185751854c88f2f694f6063c465f407811f8745702c3d"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-24-broadcast_improved-broadcast.oem",
+      "sha256": "e259366b34d16af74df7c781c047678a2021681383378662fb36dfff72899766",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-24-broadcast/forecast.csv",
+      "source_sha256": "2175497fd884be8d80e7d1fe0379c93c562ed9c19ca39c7839555c90964ef87a"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-25-broadcast_improved-broadcast.oem",
+      "sha256": "060d3b8ccb5b0385b6931c43c37f873011e0463aabb22a6432762cc000c0828c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-25-broadcast/forecast.csv",
+      "source_sha256": "36758f048ddb5eb4a2535fc9265e51c5f8870b3d6f3eafe4ade961342c9e764a"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-26-broadcast_improved-broadcast.oem",
+      "sha256": "989b16e91b5877d0886d92507db723b03446526b5f03c536cf1a7315d8fbcae3",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-26-broadcast/forecast.csv",
+      "source_sha256": "abd88e39b366267ba1044eabc2ac992deca45a45fd4056e09b2e36775ee15ad9"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-27-broadcast_improved-broadcast.oem",
+      "sha256": "0608d62ca9d1534fb64f1eeb2de903bfc6bafd9e6b9735c6fb435099d4b008b2",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-27-broadcast/forecast.csv",
+      "source_sha256": "a6cb8ffa53448e5f3d728924ef1c47073330968e80acc068f46d4ae4cdc2716d"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-28-broadcast_improved-broadcast.oem",
+      "sha256": "266cb12e4771d80181de0de7a38d7f43e4a7cc8880bf6b3c4b3d3694dab25b5f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-28-broadcast/forecast.csv",
+      "source_sha256": "7c1a116646d843f24e39d532ce78b59a605a50078b1678b74903713a13d9f61b"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-29-broadcast_improved-broadcast.oem",
+      "sha256": "b27765c87bd35d1fb3aa1e6aae996ed2dcde735701e66b1e99b40746c0265015",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-29-broadcast/forecast.csv",
+      "source_sha256": "1f11e1702d5ddc404450747030c3c1e0a9c66d2bef878c4e2775c44d5978d61c"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-30-broadcast_improved-broadcast.oem",
+      "sha256": "335d2037ef69e2c93c865df944855db83412247dbba9eb37772e966cde9bafdf",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-30-broadcast/forecast.csv",
+      "source_sha256": "0cabddd0357f41b4092ab85ba037dd20f882658156243d3aecfb8e731e553ce5"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-10-31-broadcast_improved-broadcast.oem",
+      "sha256": "ba418df9f942dc82f57ca5b953ff164364d7de9668a4729591c18f9536c5e7b6",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-10-31-broadcast/forecast.csv",
+      "source_sha256": "3e2cb62d09929f8ba055c562420a5bdbdb183824475f65397d743978d4b9c6e0"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-11-01-broadcast_improved-broadcast.oem",
+      "sha256": "4c9c310eb05d0eb3b09982ef376ec30d91a8368c8780ba423fc7740e54821d48",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-11-01-broadcast/forecast.csv",
+      "source_sha256": "788e68e1cd1d920f436e29545e30e85260830aee808855570c1fd82ac08d2d1c"
+    },
+    {
+      "oem": "improved-broadcast/S3A_2024-11-02-broadcast_improved-broadcast.oem",
+      "sha256": "e010ea0e6d7d3febf540cb94b8bb4c08f0e0971b6134dca96315823bef931843",
+      "source_csv": "docs/reports/drag-maneuver-improvements/nominal/results/2024-11-02-broadcast/forecast.csv",
+      "source_sha256": "7e2d12c68c2e3158732a0228ef6efea92bbb357fd3cbe504d94654a375b9c808"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-03-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "b8ec278a6606c2f9e8bfe9bcd11fc21c43e6739b778f5b42967bd671ac4ecf6b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-03-broadcast/forecast.csv",
+      "source_sha256": "5ecc7933c7a9fcb058fa05d85e2427762895c1dd65236796879fef71c5c66583"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-04-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "bc7a8e27ed178ba4f3f572c6dbda9a6cf68e88a17d9dde069665f005d3b5654b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-04-broadcast/forecast.csv",
+      "source_sha256": "7133d2eee34ca16b97e760cbf1ec315e85fb963c1b30cb4338bbc9b34fda128d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-05-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "d81b52000dda8d5477f3fee811f429e0e83f1e2f630929c95a8f9e296534592a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-05-broadcast/forecast.csv",
+      "source_sha256": "c144143acb303c5dc45098eb32b13bf5c2689ba2b630a2d6b04ba558892f3f1d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-06-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "4efff6436bc459b7a5bba8dd93131981286619f276d680d9018384d29b4eb3ee",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-06-broadcast/forecast.csv",
+      "source_sha256": "90f883101baf1ea1c8c4c0557afd9163cfb3c508fa7e4f2262eff28cb2097e9f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-07-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "806d5f124f81852fa1b1a407c52e02779ae626aeb2f3a62d4cc128a6e087e3e7",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-07-broadcast/forecast.csv",
+      "source_sha256": "b7a293084b2f01cf5a25aca6eb7797b76d748024a7309afd8156b2c5458fd96d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-08-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "8df357d2883d91e6d7b9b1969a82a135da68b7f63b061eebc127c31c46f1fb25",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-08-broadcast/forecast.csv",
+      "source_sha256": "d737d229d2a97d39a8be4586e597ed8369fa5f29a3364522d16cd9f7a0bdd27c"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-09-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "0064a11cdabc6a5be80309b549bbf566553a530ac27d47d3c74b26ecf9f105d5",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-09-broadcast/forecast.csv",
+      "source_sha256": "ed4b530f9d35dadf0334b94c371880b46164addcf5a6d61042b2242d8b5a85c9"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-10-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "825c8dde94915a22fba8e41a4f78c876d71f90420b83c519bd46214ad17260e5",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-10-broadcast/forecast.csv",
+      "source_sha256": "86280c99c35edc1fcd82a3642998c2b1f652dd6dcfb06aa6577d66e84c33e9a5"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-11-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "28045e06b497fce7f3512a9e1d847dd4f753a98c92ac96efe3d2d5c1c332be79",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-11-broadcast/forecast.csv",
+      "source_sha256": "e1bc1e1b352e9cfecf9b57c49ee286f58d63912cc75559866fb304973a293b20"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-12-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "0b4b070aada0a9e6bcbaa9b2ad563f56bbf76c4e63ced4137b00b51cdb7ccbeb",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-12-broadcast/forecast.csv",
+      "source_sha256": "d1474d62fe463db25042834bf647cc83ebd481e661274685642c18b6809da4aa"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-13-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "108dfedc61d3db07373db6382323ea7499d2e2dc458a188b68d2789b6812cca6",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-13-broadcast/forecast.csv",
+      "source_sha256": "807d2ac4acc567f5961b135bd410d9627146d3ebb6e1610e1e430230edf36cae"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-14-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "d89f482c56628b4a93636b61abed419e84ce5ce69636d17f585cf6d5b8982988",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-14-broadcast/forecast.csv",
+      "source_sha256": "2cbc0377b5edbd4ada00e69d6ea484535dc5f5387a2e978c0b394b58bd2bfd1f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-15-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "98d6b3e9bcf09d0e67d467bb496b5d36d846bcf6b0bfc3c9afac91c68587a5db",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-15-broadcast/forecast.csv",
+      "source_sha256": "4ff8aa65d4873c3f0d7abac32d823b5448625b55a7f8e398e77ca707c7122e31"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-16-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "64c74e70d1c0ac6c7e694729f06f4f59373bb9ccdc0980c8d01fcaefeba770fe",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-16-broadcast/forecast.csv",
+      "source_sha256": "b352c9743ab80ec2c8916ef0d86136cdfe58648bd25eee84b6e8ae0aad26b147"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-17-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "ed91cea75003f33ee3b844eccc5e2709a8cbe28cb608c6ef3ef97c0ad8758a0b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-17-broadcast/forecast.csv",
+      "source_sha256": "45dd759e521b5344d9d8715bf53ec0c61f2654c83dc0a002f17be2db6ea94292"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-18-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "3a9670e5e91f6cde46567d7918325e5d278cdf9e38b531d41878775510fd2327",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-18-broadcast/forecast.csv",
+      "source_sha256": "2d3a0aba2c01372d0043c8b4c9d1a1b69f724f27519d0d29813f00ba2775e951"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-19-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "7325c24f5e2c221afaae9a8d3adeabab0fd562513c6bd71d43945ef54ca2b071",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-19-broadcast/forecast.csv",
+      "source_sha256": "8c69e02c9c4f3cbc7263674b1adae27f962a4e128e5f0aa03fa09b02c0d21943"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-20-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "568af68f04cc858e0105ef8920359e2a186a7224ef033e282d19f1b6e5a21591",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-20-broadcast/forecast.csv",
+      "source_sha256": "a2cf32d63cbfe3dcee9a1860d39fa53f26fb853286ce83c833fe7225d46a2487"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-21-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "614fff15c56d3abc10ffdc701d494de50a3ecd3a5f3c184b30858998c3dd637c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-21-broadcast/forecast.csv",
+      "source_sha256": "6aeeff4cb3edc0a1a6e8a8301c0f1c79e4dd37476ba730ebbfe99908e4d9976b"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-22-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "7f53d412b5511465e592fdae599fa5522c90585059bf064927b59a19e799947c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-22-broadcast/forecast.csv",
+      "source_sha256": "c68d7f1867fe80531a4521363ca5ef2eaf0f2034de71c253d74a1ccfa644833f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-23-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "362b0e2f558124073565a1f820ee5ded20bdc1dddf4a8f0fe1e7b50d1604affc",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-23-broadcast/forecast.csv",
+      "source_sha256": "d1eb4d6a826cf33832436365596e8ace21ffc0469fe397d86efc94909e4ddfd0"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-24-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "d677e065571e8c5bc81945312ed7c04f502bf27da42e82f8f1c5a3e9cc8424c7",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-24-broadcast/forecast.csv",
+      "source_sha256": "97c1ada0a84850b30a91bdb7c1435d35be422d306b766b9bf9a5b36d06dc390f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-25-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "7e8ca885f4766bbfab2c7bcdd715c36a2a0e16f5cd2ff5ae92a1e0e2f1d313df",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-25-broadcast/forecast.csv",
+      "source_sha256": "4cb4ac787336cd79dbaab95d449742e4904ebc508353beea094a26f7f07a1539"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-26-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "263a8f8b68a48a3bee1823071c06c1bc093518da1eaa7f6a6c00a187e80f35ab",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-26-broadcast/forecast.csv",
+      "source_sha256": "d5dc40c683b40e11fa4a4bcceb44015dfa17108a985d12a2759cfe6c223a31ba"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-27-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "b7ca54be949b3299c4d343e000ad4f5c2c7088d350636e291e6b16f6041156d8",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-27-broadcast/forecast.csv",
+      "source_sha256": "4cf5e3f69a5fcbcd4558761a6dc9a0ed1632a9cf5e77d9791c3207188a8fe169"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-28-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "104767477899e37f41c5317098607f872cc9577ce1c7fba57a13b620b7bd2fe0",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-28-broadcast/forecast.csv",
+      "source_sha256": "c89e50dbea3cfd0f7df7ce3e152bb0149b1d03292afaed2cc5003dbdba59ddbd"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-29-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "1d00bdcd6b7ec0c097b271e20824b69d9839c7130a0e63e71d76bd364303747a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-29-broadcast/forecast.csv",
+      "source_sha256": "3d4836a973b7a4bc6cabe43d95ecd40bbe08908ae24414556d69c050897e264e"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-09-30-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "c496a232026a3f2bd9da14c8e2f591fd160082d05bc52acf0c53c9a8c3d2dcad",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-09-30-broadcast/forecast.csv",
+      "source_sha256": "b02f40369ee7fa6c8b78bcfe356294ccf8a5cbf21bd6254944f2e4b23a4f26f0"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-01-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "7e4e99ecd71a7c40bc91f7c64aaf884586ad9d3a705a29cc99721032188e1efe",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-01-broadcast/forecast.csv",
+      "source_sha256": "85561dee9babb9c59c76a6cab79f43e4e8fb2ca0fd140a1dd68ce786c1ddb26d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-02-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "4f18b026518f91b994decfb7c29aa38f16f78bf754d32c26f82da4a1b85af3aa",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-02-broadcast/forecast.csv",
+      "source_sha256": "2ad362c287cd83ad0087d0c65d5f4c5c0e9b1dd4631b82b5285b0b8907136757"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-03-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "26fd9ab21922e31909853b0d76b95ead47be4ed919d5ae34739424c58260b78d",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-03-broadcast/forecast.csv",
+      "source_sha256": "9916e5fa7cda31649868c24ca1ce27e3314c181597374ca4d49564c1a8d8cf1f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-04-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "afbac83432da93de434bd74643b8312f47f061128d01219cec1ae7bfe06880b3",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-04-broadcast/forecast.csv",
+      "source_sha256": "e6d5da721884e00c3ea3461221150fccf46b2d2ac64bab2b0cfb2335d05b3fb2"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-05-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "572a5013059c084f8264b8c0b26b93954749b100f3fa97e29b8f5dca1979d897",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-05-broadcast/forecast.csv",
+      "source_sha256": "3ad120623965285cfd2df9296d9ad73941b41f53563bbabc83f907f17d9f3971"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-06-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "4120bdc43e1de4515dca86f6c8d64873ebdce6115ba06b27706dff6d584aeace",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-06-broadcast/forecast.csv",
+      "source_sha256": "67065deaa968c816b2163104f80f8ce1b664e4f81bf68d00b89c2bebf331a41f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-07-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "1b09a598645e3bbdd487c30594f0518f11ebeca07dc86b06028c163e91ffa8cf",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-07-broadcast/forecast.csv",
+      "source_sha256": "9a85398b4612fadd630401cf844a3907c9a7ff3e630da6b34ea013effc9c9b3b"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-08-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "c6ab6fcf82ced06422598a9229bf600ae9a8e7ebd69f046670c6d401782106fa",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-08-broadcast/forecast.csv",
+      "source_sha256": "2f5ae23139ad08f78fca503160b864cc0050e7d832d49fc74041ec0213207e4f"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-09-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "b8042f2f71e9068d99f3fb8b85e51da570a520f8600ae7af5b042a7dcc58dd4f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-09-broadcast/forecast.csv",
+      "source_sha256": "e2e709f4182345a1cc70bb3a6ed2b2fc874d2dfc31f9246a0ec25b1541b89596"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-10-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "0b8c874bd2e6d01281600ed2b49492ce64f851d378ced4cc191c3aa326a590ce",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-10-broadcast/forecast.csv",
+      "source_sha256": "dfb45f96d7fe1ab2b4ed1e93cc0337b12979fcb430791919e7bb63c9f0a98c96"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-11-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "c07480f76e480d8d8796220e521b055967960c952c7aa6a12e4f471334a4c7f8",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-11-broadcast/forecast.csv",
+      "source_sha256": "9a4224b6e9a390a7c4c75afc70f184db67f33a4767bff7fd4ac787f2b72f6081"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-12-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "4baad3b0477fa900d8605343fcb4125218d0c1b447a0b0891491c3cf4de55a5a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-12-broadcast/forecast.csv",
+      "source_sha256": "07ea290951b72eb285f7a00f8d6e86865de1300cb4ae084d0833c8afb5428b8d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-13-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "0b7240b9685dd00c4d4dd43d59cca9f284c5c359f25a89bdb878663e865d7dcb",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-13-broadcast/forecast.csv",
+      "source_sha256": "117515dc837621b2e375fffa9687a579ea141c7a27ace79fa79954944875a21b"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-14-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "f761ea39855981319a3e2cc1f48533bd4166c48b9c9923890fb2977533136955",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-14-broadcast/forecast.csv",
+      "source_sha256": "c12ae11c440ee2402de4ce11b2af07ef28dc161beb66affc68dba8090f0bd5aa"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-15-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "d8e762111eef8006360057b69293c2cec0ce8e64d50f2b399588e97fc2016138",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-15-broadcast/forecast.csv",
+      "source_sha256": "26c65cbbcfbfb62314d02a7702006758f7d69c1cd75ffaca727a603773e8399d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-17-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "649151092506f5ec2ca4f516408c01c340294571b9d6082e32b76b5a5e9a4160",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-17-broadcast/forecast.csv",
+      "source_sha256": "0172517b3121233c672d2a7bb4517c59a0cb592a5335e661756d46e40238367c"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-18-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "50616a57c03c6d8aefec47bb82e54991f0369bf58eb0927cc4a908f54a4ed6a8",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-18-broadcast/forecast.csv",
+      "source_sha256": "d457328e12e1cfea52d38fe532f00352a584b62a279801659e65514bd0c260df"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-19-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "74fbcf57b42023621cbbff9b12b05b1b35b47f1f1f243e4c7883152c3a90de75",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-19-broadcast/forecast.csv",
+      "source_sha256": "a58d6c95e89cca3956216e541cecef9ff4ee1223bae94c8586364e0da8976a6a"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-20-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "a5034536bcfbc335b59ef028d3da3b977e88f79143477e30ddbb03df9346a742",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-20-broadcast/forecast.csv",
+      "source_sha256": "a43c9e545735d1695123c4cb6c87decc020588bd28aeef623abfbc5acf1dc490"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-21-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "6843a62ec911fc48589b4ceed330b60f95a89daf904f8e607b31163c7fae05b5",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-21-broadcast/forecast.csv",
+      "source_sha256": "b5d888db719bb563b48ee2b31848e78aa48570afce401f4dde46cd0d8485a9e6"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-22-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "a00ff4cb8aeae741add8ea22b13a2e04f4d3a2f21778012e0947b8cc204ee929",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-22-broadcast/forecast.csv",
+      "source_sha256": "b4bb7d7f2a3b95b56ea381cbd1158f29c17054454124e68de05c4633f18900b8"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-23-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "4339fa4cf7cd5dd7a10fb8fb155838875e2c0075eccb908800f23b8f8da4e28f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-23-broadcast/forecast.csv",
+      "source_sha256": "8d4103d4e73d803e22c185751854c88f2f694f6063c465f407811f8745702c3d"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-24-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "f5daf6e07e978b8875235438aea55e4441b85dc3855b0979d8a25a4aed4104ab",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-24-broadcast/forecast.csv",
+      "source_sha256": "4ce0c54e050290c1479b696cc206d616688cce5ea5ac69a9a2a79a0ea3940574"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-25-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "51f5f1df23108405bb32e1cab486cfa22ced4e12ca73a23fdd9aa8f8b51aa6b4",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-25-broadcast/forecast.csv",
+      "source_sha256": "6db6d3e9f5a1dbd64ad71c18c497b38cb59c327ca4ecc26193cf3a409611cf60"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-26-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "a216f4bc9a7107af4ed358f521e9ce3f4eaebd6ba455dab659e129fc473ff8a1",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-26-broadcast/forecast.csv",
+      "source_sha256": "7bf41449f31a384861676e05b0e06b29958b8239de304341466f7026ce22bb8b"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-27-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "7c8e71597eb308bb27b5da8e1897b294009b66412fb9231366ee7b0ee96d681d",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-27-broadcast/forecast.csv",
+      "source_sha256": "43f8351f1167141788f84559680c631201ea63ff46cc010b4c1e4ea224f9dbfa"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-28-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "6daa74c31af3999ab1d10412e4692a29144fb316e77438609ea34c821a5f1dcd",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-28-broadcast/forecast.csv",
+      "source_sha256": "a6d67654f37c209666a0bf6daca5208d755cc87b1053479a6c19fde757150c05"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-29-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "0ec06a2630a03baaf34f7c245d8636278b8e66e0f61e058cf6ed6e7c4400c611",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-29-broadcast/forecast.csv",
+      "source_sha256": "9cb64a95903a93f5b88a35a397f46a5f9d2c972779588e38da2ea4a2ecf7b709"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-30-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "6f9645d71a6bc932c09dbb429a48ab77d1cda56c9723a2ae4a940e6bbab8e834",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-30-broadcast/forecast.csv",
+      "source_sha256": "bd3cbbc8200e3987b12498f4577ff1f5a449cb56d853b6753f9c7a9cadd12395"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-10-31-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "889918bbb1d88797f84108df4c889b4e0b09d1c6f9af04f8644bd17f1ccf4e78",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-10-31-broadcast/forecast.csv",
+      "source_sha256": "3e2cb62d09929f8ba055c562420a5bdbdb183824475f65397d743978d4b9c6e0"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-11-01-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "851db938db11270ffa14b67d2a4b597f60e9959523f03bcbb3d0a4f8c67cf7e2",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-11-01-broadcast/forecast.csv",
+      "source_sha256": "788e68e1cd1d920f436e29545e30e85260830aee808855570c1fd82ac08d2d1c"
+    },
+    {
+      "oem": "retrospective-old-maneuvers/S3A_2024-11-02-broadcast_retrospective-old-maneuvers.oem",
+      "sha256": "3b9a159fc8ba47e5dc2704e885ce07e1b3ad96b0b7479b50c5a8efdac2dd9a5a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/old-burns/results/2024-11-02-broadcast/forecast.csv",
+      "source_sha256": "7e2d12c68c2e3158732a0228ef6efea92bbb357fd3cbe504d94654a375b9c808"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-03-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "f7f8b3d69ce86fdda3268179077b0cf843236dc420a61792c5f5104c3a3ac25e",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-03-broadcast/forecast.csv",
+      "source_sha256": "0a24e7b8f09ceb03c3805d7640d4677c9b1b3f0234e7b93682024007adc30efc"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-04-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "648939b17bc2aba8556e192c3ca07bb81259252e4bbb30b1f9cc7ed8833b1716",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-04-broadcast/forecast.csv",
+      "source_sha256": "5f415134e90b36c2f9d9881a5d67118a65135b065fed9735c12190c2b10d99a0"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-05-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "6ffce0b07fea3407ae374f861d2320a27b2871d2476692e4d6f8135acbfe6237",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-05-broadcast/forecast.csv",
+      "source_sha256": "0562fe0698cc94b9d4f03d7271d9c6daeb9b7107d0e0fd59bb955690a6128fde"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-06-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "d3e569ab4dc352182fe0332d2286c0bec028c6b11c3568a6f9c7084acdd09463",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-06-broadcast/forecast.csv",
+      "source_sha256": "b490674d70eff5c78b34ad7d8270edaabd8df83350a23e4bbbd17437fb215a3d"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-07-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "8748ddbc54e59d9def15fac429c234a99f694ac31617d976872f239e1023db3b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-07-broadcast/forecast.csv",
+      "source_sha256": "88c9d8aabd9ecb40674856932e556f6f2065f043130d110ef9208b597e309995"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-08-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "07bdb68c41cfd13dca837fc4a3d59b3ff1f838844f732b22932b0998771648aa",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-08-broadcast/forecast.csv",
+      "source_sha256": "9268db94dae068f63d32e0a3caaf9fce8d43d72dd2e424ea9dfeac277a523ab9"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-09-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "68cd3cb14bc10d7640c33463e0bc39b8ea866d9ee71b63b7c558ddb024c3f541",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-09-broadcast/forecast.csv",
+      "source_sha256": "615aaccea95e0b85697b0d989ea81b7ab561b78e303b9f4bb40085e65e58e6d3"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-10-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "44df281bd526c68bcb08f6ce0425884028f9b410f7f2cb6fd53f461842b789bf",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-10-broadcast/forecast.csv",
+      "source_sha256": "86280c99c35edc1fcd82a3642998c2b1f652dd6dcfb06aa6577d66e84c33e9a5"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-11-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "c1bd3e103abb7d384b704cccdfd3cd2ef5b94927568238eb59e7cc81d38bed39",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-11-broadcast/forecast.csv",
+      "source_sha256": "e1bc1e1b352e9cfecf9b57c49ee286f58d63912cc75559866fb304973a293b20"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-12-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "e937c85a85c618e4d172fa9cd3e207a4b8a57132039f3a142ce675e4021b24b7",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-12-broadcast/forecast.csv",
+      "source_sha256": "bb58307189a3db8a298317a2e4ceaf28e693a8358a00804daf68870615e5089c"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-13-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "99106e776114e2aa262f7e7979809e10654277a9668e2515198773c4f277b173",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-13-broadcast/forecast.csv",
+      "source_sha256": "ae8bd5b77c80da3b47f8ec7355435118d9d58c78d87f231d28f24b9c5950c1af"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-14-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "5090f0587116ab4e93d2e7cc3c54a4ee2fb6dda0e438394b4be26520b07a5d8f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-14-broadcast/forecast.csv",
+      "source_sha256": "6308d00ab4ecdc1c166e3dbe5f995a91661bd9c7ef632e16d38ee24184249cd5"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-15-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "dc6c2f3bc508684524217c6dd094ed68ea4644e3959876b84019df1233cf623e",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-15-broadcast/forecast.csv",
+      "source_sha256": "adab257e803e660312f552c800e76d781f8f19a4d35aed40194e20573b116197"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-16-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "e97b3051039682834acd07835a98b648f19d3e2ab9b104a186f9301825fc088b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-16-broadcast/forecast.csv",
+      "source_sha256": "7c615fd2b60dfff62a6664e408a3447cbf9a0682aec63e7b742c123ee378fa67"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-17-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "b9c150a680aff026a00d2f739666fdc90c16a87cda406ebc870217382b81bb19",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-17-broadcast/forecast.csv",
+      "source_sha256": "d4d1f5d4ca20209e375e8984da3f022740dc9d971440ff0eefd308496289a25b"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-18-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "c1da858a761cfa9afb8b319b7ca458abcb07776dbf9989939b76d05a194aeeed",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-18-broadcast/forecast.csv",
+      "source_sha256": "044959691f3361948a74a86edd7ef6b4ca8147d0afcebad51011670c19378220"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-19-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "079de9ec7d58e50d53e4cacbab17ccf6ea1b53d20e3ee22ffa2b6b13ab7bfc1a",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-19-broadcast/forecast.csv",
+      "source_sha256": "8c69e02c9c4f3cbc7263674b1adae27f962a4e128e5f0aa03fa09b02c0d21943"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-20-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "7899b25925d385936653a3bfbd8793547d38af2b5251edb261853259993d3629",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-20-broadcast/forecast.csv",
+      "source_sha256": "a2cf32d63cbfe3dcee9a1860d39fa53f26fb853286ce83c833fe7225d46a2487"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-21-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "8e68384292c499e7687b26ac600061c55a7d056bf3db4f98cf4ee1b28f8b74c1",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-21-broadcast/forecast.csv",
+      "source_sha256": "6aeeff4cb3edc0a1a6e8a8301c0f1c79e4dd37476ba730ebbfe99908e4d9976b"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-22-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "f6daf4730a2bf26291c53056d05eefa6af40bc9d9fd9f3de19ec7ee07017c98e",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-22-broadcast/forecast.csv",
+      "source_sha256": "c68d7f1867fe80531a4521363ca5ef2eaf0f2034de71c253d74a1ccfa644833f"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-23-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "0e5e45de7f44c43a64f83129b8b38b5201de4b18d16a3c80981a946c463031c3",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-23-broadcast/forecast.csv",
+      "source_sha256": "d1eb4d6a826cf33832436365596e8ace21ffc0469fe397d86efc94909e4ddfd0"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-24-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "0ef4925cc58518cdb2bbde7851a84197a7fb40b424e7289379e639606ecc8d30",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-24-broadcast/forecast.csv",
+      "source_sha256": "97c1ada0a84850b30a91bdb7c1435d35be422d306b766b9bf9a5b36d06dc390f"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-25-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "f21d9197608a817ba732befbff458a9f5997fa826dec393a1c8c588b1b0b7aa2",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-25-broadcast/forecast.csv",
+      "source_sha256": "4cb4ac787336cd79dbaab95d449742e4904ebc508353beea094a26f7f07a1539"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-26-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "ba82cd8f4e3bc0ec5df04ae97a32ab7f86bea9341a23a02287d1ffb7f2eee594",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-26-broadcast/forecast.csv",
+      "source_sha256": "d5dc40c683b40e11fa4a4bcceb44015dfa17108a985d12a2759cfe6c223a31ba"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-27-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "2967f5c815dcc0924067785e971c045adb127898e40cb6d8864fc17ee88ffe9d",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-27-broadcast/forecast.csv",
+      "source_sha256": "4cf5e3f69a5fcbcd4558761a6dc9a0ed1632a9cf5e77d9791c3207188a8fe169"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-28-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "ca011fa1897eed332d77c9c8e0ca4cf38a4c296fd51be1c648cf4b09f7a2f410",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-28-broadcast/forecast.csv",
+      "source_sha256": "c89e50dbea3cfd0f7df7ce3e152bb0149b1d03292afaed2cc5003dbdba59ddbd"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-29-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "2ac443133b81570d61befefe12b1e4a18e4fabe5eabeb8a642788f2a3242b060",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-29-broadcast/forecast.csv",
+      "source_sha256": "3d4836a973b7a4bc6cabe43d95ecd40bbe08908ae24414556d69c050897e264e"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-09-30-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "94795e2d802ae76cd0e0dbb6f6d1fc65a9aee05364940c8c857b1eacc340b6d4",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-09-30-broadcast/forecast.csv",
+      "source_sha256": "5a71661e0b31fadf84c39f7b0f3ab4cde7c125413a0ada447aa8bcba83589083"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-01-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "529134ed3a5b95bc062b4384c78e518b50b963c1f6adb2357c38a7a32f491491",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-01-broadcast/forecast.csv",
+      "source_sha256": "100a08a4d7e16db04e2ca246fb823da04157a6d88e7507cdff131ba97529b32c"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-02-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "11ad91e9a646d3fe4411f587a8abbc979dfaee7cbcd80cee857cbc968c7572d2",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-02-broadcast/forecast.csv",
+      "source_sha256": "d7a6c726bb992b817e10b1b8abd2e0471ed8aa24d0366c385c621e8a2a9a64d7"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-03-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "14b6ee8768e0e013f7b65d8250e8b39b8aaa1f3e2af7ed429e827e2981698bbd",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-03-broadcast/forecast.csv",
+      "source_sha256": "94d287e9bc07e0313800793801f7cd448be5bf8b8ef4f442265f600147b73fd0"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-04-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "0bcc0aa4bb3564e8888af07d21ad2120ec1037838c680f9325b5547ce6dc29be",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-04-broadcast/forecast.csv",
+      "source_sha256": "339fc23aa959594e3605952ec808b1b27f07f623d656c54016c9e0fc1f89d636"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-05-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "e0eab9840d1c9442f90f98e5ecbe6a688c841cda2375c5848a3758503c353022",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-05-broadcast/forecast.csv",
+      "source_sha256": "3c8cc5f627b06b58dbe154592aeebf8a471bba376f82d4e95d01977aac501708"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-06-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "907a72360c0eaa2b2027368fc0f66c5801ede0b9302129e0861eb52ca93bd955",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-06-broadcast/forecast.csv",
+      "source_sha256": "3d91fd03556f6e8f748da9971f7cf986e8a15f98e75adad6c7ad05ef7f19378f"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-07-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "3040361273e15339e19cb2b735acfc617583f0473ed14d98714280b5c7267d81",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-07-broadcast/forecast.csv",
+      "source_sha256": "9a85398b4612fadd630401cf844a3907c9a7ff3e630da6b34ea013effc9c9b3b"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-08-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "f43216ee2060927ec80f32bdb22af9144462b66ab6b22dd1a673e181dda27960",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-08-broadcast/forecast.csv",
+      "source_sha256": "2f5ae23139ad08f78fca503160b864cc0050e7d832d49fc74041ec0213207e4f"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-09-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "e7a88d42a4b0ec95d168c9d49a3bd7adb608df043f7ff8bfd92fd474226764fa",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-09-broadcast/forecast.csv",
+      "source_sha256": "e2e709f4182345a1cc70bb3a6ed2b2fc874d2dfc31f9246a0ec25b1541b89596"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-10-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "9fd406933ae2682692887e1b6047b144fdcca5dc8cdc7e6d63df77c90218e698",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-10-broadcast/forecast.csv",
+      "source_sha256": "dfb45f96d7fe1ab2b4ed1e93cc0337b12979fcb430791919e7bb63c9f0a98c96"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-11-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "04b84f2d553c65dfabad08da69b20d5c076eaacb7f3fee63ba8f22221e554d08",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-11-broadcast/forecast.csv",
+      "source_sha256": "95406424f59cf10c6ca94b0cd38adc27183bf010eb18038ee3df7458f1d90dd1"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-12-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "9d22d2a71dfa1ccecc29e631b949d2d9cf000483f76f4de6635fa9cfe79a6276",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-12-broadcast/forecast.csv",
+      "source_sha256": "1570f6fe36925ca5deae7862d3de1ad352de23560abb055843c69fd8609cef8e"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-13-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "f4a86cb453c66c0f2cfc652325185865ef9dd16beaa41322107ebf1cb96e6042",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-13-broadcast/forecast.csv",
+      "source_sha256": "3c090dd858a45aee0c3ae195e2372d5621465f39209f543dbb0d132b50259868"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-14-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "039ee96ca7875a2d40fbb95676005f06abf85ec39941962687dd0e389e826a34",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-14-broadcast/forecast.csv",
+      "source_sha256": "398da56ea02eb4fa3f8954c71255a99e5a0e10c51c83e68025f15d662d8ea024"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-15-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "55356ae2257d8961395c4c44d4c1e8fa44742d736cc80a8276a5b7e48e2a01df",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-15-broadcast/forecast.csv",
+      "source_sha256": "7264dce6a764e0cdf59eaeb8d000111449c0fdeec7e8cd9665ba1d9f1bcfa933"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-17-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "9f02b1a28c2dca8b5901919952a7bc4b95b0d179d453f99908a5118eddd868d9",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-17-broadcast/forecast.csv",
+      "source_sha256": "86876bb5675f7ea574c45723e7565cc109e59d5e0301c789b0edfaf0b73d8bfe"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-18-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "cd1bc286a1ed7d28c3862b0489834ae4c2748d9aa33f2214413f49d40a7f7895",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-18-broadcast/forecast.csv",
+      "source_sha256": "d457328e12e1cfea52d38fe532f00352a584b62a279801659e65514bd0c260df"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-19-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "39474f45781dac960f448c1dcc1c63ca22dba6ae253a59fe2a75c3269b85624d",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-19-broadcast/forecast.csv",
+      "source_sha256": "a58d6c95e89cca3956216e541cecef9ff4ee1223bae94c8586364e0da8976a6a"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-20-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "0a6bec75134111f4c015b09bf568641463c84733128480fd49750fa5cb0d9b04",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-20-broadcast/forecast.csv",
+      "source_sha256": "a43c9e545735d1695123c4cb6c87decc020588bd28aeef623abfbc5acf1dc490"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-21-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "3dada7eb9b9bbb5b2f9de55b911846ef331e9eaec047084e214ba34e0bc4a7c0",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-21-broadcast/forecast.csv",
+      "source_sha256": "b5d888db719bb563b48ee2b31848e78aa48570afce401f4dde46cd0d8485a9e6"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-22-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "cc89223138b5f444fd44842e45d9973d61166ed093f49dcdb19ff7cb28b0a2e9",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-22-broadcast/forecast.csv",
+      "source_sha256": "b4bb7d7f2a3b95b56ea381cbd1158f29c17054454124e68de05c4633f18900b8"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-23-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "dfebf46ca5b76e23aba1b1eda71ad970e8a45a66228334dce3d932b413d0f598",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-23-broadcast/forecast.csv",
+      "source_sha256": "8d4103d4e73d803e22c185751854c88f2f694f6063c465f407811f8745702c3d"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-24-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "56b9f245f23c6a586c3326c89683be3220e89e76cf258aa814797c23eba7936c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-24-broadcast/forecast.csv",
+      "source_sha256": "11a7265a283ac23ba26635637d47e19edf5e3261efd7d7f4d3214992b4d37082"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-25-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "ca97ddc0f1f0203fcb56785de3e618ef9163c3d2bb86c272a82055f30d40866e",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-25-broadcast/forecast.csv",
+      "source_sha256": "310aae30d7784ae9c0637f3bdf2e4f29de73dce16e035e6b4d8f297f627202ff"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-26-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "9cb5f299f4bcb792db53fe9e1c7ad580efa6fcdbed564c262d0639687ba71337",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-26-broadcast/forecast.csv",
+      "source_sha256": "250acd655532597459417f9565693d09bd255e0a3f8f5fc40c32c508ab982178"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-27-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "e2af779ea4691e156bbd58df854a8e4a2bace6d870317484106841a75da6194b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-27-broadcast/forecast.csv",
+      "source_sha256": "57ccd9a54b2b6cadcddcf59d71c36d922f805a14b0469e037d2054d9d6079277"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-28-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "1abba9d5c2bb6db5aaa470cbc59616e64d274278317afb4518c5748aa8a615c7",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-28-broadcast/forecast.csv",
+      "source_sha256": "45b03e668391fcd14a630c0a31aa806d535a77c7217d03a4d07c5e7a03b73188"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-29-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "ba7ca83f6bd0ef509913f15965b26342574fce25980b2ce6e2538bab1412ba0b",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-29-broadcast/forecast.csv",
+      "source_sha256": "4c2af95ef87edf04256772c23c43103ac360a5ca10bfdb1ec4ca4eca11085a54"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-30-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "ff56688b8e220e174d3d35e3b4a7a65a4274f8a2caa5db8417bbee3dd6ff2ad5",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-30-broadcast/forecast.csv",
+      "source_sha256": "17cad770f199f6e3c6924e38703113da7361e7b79ded2e0bf113d59ea45c10b0"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-10-31-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "54b1866350e4a3232496ac5c456357acfc0e0f1226a4f22ba7c2075027dce31c",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-10-31-broadcast/forecast.csv",
+      "source_sha256": "3e2cb62d09929f8ba055c562420a5bdbdb183824475f65397d743978d4b9c6e0"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-11-01-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "48793930bc589a897115d9e85f4d0f69fd03b3d7fc948139f136f5fbdc88122f",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-11-01-broadcast/forecast.csv",
+      "source_sha256": "788e68e1cd1d920f436e29545e30e85260830aee808855570c1fd82ac08d2d1c"
+    },
+    {
+      "oem": "retrospective-corrected-maneuvers/S3A_2024-11-02-broadcast_retrospective-corrected-maneuvers.oem",
+      "sha256": "e7cece3390f54a33a54dc511dfc565d2fb3fe8188154d90a1d396d5e13d227fe",
+      "source_csv": "docs/reports/drag-maneuver-improvements/new-burns/results/2024-11-02-broadcast/forecast.csv",
+      "source_sha256": "7e2d12c68c2e3158732a0228ef6efea92bbb357fd3cbe504d94654a375b9c808"
+    }
+  ]
+}

@@ -386,3 +386,11 @@ keys rather than assuming every Java extension already has a CLI flag.
 | GUI did not open | Copy the complete printed loopback URL, including its token, into a browser on the same machine. |
 | Missing input coverage | Inspect the catalogue, satellite IDs, validity interval and cutoff eligibility; add the corresponding files. Do not treat incomplete `.crdownload` files as inputs. |
 | OD rejected or errors large | Inspect quality flags and observation coverage, frame/time conventions and force assumptions. Keep failed dates in the report; inspect the detailed run log. |
+
+
+## Two-month campaign OEM outputs
+
+The archived Sentinel-3A campaign OEMs and their field-by-field explanation are in
+[the OEM output report](docs/reports/two-month-oem-export/OEM_OUTPUT_REPORT.md).
+The package contains daily benchmark samples, not dense orbital tracks; nominal
+predictions and retrospective maneuver replays are labelled separately.
