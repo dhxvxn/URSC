@@ -1,0 +1,13 @@
+{
+  "maven_package": "BUILD SUCCESS",
+  "tests": 122,
+  "failures": 0,
+  "errors": 0,
+  "browser": "Chromium via Playwright on Linux",
+  "fresh_workspace": true,
+  "raw_input_folders_needed": false,
+  "compute_requests_while_browsing": 0,
+  "archive_attempts": 427,
+  "archive_issued_outputs": 385,
+  "checks": ["default presentation tab", "all experiment filters", "Final product filter", "rejected date visible", "eight archived samples", "saved endpoint score", "individual OEM download", "complete ZIP download", "empty local History", "no startup indexing", "no browser script errors"]
+}

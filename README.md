@@ -154,6 +154,34 @@ The Maven build must report `BUILD SUCCESS`; the JAR is written under `target/`.
 The scenario is a smoke check of execution, not a Sentinel-3A accuracy assessment.
 For later updates, commit or stash local edits before `git pull --ff-only`, then rebuild.
 
+### Presentation today: open saved results without rerunning
+
+For today, [download the ready-to-run presentation ZIP](packaging/presentation/URSC-saved-presentation.zip),
+extract it, and use its Windows or Linux launcher. Java 17+ is required; Maven
+and raw input folders are not required for that download.
+
+```text
+java -jar target/leo-trajectory-0.1.0.jar gui --presentation
+```
+
+The **Saved presentation** tab opens by default with the already-computed
+Sentinel-3A campaign (61 cutoffs, 3 September–2 November 2024). It includes the
+original four-product comparison, improved Broadcast results and separately
+labelled retrospective maneuver replays: 427 attempted cases, 385 issued OEMs.
+Filter by experiment/product, inspect a date's saved state samples and recorded
+one-day/seven-day errors, or download its OEM and the complete output package.
+No OD or propagation is performed. `--presentation` also skips startup input-folder
+indexing; it does not need the raw input folders. Do not click **Run** or start a
+new window campaign for the presentation. The normal **Run** workflow remains
+available for future experiments.
+
+The archive is bundled in the JAR and works offline. These are daily benchmark
+samples, not dense orbit tracks. Rejected dates and unscored endpoints remain
+visible, and retrospective products/replays are labelled. The archive is a
+read-only presentation snapshot, separate from new runs in your local History.
+After pulling this update, rebuild once with `mvn package` before your presentation;
+opening an old JAR will not load the new bundled archive.
+
 ### What you should see
 
 When it starts, it prints a line like:

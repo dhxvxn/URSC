@@ -1,4 +1,5 @@
 import { api, events } from './api.js';
+import { renderPresentation } from './presentation.js';
 import { toast } from './ui.js';
 import { renderData } from './data.js';
 import { renderRun } from './run.js';
@@ -43,6 +44,8 @@ function jobUi(evt) {
 }
 
 async function main() {
+  // Load the bundled archive independently of catalog/indexing or live run APIs.
+  renderPresentation(document.getElementById('tab-presentation'));
   const theme = localStorage.getItem('ursc-theme');
   if (theme) document.documentElement.dataset.theme = theme;
   document.getElementById('theme').addEventListener('click', () => {
