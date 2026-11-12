@@ -131,6 +131,7 @@ back into the computation. Full detail, with pictures and a glossary, is in
 
 - **[docs/REPORT.md](docs/REPORT.md)** — illustrated end-to-end report (problem → results) with a glossary.
 - **[docs/PRESENTATION.md](docs/PRESENTATION.md)** — a 60–120 minute speaker's script and demo guide.
+- **[docs/PROMPT_DEVELOPMENT_REPORT.md](docs/PROMPT_DEVELOPMENT_REPORT.md)** — the polished, reproducible prompt history (Codex + Claude) that built the project.
 - **[docs/GNSS-OD-demo.mp4](docs/GNSS-OD-demo.mp4)** — a 43-second demonstration video (opens in GitHub's video player), with its narration in **[docs/VIDEO-NARRATION.md](docs/VIDEO-NARRATION.md)**.
 - **[docs/USAGE.md](docs/USAGE.md)** — every CLI command and flag, and the scenario `.properties` reference.
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — package map and how to add a force model / atmosphere / integrator / propagator.
