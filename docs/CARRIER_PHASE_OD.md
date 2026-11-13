@@ -18,7 +18,8 @@ executable jar so the program still runs offline:
 | Initial orbit | `IodGibbs`, then `BatchLSEstimator` with `Position` measurements |
 | **Orbit determination** | **`BatchLSEstimator`** with **`OneWayGNSSRange`** + **`OneWayGNSSPhase`**, `QuadraticClockModel`, `AmbiguityDriver`, `ShapiroOneWayGNSSRange/PhaseModifier`, `OnBoardAntennaOneWayGNSSRange/PhaseModifier` |
 | Dynamics | `NumericalPropagatorBuilder` / `NumericalPropagator`, `DormandPrince853Integrator`, `HolmesFeatherstoneAttractionModel`, `ThirdBodyAttraction` (DE440), `DragForce` + `NRLMSISE00` / `JB2008` / `HarrisPriester` / `SimpleExponentialAtmosphere`, `IsotropicDrag` / `BoxAndSolarArraySpacecraft`, `SolarRadiationPressure`, `KnockeRediffusedForceModel`, `SolidTides`, `OceanTides`, `Relativity`, `LenseThirringRelativity`, `ParametricAcceleration` |
-| Attitude | `LofOffset` (nominal), or measured PROQUA quaternions through an Orekit `AttitudeProvider` |
+| Attitude | `YawCompensation(NadirPointing)` in the CPOD body convention (nominal; matches PROQUA to 0.005°), or measured PROQUA quaternions through an Orekit `AttitudeProvider` |
+| GPS antennas | `AntexLoader` (IGS igs20), `SatelliteType.buildAttitudeProvider` (GPS yaw steering), `OnBoardAntennaOneWayGNSSRange/PhaseModifier` with `FrequencyPattern`s; phase wind-up as an `EstimationModifier` |
 | Forecast covariance | `MatricesHarvester` (state-transition and parameter Jacobians) |
 
 Code: package `org.ursc.trajectory.orekit` (`OrekitSession`, `OrekitGpsProducts`,
@@ -107,11 +108,14 @@ centre of gravity from the mission documentation. Without that correction the or
 
 | Key | Default | Meaning |
 |---|---|---|
-| `od.arcHours` | 6 | data arc ending at the cut-off |
-| `od.phaseRateSeconds` | 30 | carrier-phase sampling (slip detection uses 10 s) |
+| `od.arcHours` | 6 (Sentinel-3A profile: 12) | data arc ending at the cut-off |
+| `od.phaseRateSeconds` | 30 (Sentinel-3A profile: 60) | carrier-phase sampling (slip detection uses 10 s) |
 | `od.codeSigma`, `od.phaseSigma` | 1 m, 0.01 m | starting weights (re-estimated) |
 | `od.antennaOffset` | true | apply the header antenna offset |
-| `od.estimateCd`, `od.estimateCr` | false | estimate drag / radiation coefficients |
+| `od.estimateCd`, `od.estimateCr` | false (Sentinel-3A profile: Cd **true**) | estimate drag / radiation coefficients |
+| `od.gpsAntennaPhaseCentre` | true | GPS satellite antenna offsets/variations from ANTEX (precise orbits only) |
+| `od.phaseWindUp` | true | carrier-phase wind-up |
+| `window.parallelRuns` | 0 (automatic) | cut-offs of a window run computed at the same time (separate processes) |
 | `od.samplingSeconds`, `od.maxPdop`, `od.maxSppRms`, `od.pseudorangeSigma` | 300 s, 6, 30 m, 5 m | code positions for the starting orbit only |
 | `spacecraft.comBodyX/Y/Z` | 0 (Sentinel-3A profile: 1.489, 0.217, 0.009 m) | centre of mass in the frame of `ANTENNA: DELTA` |
 | `integrator.positionToleranceM` | 1 mm | Orekit Dormand-Prince 8(5,3) tolerance |
@@ -157,13 +161,36 @@ see the [results](#two-month-results) below.
 
 Carrier phase roughly halves the orbit error at the cut-off and reduces it by a quarter one hour later. Beyond a few hours every run is limited by atmospheric drag (near solar maximum, with space weather persisted from the cut-off), so the 1-day and 7-day errors are unchanged. Daily values and the raw CSVs: [reports/two-month-carrier-phase-orekit](reports/two-month-carrier-phase-orekit/README.md).
 
+## Improvements after the first two-month campaign
+
+The five improvements below were measured on seven test days and then together in a second 61-day
+campaign; see [reports/two-month-improvements](reports/two-month-improvements/README.md).
+
+1. **Drag coefficient estimated on a 12 h arc** (Sentinel-3A profile). It is the largest gain for the
+   forecast. A bug made the fit singular when Cd was estimated: Orekit's drag model also exposes a
+   "global drag factor", perfectly correlated with Cd, and both were selected. It is fixed.
+2. **Drag modelling.**
+   * JB2008 and the box-wing model with measured attitude were tested.
+   * Neither is the default. The box-wing panel areas are not Sentinel-3A's (they need the mission
+     macro-model); see the results.
+3. **GPS antenna phase centres and phase wind-up.**
+   * The IGS ANTEX offsets and variations are applied in each GPS satellite's yaw attitude, for
+     centre-of-mass (precise and ultra-rapid) orbits.
+   * Phase wind-up is applied.
+   * Together they reduce the phase residuals from about 6 cm to about 5 cm.
+4. **Closer to Orekit's design.**
+   * The nominal attitude is Orekit's yaw-compensated geodetic nadir pointing. It matches the
+     measured PROQUA quaternions to 0.005°, where the previous approximation was 2.5° off.
+   * OEM output frames are computed with Orekit during the run.
+   * A headless `run` command runs saved configurations.
+   * The time-span issue is written up for the Orekit project (`docs/orekit/`).
+5. **Parallel window runs.** Each cut-off runs in its own worker process, because Orekit's data
+   context is process-wide. By default there is one worker per spare core, limited by memory.
+
 ## Known limitations
 
 These are the remaining sources of error:
 
-* **GPS satellite antenna phase-centre offsets and variations.** These need an IGS ANTEX file.
-  With precise products they leave centimetre-to-decimetre residuals.
-* **Phase wind-up.** Its part common to all satellites goes into the clocks.
 * **LEO antenna phase-centre variations.**
 * **Strictly dynamic arc.** There are no empirical accelerations, so drag mismodelling over
   the 6 h arc shows in the residuals.

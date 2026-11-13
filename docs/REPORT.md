@@ -591,7 +591,7 @@ leap-second table, NRLMSISE-00 against its official reference case to seven sign
 batch-OD recovery of a known state and drag coefficient from synthetic data, and CCSDS OEM
 round-trips. The propagator is additionally checked against real Sentinel-3A precise orbits.
 
-## 13a. Rebuild: carrier-phase orbit determination on the Orekit engine
+### 13a. Rebuild: carrier-phase orbit determination on the Orekit engine
 
 The orbit determination was rebuilt and rerun on the same 61 cut-offs with the same settings:
 * **Measurements.** It now uses the GPS **carrier phase**, not only the code.

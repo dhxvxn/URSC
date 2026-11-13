@@ -489,9 +489,17 @@ public final class OrekitCarrierPhaseOd {
         for (final ObservedMeasurement<?> m : meas) {
             estimator.addMeasurement(m);
         }
-        estimator.setParametersConvergenceThreshold(1.0e-3);
-        estimator.setMaxIterations(s.maxIterations);
-        estimator.setMaxEvaluations(4 * s.maxIterations);
+        // converged when the normalised parameter corrections are below 1e-3 (Orekit's usual test)
+        // or the weighted cost no longer changes (relative 1e-6): with Cd estimated on long arcs
+        // Gauss-Newton creeps towards the minimum and the parameter test alone may never trigger
+        estimator.setConvergenceChecker((iteration, previous, current) -> {
+            final double maxStep = current.getPoint().subtract(previous.getPoint()).getLInfNorm();
+            final double c0 = previous.getCost();
+            final double c1 = current.getCost();
+            return maxStep < 1.0e-3 || Math.abs(c0 - c1) <= 1.0e-6 * Math.max(c1, 1.0e-30);
+        });
+        estimator.setMaxIterations(Math.max(s.maxIterations, 25));
+        estimator.setMaxEvaluations(4 * Math.max(s.maxIterations, 25));
         final Propagator[] p = estimator.estimate();
         r.iterations += estimator.getIterationsCount();
         r.converged = true;
