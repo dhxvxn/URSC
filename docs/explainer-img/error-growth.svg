@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="Helvetica,Arial,sans-serif" font-size="12"><rect width="720" height="400" fill="#fcfcfb"/>
+<text x="70" y="22" fill="#0b0b0b" font-size="14" font-weight="bold">Median 3-D error vs POEORB over 61 cut-offs (log scale)</text>
+<line x1="70" x2="550" y1="397.2" y2="397.2" stroke="#e4e3df"/><text x="62" y="401.2" text-anchor="end" fill="#52514e">0.1 m</text>
+<line x1="70" x2="550" y1="329.8" y2="329.8" stroke="#e4e3df"/><text x="62" y="333.8" text-anchor="end" fill="#52514e">1 m</text>
+<line x1="70" x2="550" y1="262.4" y2="262.4" stroke="#e4e3df"/><text x="62" y="266.4" text-anchor="end" fill="#52514e">10 m</text>
+<line x1="70" x2="550" y1="195.0" y2="195.0" stroke="#e4e3df"/><text x="62" y="199.0" text-anchor="end" fill="#52514e">100 m</text>
+<line x1="70" x2="550" y1="127.6" y2="127.6" stroke="#e4e3df"/><text x="62" y="131.6" text-anchor="end" fill="#52514e">1 km</text>
+<line x1="70" x2="550" y1="60.2" y2="60.2" stroke="#e4e3df"/><text x="62" y="64.2" text-anchor="end" fill="#52514e">10 km</text>
+<text x="90.0" y="370" text-anchor="middle" fill="#52514e">Cut-off</text>
+<text x="178.0" y="370" text-anchor="middle" fill="#52514e">+1 h</text>
+<text x="266.0" y="370" text-anchor="middle" fill="#52514e">+6 h</text>
+<text x="354.0" y="370" text-anchor="middle" fill="#52514e">+1 day</text>
+<text x="442.0" y="370" text-anchor="middle" fill="#52514e">+3 days</text>
+<text x="530.0" y="370" text-anchor="middle" fill="#52514e">+7 days</text>
+<polyline points="90.0,316.6 178.0,310.5 266.0,263.5 354.0,196.5 442.0,126.9 530.0,66.0" fill="none" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="90.0" cy="316.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="178.0" cy="310.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="266.0" cy="263.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="354.0" cy="196.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="442.0" cy="126.9" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="530.0" cy="66.0" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="90.0,333.2 178.0,319.3 266.0,266.8 354.0,197.1 442.0,127.6 530.0,66.3" fill="none" stroke="#1baf7a" stroke-width="2"/>
+<circle cx="90.0" cy="333.2" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="178.0" cy="319.3" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="266.0" cy="266.8" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="354.0" cy="197.1" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="442.0" cy="127.6" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="530.0" cy="66.3" r="4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="90.0,313.1 178.0,308.1 266.0,279.5 354.0,219.8 442.0,151.3 530.0,59.0" fill="none" stroke="#eb6834" stroke-width="2"/>
+<circle cx="90.0" cy="313.1" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="178.0" cy="308.1" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="266.0" cy="279.5" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="354.0" cy="219.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="442.0" cy="151.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="530.0" cy="59.0" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="565" x2="585" y1="56" y2="56" stroke="#2a78d6" stroke-width="3"/><text x="590" y="60" fill="#0b0b0b">Before (SPP fit)</text>
+<line x1="565" x2="585" y1="78" y2="78" stroke="#1baf7a" stroke-width="3"/><text x="590" y="82" fill="#0b0b0b">Orekit carrier phase</text>
+<line x1="565" x2="585" y1="100" y2="100" stroke="#eb6834" stroke-width="3"/><text x="590" y="104" fill="#0b0b0b">Final (steps 1–5)</text>
+<text x="362.0" y="235.8" fill="#0b0b0b">43 m</text><text x="362.0" y="188.5" fill="#0b0b0b">95 m</text>
+</svg>

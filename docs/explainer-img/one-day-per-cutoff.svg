@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" font-family="Helvetica,Arial,sans-serif" font-size="12"><rect width="720" height="380" fill="#fcfcfb"/>
+<text x="70" y="22" fill="#0b0b0b" font-size="14" font-weight="bold">Error one day after each cut-off: before vs final (log scale)</text>
+<circle cx="75" cy="40" r="4" fill="#2a78d6"/><text x="84" y="44" fill="#0b0b0b">Before (SPP fit)</text><circle cx="205" cy="40" r="4" fill="#eb6834"/><text x="214" y="44" fill="#0b0b0b">Final (steps 1–5)</text><text x="340" y="44" fill="#52514e">grey line joins the same day; ▲ storm days</text>
+<line x1="70" x2="700" y1="320.0" y2="320.0" stroke="#e4e3df"/><text x="62" y="324.0" text-anchor="end" fill="#52514e">1 m</text>
+<line x1="70" x2="700" y1="256.6" y2="256.6" stroke="#e4e3df"/><text x="62" y="260.6" text-anchor="end" fill="#52514e">10 m</text>
+<line x1="70" x2="700" y1="193.2" y2="193.2" stroke="#e4e3df"/><text x="62" y="197.2" text-anchor="end" fill="#52514e">100 m</text>
+<line x1="70" x2="700" y1="129.8" y2="129.8" stroke="#e4e3df"/><text x="62" y="133.8" text-anchor="end" fill="#52514e">1 km</text>
+<line x1="70" x2="700" y1="66.3" y2="66.3" stroke="#e4e3df"/><text x="62" y="70.3" text-anchor="end" fill="#52514e">10 km</text>
+<text x="75.0" y="338" text-anchor="middle" fill="#52514e">Sep 3</text>
+<line x1="75.0" x2="75.0" y1="202.8" y2="216.7" stroke="#c3c2b7"/>
+<circle cx="75.0" cy="202.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-03 before 70.6 m</title></circle>
+<circle cx="75.0" cy="216.7" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-03 final 42.5 m</title></circle>
+<line x1="85.3" x2="85.3" y1="194.1" y2="198.2" stroke="#c3c2b7"/>
+<circle cx="85.3" cy="194.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-04 before 96.8 m</title></circle>
+<circle cx="85.3" cy="198.2" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-04 final 83.3 m</title></circle>
+<line x1="95.7" x2="95.7" y1="200.0" y2="243.6" stroke="#c3c2b7"/>
+<circle cx="95.7" cy="200.0" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-05 before 78.1 m</title></circle>
+<circle cx="95.7" cy="243.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-05 final 16.0 m</title></circle>
+<line x1="106.0" x2="106.0" y1="197.6" y2="193.5" stroke="#c3c2b7"/>
+<circle cx="106.0" cy="197.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-06 before 85.2 m</title></circle>
+<circle cx="106.0" cy="193.5" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-06 final 98.7 m</title></circle>
+<line x1="116.3" x2="116.3" y1="195.5" y2="244.3" stroke="#c3c2b7"/>
+<circle cx="116.3" cy="195.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-07 before 92.0 m</title></circle>
+<circle cx="116.3" cy="244.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-07 final 15.6 m</title></circle>
+<line x1="126.7" x2="126.7" y1="181.9" y2="204.8" stroke="#c3c2b7"/>
+<circle cx="126.7" cy="181.9" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-08 before 150.3 m</title></circle>
+<circle cx="126.7" cy="204.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-08 final 65.5 m</title></circle>
+<line x1="137.0" x2="137.0" y1="81.1" y2="80.4" stroke="#c3c2b7"/>
+<circle cx="137.0" cy="81.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-09 before 5842.4 m</title></circle>
+<circle cx="137.0" cy="80.4" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-09 final 5999.0 m</title></circle>
+<text x="137.0" y="56" text-anchor="middle" fill="#52514e" font-size="10">▲</text>
+<line x1="147.3" x2="147.3" y1="191.8" y2="205.6" stroke="#c3c2b7"/>
+<circle cx="147.3" cy="191.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-10 before 105.2 m</title></circle>
+<circle cx="147.3" cy="205.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-10 final 63.6 m</title></circle>
+<line x1="157.7" x2="157.7" y1="194.6" y2="235.8" stroke="#c3c2b7"/>
+<circle cx="157.7" cy="194.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-11 before 94.9 m</title></circle>
+<circle cx="157.7" cy="235.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-11 final 21.3 m</title></circle>
+<line x1="168.0" x2="168.0" y1="157.8" y2="159.6" stroke="#c3c2b7"/>
+<circle cx="168.0" cy="157.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-12 before 360.7 m</title></circle>
+<circle cx="168.0" cy="159.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-12 final 338.1 m</title></circle>
+<line x1="178.3" x2="178.3" y1="174.5" y2="231.7" stroke="#c3c2b7"/>
+<circle cx="178.3" cy="174.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-13 before 197.1 m</title></circle>
+<circle cx="178.3" cy="231.7" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-13 final 24.7 m</title></circle>
+<line x1="188.7" x2="188.7" y1="200.1" y2="250.6" stroke="#c3c2b7"/>
+<circle cx="188.7" cy="200.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-14 before 77.8 m</title></circle>
+<circle cx="188.7" cy="250.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-14 final 12.4 m</title></circle>
+<line x1="199.0" x2="199.0" y1="199.1" y2="207.7" stroke="#c3c2b7"/>
+<circle cx="199.0" cy="199.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-15 before 80.5 m</title></circle>
+<circle cx="199.0" cy="207.7" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-15 final 59.0 m</title></circle>
+<line x1="209.3" x2="209.3" y1="192.6" y2="199.1" stroke="#c3c2b7"/>
+<circle cx="209.3" cy="192.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-16 before 102.0 m</title></circle>
+<circle cx="209.3" cy="199.1" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-16 final 80.6 m</title></circle>
+<line x1="219.7" x2="219.7" y1="172.7" y2="179.2" stroke="#c3c2b7"/>
+<circle cx="219.7" cy="172.7" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-17 before 210.0 m</title></circle>
+<circle cx="219.7" cy="179.2" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-17 final 165.9 m</title></circle>
+<line x1="230.0" x2="230.0" y1="100.8" y2="100.6" stroke="#c3c2b7"/>
+<circle cx="230.0" cy="100.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-18 before 2856.9 m</title></circle>
+<circle cx="230.0" cy="100.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-18 final 2879.1 m</title></circle>
+<text x="230.0" y="56" text-anchor="middle" fill="#52514e" font-size="10">▲</text>
+<line x1="240.3" x2="240.3" y1="212.9" y2="214.8" stroke="#c3c2b7"/>
+<circle cx="240.3" cy="212.9" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-19 before 48.9 m</title></circle>
+<circle cx="240.3" cy="214.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-19 final 45.6 m</title></circle>
+<line x1="250.7" x2="250.7" y1="259.5" y2="251.3" stroke="#c3c2b7"/>
+<circle cx="250.7" cy="259.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-20 before 9.0 m</title></circle>
+<circle cx="250.7" cy="251.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-20 final 12.1 m</title></circle>
+<line x1="261.0" x2="261.0" y1="277.0" y2="262.4" stroke="#c3c2b7"/>
+<circle cx="261.0" cy="277.0" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-21 before 4.8 m</title></circle>
+<circle cx="261.0" cy="262.4" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-21 final 8.1 m</title></circle>
+<line x1="271.3" x2="271.3" y1="280.4" y2="216.5" stroke="#c3c2b7"/>
+<circle cx="271.3" cy="280.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-22 before 4.2 m</title></circle>
+<circle cx="271.3" cy="216.5" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-22 final 42.8 m</title></circle>
+<line x1="281.7" x2="281.7" y1="215.6" y2="228.6" stroke="#c3c2b7"/>
+<circle cx="281.7" cy="215.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-23 before 44.3 m</title></circle>
+<circle cx="281.7" cy="228.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-23 final 27.6 m</title></circle>
+<line x1="292.0" x2="292.0" y1="199.7" y2="238.8" stroke="#c3c2b7"/>
+<circle cx="292.0" cy="199.7" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-24 before 79.0 m</title></circle>
+<circle cx="292.0" cy="238.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-24 final 19.1 m</title></circle>
+<line x1="302.3" x2="302.3" y1="185.4" y2="214.2" stroke="#c3c2b7"/>
+<circle cx="302.3" cy="185.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-25 before 132.6 m</title></circle>
+<circle cx="302.3" cy="214.2" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-25 final 46.6 m</title></circle>
+<line x1="312.7" x2="312.7" y1="198.7" y2="215.0" stroke="#c3c2b7"/>
+<circle cx="312.7" cy="198.7" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-26 before 81.9 m</title></circle>
+<circle cx="312.7" cy="215.0" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-26 final 45.2 m</title></circle>
+<line x1="323.0" x2="323.0" y1="197.6" y2="230.2" stroke="#c3c2b7"/>
+<circle cx="323.0" cy="197.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-27 before 85.3 m</title></circle>
+<circle cx="323.0" cy="230.2" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-27 final 26.0 m</title></circle>
+<line x1="333.3" x2="333.3" y1="197.7" y2="255.4" stroke="#c3c2b7"/>
+<circle cx="333.3" cy="197.7" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-28 before 84.8 m</title></circle>
+<circle cx="333.3" cy="255.4" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-28 final 10.4 m</title></circle>
+<line x1="343.7" x2="343.7" y1="186.8" y2="261.3" stroke="#c3c2b7"/>
+<circle cx="343.7" cy="186.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-29 before 125.9 m</title></circle>
+<circle cx="343.7" cy="261.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-29 final 8.4 m</title></circle>
+<line x1="354.0" x2="354.0" y1="183.1" y2="218.2" stroke="#c3c2b7"/>
+<circle cx="354.0" cy="183.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-09-30 before 144.1 m</title></circle>
+<circle cx="354.0" cy="218.2" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-09-30 final 40.4 m</title></circle>
+<text x="364.3" y="338" text-anchor="middle" fill="#52514e">Oct 1</text>
+<line x1="364.3" x2="364.3" y1="184.1" y2="312.5" stroke="#c3c2b7"/>
+<circle cx="364.3" cy="184.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-01 before 139.1 m</title></circle>
+<circle cx="364.3" cy="312.5" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-01 final 1.3 m</title></circle>
+<line x1="374.7" x2="374.7" y1="193.4" y2="211.3" stroke="#c3c2b7"/>
+<circle cx="374.7" cy="193.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-02 before 99.2 m</title></circle>
+<circle cx="374.7" cy="211.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-02 final 51.8 m</title></circle>
+<line x1="385.0" x2="385.0" y1="199.8" y2="223.1" stroke="#c3c2b7"/>
+<circle cx="385.0" cy="199.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-03 before 78.5 m</title></circle>
+<circle cx="385.0" cy="223.1" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-03 final 33.7 m</title></circle>
+<line x1="395.3" x2="395.3" y1="193.2" y2="223.6" stroke="#c3c2b7"/>
+<circle cx="395.3" cy="193.2" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-04 before 99.9 m</title></circle>
+<circle cx="395.3" cy="223.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-04 final 33.1 m</title></circle>
+<line x1="405.7" x2="405.7" y1="198.2" y2="214.7" stroke="#c3c2b7"/>
+<circle cx="405.7" cy="198.2" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-05 before 83.4 m</title></circle>
+<circle cx="405.7" cy="214.7" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-05 final 45.8 m</title></circle>
+<line x1="416.0" x2="416.0" y1="68.5" y2="68.4" stroke="#c3c2b7"/>
+<circle cx="416.0" cy="68.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-06 before 9236.3 m</title></circle>
+<circle cx="416.0" cy="68.4" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-06 final 9263.2 m</title></circle>
+<text x="416.0" y="56" text-anchor="middle" fill="#52514e" font-size="10">▲</text>
+<line x1="436.7" x2="436.7" y1="171.3" y2="202.3" stroke="#c3c2b7"/>
+<circle cx="436.7" cy="171.3" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-08 before 220.9 m</title></circle>
+<circle cx="436.7" cy="202.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-08 final 71.9 m</title></circle>
+<line x1="447.0" x2="447.0" y1="202.4" y2="189.8" stroke="#c3c2b7"/>
+<circle cx="447.0" cy="202.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-09 before 71.6 m</title></circle>
+<circle cx="447.0" cy="189.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-09 final 113.2 m</title></circle>
+<line x1="457.3" x2="457.3" y1="166.6" y2="157.4" stroke="#c3c2b7"/>
+<circle cx="457.3" cy="166.6" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-10 before 262.0 m</title></circle>
+<circle cx="457.3" cy="157.4" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-10 final 366.1 m</title></circle>
+<line x1="467.7" x2="467.7" y1="148.8" y2="177.0" stroke="#c3c2b7"/>
+<circle cx="467.7" cy="148.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-11 before 501.5 m</title></circle>
+<circle cx="467.7" cy="177.0" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-11 final 180.1 m</title></circle>
+<line x1="478.0" x2="478.0" y1="211.2" y2="208.8" stroke="#c3c2b7"/>
+<circle cx="478.0" cy="211.2" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-12 before 51.9 m</title></circle>
+<circle cx="478.0" cy="208.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-12 final 56.6 m</title></circle>
+<line x1="488.3" x2="488.3" y1="204.4" y2="285.9" stroke="#c3c2b7"/>
+<circle cx="488.3" cy="204.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-13 before 66.6 m</title></circle>
+<circle cx="488.3" cy="285.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-13 final 3.4 m</title></circle>
+<line x1="498.7" x2="498.7" y1="217.7" y2="244.0" stroke="#c3c2b7"/>
+<circle cx="498.7" cy="217.7" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-14 before 41.0 m</title></circle>
+<circle cx="498.7" cy="244.0" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-14 final 15.8 m</title></circle>
+<line x1="519.3" x2="519.3" y1="205.0" y2="225.9" stroke="#c3c2b7"/>
+<circle cx="519.3" cy="205.0" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-16 before 65.1 m</title></circle>
+<circle cx="519.3" cy="225.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-16 final 30.4 m</title></circle>
+<line x1="529.7" x2="529.7" y1="91.4" y2="90.9" stroke="#c3c2b7"/>
+<circle cx="529.7" cy="91.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-17 before 4029.2 m</title></circle>
+<circle cx="529.7" cy="90.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-17 final 4095.7 m</title></circle>
+<text x="529.7" y="56" text-anchor="middle" fill="#52514e" font-size="10">▲</text>
+<line x1="540.0" x2="540.0" y1="221.0" y2="222.0" stroke="#c3c2b7"/>
+<circle cx="540.0" cy="221.0" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-18 before 36.4 m</title></circle>
+<circle cx="540.0" cy="222.0" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-18 final 35.1 m</title></circle>
+<line x1="550.3" x2="550.3" y1="195.1" y2="269.3" stroke="#c3c2b7"/>
+<circle cx="550.3" cy="195.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-19 before 93.1 m</title></circle>
+<circle cx="550.3" cy="269.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-19 final 6.3 m</title></circle>
+<line x1="560.7" x2="560.7" y1="221.4" y2="223.9" stroke="#c3c2b7"/>
+<circle cx="560.7" cy="221.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-20 before 35.9 m</title></circle>
+<circle cx="560.7" cy="223.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-20 final 32.8 m</title></circle>
+<line x1="571.0" x2="571.0" y1="219.9" y2="247.8" stroke="#c3c2b7"/>
+<circle cx="571.0" cy="219.9" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-21 before 37.8 m</title></circle>
+<circle cx="571.0" cy="247.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-21 final 13.8 m</title></circle>
+<line x1="581.3" x2="581.3" y1="196.8" y2="250.9" stroke="#c3c2b7"/>
+<circle cx="581.3" cy="196.8" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-22 before 87.6 m</title></circle>
+<circle cx="581.3" cy="250.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-22 final 12.3 m</title></circle>
+<line x1="591.7" x2="591.7" y1="206.1" y2="199.8" stroke="#c3c2b7"/>
+<circle cx="591.7" cy="206.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-23 before 62.6 m</title></circle>
+<circle cx="591.7" cy="199.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-23 final 78.7 m</title></circle>
+<line x1="602.0" x2="602.0" y1="192.5" y2="226.3" stroke="#c3c2b7"/>
+<circle cx="602.0" cy="192.5" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-24 before 102.3 m</title></circle>
+<circle cx="602.0" cy="226.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-24 final 30.0 m</title></circle>
+<line x1="612.3" x2="612.3" y1="214.4" y2="224.8" stroke="#c3c2b7"/>
+<circle cx="612.3" cy="214.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-25 before 46.3 m</title></circle>
+<circle cx="612.3" cy="224.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-25 final 31.7 m</title></circle>
+<line x1="622.7" x2="622.7" y1="184.3" y2="203.9" stroke="#c3c2b7"/>
+<circle cx="622.7" cy="184.3" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-26 before 138.2 m</title></circle>
+<circle cx="622.7" cy="203.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-26 final 67.7 m</title></circle>
+<line x1="633.0" x2="633.0" y1="177.4" y2="182.9" stroke="#c3c2b7"/>
+<circle cx="633.0" cy="177.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-27 before 177.5 m</title></circle>
+<circle cx="633.0" cy="182.9" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-27 final 145.4 m</title></circle>
+<line x1="643.3" x2="643.3" y1="176.2" y2="196.6" stroke="#c3c2b7"/>
+<circle cx="643.3" cy="176.2" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-28 before 185.3 m</title></circle>
+<circle cx="643.3" cy="196.6" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-28 final 88.3 m</title></circle>
+<line x1="653.7" x2="653.7" y1="187.1" y2="248.3" stroke="#c3c2b7"/>
+<circle cx="653.7" cy="187.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-29 before 124.8 m</title></circle>
+<circle cx="653.7" cy="248.3" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-29 final 13.5 m</title></circle>
+<line x1="664.0" x2="664.0" y1="72.1" y2="71.7" stroke="#c3c2b7"/>
+<circle cx="664.0" cy="72.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-30 before 8105.8 m</title></circle>
+<circle cx="664.0" cy="71.7" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-30 final 8237.5 m</title></circle>
+<text x="664.0" y="56" text-anchor="middle" fill="#52514e" font-size="10">▲</text>
+<line x1="674.3" x2="674.3" y1="184.9" y2="228.7" stroke="#c3c2b7"/>
+<circle cx="674.3" cy="184.9" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-10-31 before 135.3 m</title></circle>
+<circle cx="674.3" cy="228.7" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-10-31 final 27.5 m</title></circle>
+<text x="684.7" y="338" text-anchor="middle" fill="#52514e">Nov 1</text>
+<line x1="684.7" x2="684.7" y1="177.1" y2="212.5" stroke="#c3c2b7"/>
+<circle cx="684.7" cy="177.1" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-11-01 before 179.2 m</title></circle>
+<circle cx="684.7" cy="212.5" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-11-01 final 49.5 m</title></circle>
+<line x1="695.0" x2="695.0" y1="164.4" y2="172.8" stroke="#c3c2b7"/>
+<circle cx="695.0" cy="164.4" r="4" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"><title>2024-11-02 before 284.4 m</title></circle>
+<circle cx="695.0" cy="172.8" r="4" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"><title>2024-11-02 final 209.2 m</title></circle>
+</svg>
