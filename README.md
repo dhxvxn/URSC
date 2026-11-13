@@ -264,6 +264,8 @@ error against it — for display only; it is never fed back into the computation
   [complete offline package](docs/gui-complete-guide/GUI_COMPLETE_GUIDE_PACKAGE.zip?raw=true).
 
 - **[docs/REPORT.md](docs/REPORT.md)** — illustrated end-to-end report (problem → results) with a glossary.
+- **[docs/Report-Change-Sheets.pdf](docs/Report-Change-Sheets.pdf)**: only the changed pages of the printed report, with swap instructions ([docs/Report-Full-Updated.pdf](docs/Report-Full-Updated.pdf) is the complete updated report).
+- **[docs/reports/two-month-improvements](docs/reports/two-month-improvements/README.md)**: the five improvements, measured step by step and over 61 days.
 - **[docs/PRESENTATION.md](docs/PRESENTATION.md)** — a 60–120 minute speaker's script and demo guide.
 - **[docs/PROMPT_DEVELOPMENT_REPORT.md](docs/PROMPT_DEVELOPMENT_REPORT.md)** — the polished, reproducible prompt history (Codex + Claude) that built the project.
 - **[docs/GNSS-OD-demo.mp4](docs/GNSS-OD-demo.mp4)** — a 43-second demonstration video (opens in GitHub's video player), with its narration in **[docs/VIDEO-NARRATION.md](docs/VIDEO-NARRATION.md)**.

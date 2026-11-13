@@ -246,8 +246,8 @@ public final class OdForecastPipeline {
 
         // ---- orbit determination: Orekit batch least squares on code + carrier phase
         pl.stage("Orbit determination: Orekit batch least squares on code + carrier phase", 0.27);
-        final boolean estCd = cfg.od.estimateCd && cfg.forces.drag.enabled;
-        final boolean estCr = cfg.od.estimateCr && cfg.forces.srp.enabled;
+        boolean estCd = cfg.od.estimateCd && cfg.forces.drag.enabled;
+        boolean estCr = cfg.od.estimateCr && cfg.forces.srp.enabled;
         final List<ForceModel> odForces = OrekitDynamics.forces(cfg, env, session, cfg.spacecraft.cd, cfg.spacecraft.cr, fw);
         final NumericalPropagatorBuilder builder = OrekitDynamics.builder(seedOrbit, mass, cfg, odForces, attitude);
         for (final ParameterDriver d : OrekitDynamics.coefficientDrivers(odForces, estCd, estCr)) {
@@ -282,7 +282,7 @@ public final class OdForecastPipeline {
             cs.gpsAntennas = cs.gpsAntennas.withoutPhaseCentres();
         }
         final GnssProductResolver cpResolver = resolver(cfg, cutoff, sources);
-        final OrekitCarrierPhaseOd.Result cp;
+        OrekitCarrierPhaseOd.Result cp;
         try {
             cp = new OrekitCarrierPhaseOd(builder, epochs, OrekitDates.fromOrekit(seedOrbit.getDate()), cutoff,
                     (t, prns) -> {
@@ -290,11 +290,37 @@ public final class OdForecastPipeline {
                         return sel == null || !(sel.source instanceof OrekitGpsSource) ? null : (OrekitGpsSource) sel.source;
                     }, cs, session).estimate();
         } catch (final RuntimeException e) {
-            res.errors.add("Carrier-phase orbit determination failed (" + e.getClass().getSimpleName() + ": "
-                    + e.getMessage() + "); no forecast issued");
-            res.status = RunResult.Status.FAILED_OD;
-            res.od = od;
-            return;
+            if (!(estCd || estCr)) {
+                res.errors.add("Carrier-phase orbit determination failed (" + e.getClass().getSimpleName() + ": "
+                        + e.getMessage() + "); no forecast issued");
+                res.status = RunResult.Status.FAILED_OD;
+                res.od = od;
+                return;
+            }
+            // with the drag/radiation coefficient free the fit did not converge (e.g. a storm day):
+            // fit again with the coefficients fixed rather than issuing no forecast
+            res.warnings.add("Carrier-phase orbit determination did not converge with the "
+                    + (estCd ? "drag" : "radiation") + " coefficient estimated (" + e.getMessage()
+                    + "); repeated with the coefficients fixed at their configured values");
+            pl.log("OD: refitting with Cd/Cr fixed");
+            estCd = false;
+            estCr = false;
+            final NumericalPropagatorBuilder fixed = OrekitDynamics.builder(seedOrbit, mass, cfg,
+                    OrekitDynamics.forces(cfg, env, session, cfg.spacecraft.cd, cfg.spacecraft.cr, fw), attitude);
+            final GnssProductResolver retryResolver = resolver(cfg, cutoff, sources);
+            try {
+                cp = new OrekitCarrierPhaseOd(fixed, epochs, OrekitDates.fromOrekit(seedOrbit.getDate()), cutoff,
+                        (t, prns) -> {
+                            final GnssProductResolver.Selection sel = retryResolver.select(t, prns);
+                            return sel == null || !(sel.source instanceof OrekitGpsSource) ? null : (OrekitGpsSource) sel.source;
+                        }, cs, session).estimate();
+            } catch (final RuntimeException e2) {
+                res.errors.add("Carrier-phase orbit determination failed (" + e2.getClass().getSimpleName() + ": "
+                        + e2.getMessage() + "); no forecast issued");
+                res.status = RunResult.Status.FAILED_OD;
+                res.od = od;
+                return;
+            }
         }
         fillOd(od, cp, seedOrbit, estCd, estCr, cfg);
         res.od = od;

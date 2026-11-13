@@ -187,6 +187,11 @@ campaign; see [reports/two-month-improvements](reports/two-month-improvements/RE
 5. **Parallel window runs.** Each cut-off runs in its own worker process, because Orekit's data
    context is process-wide. By default there is one worker per spare core, limited by memory.
 
+Result over 61 days (median against POEORB): **+1 day 95 m → 43 m, +3 days 1.0 km → 0.45 km**. In
+exchange, the position at the cut-off goes from 0.9 to 1.8 m and the +7-day error from 8.1 to
+10.4 km. For 7-day products, use fixed Cd and a 6 h arc. If a fit with Cd estimated does not
+converge, it is repeated with Cd fixed.
+
 ## Known limitations
 
 These are the remaining sources of error:

@@ -602,11 +602,11 @@ The orbit determination was rebuilt and rerun on the same 61 cut-offs with the s
 |---|---:|---:|---|---:|
 | Before: SPP position fit (previous engine) | 61 | 61 | 2.702 m (positions) | 135 s |
 | After: carrier-phase OD (in-house engine) | 61 | 61 | 0.069 m (carrier phase) | 191 s |
-| Final: carrier-phase OD on the Orekit engine | 61 | 61 | 0.072 m (carrier phase) | 280 s |
+| Orekit: carrier-phase OD on the Orekit engine | 61 | 61 | 0.072 m (carrier phase) | 280 s |
 
 **3-D position error against POEORB (m), median over the scored days** (95th percentile in brackets):
 
-| Horizon | Before | After | Final | Change (final vs before) |
+| Horizon | Before | After | Orekit | Change (Orekit vs before) |
 |---|---:|---:|---:|---:|
 | At cut-off | 1.57 (3.21) | 0.78 (2.15) | 0.89 (2.22) | -44 % |
 | +1 h | 1.93 (4.48) | 1.26 (4.52) | 1.43 (4.68) | -26 % |
@@ -621,6 +621,46 @@ The orbit determination was rebuilt and rerun on the same 61 cut-offs with the s
 
 Details: [CARRIER_PHASE_OD.md](CARRIER_PHASE_OD.md) and
 [reports/two-month-carrier-phase-orekit](reports/two-month-carrier-phase-orekit/README.md).
+
+### 13b. Five further improvements
+
+After the rebuild, five improvements were made and measured. Each was first tested on seven
+cut-offs; all were then run together in a second 61-day campaign.
+
+1. **The drag coefficient is estimated, on a 12-hour arc.**
+2. **Alternative drag models** were tested: JB2008, and a box-wing spacecraft model with measured
+   attitude.
+3. **GPS antenna phase centres** from the IGS ANTEX file, and **phase wind-up**, are modelled.
+4. **The attitude law and output frames** now come from Orekit. The nominal attitude (yaw-compensated
+   geodetic nadir pointing) matches the measured attitude to 0.005°.
+5. **Window runs** compute several cut-offs **in parallel**.
+
+Step 2's two models made the forecasts worse and were not adopted. The others are now the
+defaults.
+
+| Horizon | Before (SPP fit) | Carrier phase on Orekit | Final (steps 1–5) | Change vs before | Change vs Orekit rebuild |
+|---|---:|---:|---:|---:|---:|
+| At cut-off | 1.57 (3.21) | 0.89 (2.22) | **1.77** (3.19) | +12 % | +100 % |
+| +1 h | 1.93 (4.48) | 1.43 (4.68) | **2.10** (4.06) | +9 % | +47 % |
+| +6 h | 9.62 (712) | 8.61 (714) | **5.57** (723) | -42 % | -35 % |
+| +1 day | 94.91 (4,211) | 93.06 (4,213) | **42.79** (4,286) | -55 % | -54 % |
+| +3 days | 1,023 (16,355) | 1,000 (16,404) | **445** (17,245) | -57 % | -56 % |
+| +7 days | 8,208 (42,008) | 8,131 (42,118) | **10,416** (47,805) | +27 % | +28 % |
+
+Final run: 61 cut-offs, 61 successful; median phase residual 12.2 cm; median run time 732 s per cut-off (four in parallel).
+
+* **Forecasts from 6 hours to 3 days improve by about half.** Estimating the drag coefficient
+  absorbs most of the density-model error. The median error at +1 day falls from 95 m to 43 m, and
+  at +3 days from 1.0 km to 0.45 km.
+* **Positions near the cut-off are slightly less accurate,** about 1.8 m. A 12-hour arc fitted
+  with the physical force model alone cannot follow the orbit as tightly at its end.
+* **At seven days the median error is 27 % larger.** A drag coefficient fitted to half a day of
+  atmosphere does not hold for a week near solar maximum. For seven-day products the earlier
+  settings remain preferable.
+
+Two cut-offs did not converge with the drag coefficient free; the system now refits them with it
+fixed. The test-day comparison, the daily values and the data are in
+[reports/two-month-improvements](reports/two-month-improvements/README.md).
 
 ## 14. Accuracy as a function of GPS product
 
@@ -752,8 +792,9 @@ underlying library shares process-wide frame and ephemeris state that must first
   navigation and the predicted portion of ultra-rapid products; Final and Rapid products become
   available one to two weeks later and are used in Reconstruction mode.
 - **Forecast drift.** Forecast error grows chiefly through atmospheric drag, which depends on
-  unpredictable solar activity. Estimating the drag coefficient (§13b) reduces it, but several
-  kilometres over seven days remain near solar maximum without forecast space-weather input.
+  unpredictable solar activity. Estimating the drag coefficient (§13b) halves it over one to three
+  days, but several kilometres over seven days remain near solar maximum without forecast
+  space-weather input.
 - **Strictly dynamic orbit.** The orbit is fitted with the physical force model only, without
   empirical accelerations, and the ambiguities are not fixed to integers. Phase residuals of about
   6 cm remain, against the 1–2 cm of operational precise orbit determination.
